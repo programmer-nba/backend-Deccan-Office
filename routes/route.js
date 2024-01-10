@@ -10,7 +10,7 @@ router.route('/ddsc-office/update/:id').put(main.Update)
 router.route('/ddsc-office/del/:id').delete(main.Delete)
 
 //Register
-router.route('/ddsc-office/post').post(regis.CreateRegister)
+router.route('/ddsc-office/Register').post(regis.CreateRegister)
 
 
 module.exports = router;
