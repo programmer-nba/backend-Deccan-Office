@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const main = require('../controllers/main.controller');
+const main = require('../controllers/employeeController');
 const regis = require('../controllers/registerController');
 
 //CRUD
