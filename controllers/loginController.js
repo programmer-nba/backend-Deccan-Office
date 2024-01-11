@@ -11,13 +11,12 @@ loginController = async(req,res) =>{
                 let cmp = bcrypt.compare(Password, Employees.password).then((match)=>{
                     console.log(match)
                     if(match){
-                        const secretKey = 'SECRET_KEY'
+                        const secretKey = process.env.JWTPRIVATEKEY
                         const payload = {
                             user_id: Employees.first_name,
                             email: Employees.email
                         }
-                        const token = jwt.sign(payload, secretKey, { expiresIn: 60})
-                        console.log(token, payload)
+                        const token = jwt.sign(payload, secretKey, { expiresIn: '90 years'})
                         return res
                                 .status(200)
                                 .send({message:"เข้าสู่ระบบสำเร็จ"})
