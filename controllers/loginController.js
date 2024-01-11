@@ -19,7 +19,7 @@ loginController = async(req,res) =>{
                         const token = jwt.sign(payload, secretKey, { expiresIn: '90 years'})
                         return res
                                 .status(200)
-                                .send({message:"เข้าสู่ระบบสำเร็จ"})
+                                .send({status:true,message:"เข้าสู่ระบบสำเร็จ"})
                     }else{
                         return res
                                 .status(400)
