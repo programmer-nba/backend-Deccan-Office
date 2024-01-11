@@ -54,8 +54,10 @@ getAll = async (req, res) => {
 
 getByID = async (req, res) => {
   try{
-    const iden = req.body.iden_number //ดึงเฉพาะข้อมูลบัตรประชาชน
-    const getBy = await Employees.findOne({iden_number:iden})
+    //const iden = req.body.first_name //ดึงเฉพาะข้อมูลบัตรประชาชน
+    const { iden_number } = req.body;
+    console.log(iden_number)
+    const getBy = await Employees.findOne({iden_number:iden_number},{ _id: 0,__v: 0}) // 1 คือให้แสดงข้อมูล 0 คือไม่ให้แสดงข้อมูล
     if (getBy){
       return res
         .status(200)
@@ -74,9 +76,28 @@ getByID = async (req, res) => {
 Update = async (req, res)=>{
   try{
     const upID = req.params.id; //รับไอดีที่ต้องการอัพเดท
-        console.log(req.body);
-        const hashPassword = await bcrypt.hash(req.body.password, 10) //ทำการ hash รหัสใหม่
-        const updateEmployee = await Employees.findByIdAndUpdate(upID, {...req.body,password: hashPassword}, {new:true}); //หา id ที่ต้องการจากนั้นทำการอัพเดท
+    console.log(req.body);
+    if(!req.body.password){ //กรณีที่ไม่ได้ยิง body.password
+      Employees.findByIdAndUpdate(upID,req.body, {new:true}).then((data) =>{
+        if (!data) {
+          res
+            .status(400)
+            .send({status:false, message: "ไม่สามารถแก้ไขผู้ใช้งานนี้ได้"})
+        }else {
+          res
+            .status(200)
+            .send({status:true, message: "อัพเดทข้อมูลแล้ว",data: data})
+        }
+      })
+      .catch((err)=>{
+        res
+          .status(500)
+          .send({status: false, message: "มีบางอย่างผิดพลาด"})
+    })
+  } else { //กรณีที่ได้ยิง body.password
+      const salt = await bcrypt.genSalt(Number(process.env.SALT));
+      const hashPassword = await bcrypt.hash(req.body.password, salt);
+      const updateEmployee = await Employees.findByIdAndUpdate(upID, {...req.body,password: hashPassword}, {new:true}); //หา id ที่ต้องการจากนั้นทำการอัพเดท
     if(updateEmployee){
       return res
         .status(200)
@@ -86,7 +107,8 @@ Update = async (req, res)=>{
         .status(400)
         .send({ status: false, message: " อัพเดทข้อมูลไม่สำเร็จ" });
     }
-  } catch(err){
+  }
+} catch(err){
     console.log(err);
     return res.status(500).send({ message: "มีบางอย่างผิดพลาด" });
   }
