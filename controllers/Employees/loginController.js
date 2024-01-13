@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt')
 var jwt = require("jsonwebtoken");
-const { Employees } = require("../model/employee/employee");
+const { Employees } = require("../../model/employee/employee");
 
 loginController = async(req,res) =>{
     try{
@@ -19,17 +19,21 @@ loginController = async(req,res) =>{
                         const token = jwt.sign(payload, secretKey, { expiresIn: '90 years'})
                         return res
                                 .status(200)
-                                .send({status:true,message:"เข้าสู่ระบบสำเร็จ"})
+                                .send({status:true,
+                                    message:"เข้าสู่ระบบสำเร็จ",
+                                    token: token})
                     }else{
                         return res
                                 .status(400)
-                                .send({message:"รหัสผิดพลาด"})
+                                .send({status:false,
+                                    message:"รหัสผิดพลาด",})
                     }
                 })
             } else {
                 res
                 .status(400)
-                .send({message: "ไม่มีบัญชีที่ท่านใช้"})
+                .send({status:false,
+                    message: "ไม่มีบัญชีที่ท่านใช้"})
             }
         })
     }catch(err){

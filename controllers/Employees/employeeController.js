@@ -1,4 +1,4 @@
-const { Employees, Validate } = require("../model/employee/employee");
+const { Employees, Validate } = require("../../model/employee/employee");
 const jwt = require("jsonwebtoken");
 var bcrypt = require("bcrypt");
 
@@ -54,10 +54,9 @@ getAll = async (req, res) => {
 
 getByID = async (req, res) => {
   try{
-    //const iden = req.body.first_name //ดึงเฉพาะข้อมูลบัตรประชาชน
-    const { iden_number } = req.body;
-    console.log(iden_number)
-    const getBy = await Employees.findOne({iden_number:iden_number},{ _id: 0,__v: 0}) // 1 คือให้แสดงข้อมูล 0 คือไม่ให้แสดงข้อมูล
+    //const iden = req.body.iden_number //ดึงเฉพาะข้อมูลบัตรประชาชน
+    const  getId = req.params.id;
+    const getBy = await Employees.findById({_id:getId},{ _id: 0,__v: 0}) // 1 คือให้แสดงข้อมูล 0 คือไม่ให้แสดงข้อมูล
     if (getBy){
       return res
         .status(200)
@@ -77,7 +76,7 @@ Update = async (req, res)=>{
   try{
     const upID = req.params.id; //รับไอดีที่ต้องการอัพเดท
     console.log(req.body);
-    if(!req.body.password){ //กรณีที่ไม่ได้ยิง body.password
+    if(!req.body.password){ //กรณีที่ไม่ได้ยิง password
       Employees.findByIdAndUpdate(upID,req.body, {new:true}).then((data) =>{
         if (!data) {
           res
@@ -94,7 +93,7 @@ Update = async (req, res)=>{
           .status(500)
           .send({status: false, message: "มีบางอย่างผิดพลาด"})
     })
-  } else { //กรณีที่ได้ยิง body.password
+  } else { //กรณีที่ได้ยิง password
       const salt = await bcrypt.genSalt(Number(process.env.SALT));
       const hashPassword = await bcrypt.hash(req.body.password, salt);
       const updateEmployee = await Employees.findByIdAndUpdate(upID, {...req.body,password: hashPassword}, {new:true}); //หา id ที่ต้องการจากนั้นทำการอัพเดท

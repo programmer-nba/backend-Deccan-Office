@@ -1,4 +1,4 @@
-const { Employees, Validate } = require("../model/employee/employee");
+const { Employees, Validate } = require("../../model/employee/employee");
 const jwt = require("jsonwebtoken");
 
 CreateRegister = async (req, res) => {
@@ -15,7 +15,8 @@ CreateRegister = async (req, res) => {
     if (duplicate)
       return res
         .status(401)
-        .send({ status: false, message: "มีรายชื่อพนักงานภายในบริษัทแล้ว" });
+        .send({ status: false,
+          message: "มีรายชื่อพนักงานภายในบริษัทแล้ว" });
 
     const employee = await Employees.create(req.body); //เพิ่มพนักงานเข้าระบบ
     if (employee) {
@@ -23,7 +24,6 @@ CreateRegister = async (req, res) => {
         .status(201)
         .send({ status: true, message: "เพิ่มรายชื่อพนักงานเสร็จสิ้น" });
     }
-
   } catch (err) {
       console.log(err);
       return res.status(500).send({ message: "มีบางอย่างผิดพลาด" });
