@@ -23,7 +23,10 @@ loginController = async(req,res) =>{
                                 .send({status:true,
                                     message:"เข้าสู่ระบบสำเร็จ",
                                     token: token,
-                                    Level: Employees.level
+                                    employee_number: Employees.employee_number,
+                                    firstname: Employees.first_name,
+                                    lastname: Employees.last_name,
+                                    level: Employees.level,
                                 })
                     }else{
                         return res
