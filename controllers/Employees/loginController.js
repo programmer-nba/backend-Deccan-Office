@@ -14,7 +14,8 @@ loginController = async(req,res) =>{
                         const secretKey = process.env.JWTPRIVATEKEY
                         const payload = {
                             user_id: Employees.first_name,
-                            email: Employees.email
+                            email: Employees.email,
+                            level: Employees.level
                         }
                         const token = jwt.sign(payload, secretKey, { expiresIn: '90 years'})
                         return res
