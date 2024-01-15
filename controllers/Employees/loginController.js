@@ -4,16 +4,16 @@ const { Employees } = require("../../model/employee/employee");
 
 loginController = async(req,res) =>{
     try{
-        const UserID = req.body.iden_number //รับ UserId ที่ User กรอกมา
+        const UserID = req.body.userid //รับ UserId ที่ User กรอกมา
         const Password = req.body.password //รับ Password ที่ User กรอกมา
-        Employees.findOne({iden_number:UserID}).then((Employees)=>{
+        Employees.findOne({userid:UserID}).then((Employees)=>{
             if(Employees){
                 let cmp = bcrypt.compare(Password, Employees.password).then((match)=>{
                     console.log(match)
                     if(match){
                         const secretKey = process.env.JWTPRIVATEKEY
                         const payload = {
-                            user_id: Employees.first_name,
+                            user_id: Employees.userid,
                             email: Employees.email,
                             level: Employees.level
                         }

@@ -5,6 +5,7 @@ var bcrypt = require("bcrypt");
 
 const EmployeeSchema = new Schema({
     employee_number: {type:Number, required: true},
+    userid:{type:String, require: true},
     first_name: {type:String, require: true},
     last_name: {type:String, require: true},
     nick_name: {type:String, require: true},
@@ -39,6 +40,7 @@ const Employees = mongoose.model("employees", EmployeeSchema);
  const Validate = (data)=>{
    const schema = Joi.object({
         employee_number: Joi.number().required().label('กรุณากรอกไอดี'),
+        userid: Joi.string().required().label('กรุณากรอกยูสเซอร์ไอดี'),
         first_name: Joi.string().required().label('กรุณากรอกชื่อจริง'),
         last_name: Joi.string().required().label('กรุณากรอกนามสกุล'),
         nick_name: Joi.string().required().label('กรุณากรอกชื่อเล่น'),
