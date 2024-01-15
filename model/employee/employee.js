@@ -12,7 +12,7 @@ const EmployeeSchema = new Schema({
     password: {type:String, require: true},
     job_position: {type:String, require: true},
     department: {type:String, require: true},
-    level: {type:String, require: true},
+    level: {type:String, default: "users", require: true},
     tel: {type:Number, require: true},
     address: {type:String, require:true},
     subdistrict: {type:String, require: true},
@@ -22,7 +22,7 @@ const EmployeeSchema = new Schema({
     birthday: {type: Date, required: true},
     age: {type: Number, required: true},
     email: {type: String, required: true},
-});
+},{timestamps: true});
 
 EmployeeSchema.pre('save',function(next){   //ทำ Middleware การ Hash ก่อน EmployeeScheme ที่ User กรอกมาจะ save
   const user = this
@@ -46,7 +46,7 @@ const Employees = mongoose.model("employees", EmployeeSchema);
         password: Joi.string().required().label('กรุณากรอกรหัสผ่าน'),
         job_position: Joi.string().required().label('กรุณากรอกตำแหน่งงานของท่าน'),
         department: Joi.string().required().label('กรุณากรอกแผนกที่ท่านอยู่'),
-        level: Joi.string().required().label("กรุณากรอกตำแหน่ง"),
+        level: Joi.string(),
         tel: Joi.number().required().label('กรุณากรอกหมายเลขโทรศัพท์'),
         address: Joi.string().required().label('กรุณากรอกที่อยู่'),
         subdistrict: Joi.string().required().label('กรุณากรอกตำบล'),
