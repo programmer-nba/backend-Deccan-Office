@@ -14,7 +14,7 @@ const timeZone = 'UTC';
 dayjs.tz.setDefault(timeZone);
 
 const timeSchema = new Schema({
-    employee_number: {type:Number, require: true},
+    iden_number:{type:String, require: true},
     period: {type:String},
     time_in: {type:Date, default:Date.now},
     time_out: {type: Date}
@@ -44,7 +44,7 @@ const timeInOut = mongoose.model("TimeInOut", timeSchema);
 
 const Validate = (data)=>{
     const schema = Joi.object({
-         employee_number: Joi.number().required().label('กรุณากรอกรหัสพนักงาน'),
+         iden_number: Joi.string().required().label('กรุณากรอกบัตรประชาชนพนักงาน'),
          period: Joi.string().required().label('กรุณาระบุช่วงเวลาทำงาน'),
          time_in: Joi.date(),
          time_out: Joi.date()

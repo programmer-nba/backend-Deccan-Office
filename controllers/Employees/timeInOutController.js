@@ -4,11 +4,11 @@ const { Employees } = require("../../model/employee/employee")
 timeIn = async (req, res)=>{
     try{       
         const timein = req.body
-        const findEmployees = await Employees.findOne({employee_number:timein.employee_number})
-        if (!findEmployees){
+        const findIden = await Employees.findOne({iden_number:timein.iden_number})
+        if (!findIden){
             return res
                 .status(400)
-                .send({status:false, message:"ไม่พบรหัสสมาชิกของท่านในระบบ"})
+                .send({status:false, message:"ไม่พบบัตรประชาชนของท่านในระบบ"})
         }
         const createTime = await timeInOut.create(timein);
             if (createTime){
