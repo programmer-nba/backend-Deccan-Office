@@ -3,19 +3,25 @@ const { Employees } = require("../../model/employee/employee")
 
 timeIn = async (req, res)=>{
     try{       
-        const timein = req.body
-        const findIden = await Employees.findOne({iden_number:timein.iden_number})
-        if (!findIden){
+        const id = req.params.id
+        if (req.decoded.level !== "users"){
             return res
-                .status(400)
-                .send({status:false, message:"ไม่พบบัตรประชาชนของท่านในระบบ"})
+                    .status(400)
+                    .send({status:false, message:"ท่านไม่มีสิทธิ์ใช้ฟังค์ชั่นนี้"})
+        }else{
+          const findIden = await Employees.findOne({_id:id})
+          if (!findIden){
+              return res
+                  .status(400)
+                  .send({status:false, message:"ไม่พบไอดีของท่านของท่านในระบบ"})
+          }
+          const createTime = await timeInOut.create({employee_id:id, period:req.body.period});
+          if (createTime){
+              return res
+                  .status(200)
+                  .send({data: createTime})
+          }
         }
-        const createTime = await timeInOut.create(timein);
-            if (createTime){
-                return res
-                    .status(200)
-                    .send({data: createTime})
-            }
     } catch(err) {
         console.log(err);
         return res.status(500).send({ message: "มีบางอย่างผิดพลาด" });

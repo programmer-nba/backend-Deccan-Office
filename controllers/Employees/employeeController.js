@@ -72,6 +72,27 @@ getByID = async (req, res) => {
   }
 }
 
+getMe = async (req, res) => {
+  try{
+    //const iden = req.body.iden_number //ดึงเฉพาะข้อมูลบัตรประชาชน
+    const  getId = req.decoded.user_id
+    console.log(getId)
+    const findId= await Employees.findById(getId) // 1 คือให้แสดงข้อมูล 0 คือไม่ให้แสดงข้อมูล
+    if (findId){
+      return res
+        .status(200)
+        .send({status: true, data: findId})
+    } else {
+      return res
+        .status(400)
+        .send({ status: false, message: "ดึงข้อมูลไม่สำเร็จ" });
+    }
+  } catch(err){
+    console.log(err);
+    return res.status(500).send({ message: "มีบางอย่างผิดพลาด" });
+  }
+}
+
 Update = async (req, res)=>{
   try{
     const upID = req.params.id; //รับไอดีที่ต้องการอัพเดท
@@ -131,4 +152,4 @@ Delete = async (req, res)=>{
     return res.status(500).send({ message: "มีบางอย่างผิดพลาด" });
   }
 }
-module.exports = { Post, getAll, getByID, Update, Delete };
+module.exports = { Post, getAll, getByID, Update, Delete, getMe };

@@ -13,7 +13,7 @@ loginController = async(req,res) =>{
                     if(match){
                         const secretKey = process.env.JWTPRIVATEKEY
                         const payload = {
-                            user_id: Employees.employee_number,
+                            user_id: Employees._id,
                             email: Employees.email,
                             level: Employees.level
                         }
