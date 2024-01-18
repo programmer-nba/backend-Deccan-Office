@@ -10,7 +10,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone)
 
 //ตั้งค่าโซนเวลาท้องถิ่น
-const timeZone = 'UTC';
+const timeZone = 'asia/bangkok';
 dayjs.tz.setDefault(timeZone);
 
 const timeSchema = new Schema({
