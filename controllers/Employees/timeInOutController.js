@@ -3,7 +3,7 @@ const { Employees } = require("../../model/employee/employee")
 
 timeIn = async (req, res)=>{
     try{       
-        const id = req.params.id
+        const id = req.decoded.user_id
         if (req.decoded.level !== "users"){
             return res
                     .status(400)
