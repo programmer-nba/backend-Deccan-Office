@@ -10,7 +10,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone)
 
 //ตั้งค่าโซนเวลาท้องถิ่น
-const timeZone = 'asia/bangkok';
+const timeZone = 'Asia/angkok';
 dayjs.tz.setDefault(timeZone);
 
 const timeSchema = new Schema({
@@ -24,20 +24,19 @@ timeSchema.pre('save', function(next) {
     //ตรวจสอบช่วงเวลาที่ทำการเริ่มงานเข้ามา
     if(this.period == "morning"){
         this.time_out = dayjs().set('hour', 5).set('minute', 0).set('second', 0).set('millisecond', 0).toDate();
-        this.time_out = dayjs(this.time_out).tz(timeZone).toDate()
-    }else if(this.period == "afternoon"){
+    } else if(this.period == "afternoon"){
         this.time_out = dayjs().set('hour', 11).set('minute', 0).set('second', 0).set('millisecond', 0).toDate();
-        this.time_out = dayjs(this.time_out).tz(timeZone).toDate()
-    }else if(this.period == "day"){
-        this.time_out = dayjs().set('hour', 11).set('minute', 0).set('second', 0).set('millisecond', 0).toDate();
-        this.time_out = dayjs(this.time_out).tz(timeZone).toDate()
+    } else if(this.period == "day"){
+        this.time_out = dayjs().set('hour', 17).set('minute', 0).set('second', 0).set('millisecond', 0).toDate();
     }
 
-    //เปลี่ยน Time Zone จาก UTC เป็น ประเทศไทย (**เปลี่ยน timezone สำเร็จแต่พอบันทึกลง mongoDB ระบบของ database จะบันทึกเป็น UTC อัตโนมัติ **แก้ไขไม่ได้)
-    /*this.time_in = dayjs(this.time_in).tz(timeZone).toDate();
-    this.time_out = dayjs(this.time_out).tz(timeZone).toDate();*/
-    console.log(dayjs(this.time_in).format())//แสดง time_in ว่าสามารถเปลี่ยน Time Zone ได้ไหม
-    console.log(dayjs(this.time_out).format())//แสดง time_out ทดสอบว่าสามารถเปลี่ยน Time Zone ได้ไหม
+    // เปลี่ยน Time Zone จาก UTC เป็น ประเทศไทย
+    this.time_in = dayjs(this.time_in).tz(timeZone).toDate();
+    this.time_out = dayjs(this.time_out).tz(timeZone).toDate();
+
+    console.log(dayjs(this.time_in).format()); // แสดง time_in ว่าสามารถเปลี่ยน Time Zone ได้ไหม
+    console.log(dayjs(this.time_out).format()); // แสดง time_out ทดสอบว่าสามารถเปลี่ยน Time Zone ได้ไหม
+    
     next();
 });
 
