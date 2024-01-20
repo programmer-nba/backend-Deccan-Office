@@ -1,5 +1,7 @@
 const { timeInOut, Validate } = require("../../model/employee/timeInOutEmployee");
-const { Employees } = require("../../model/employee/employee")
+const { Employees } = require("../../model/employee/employee");
+const dayjs = require("dayjs");
+const { date } = require("joi");
 
 timeIn = async (req, res)=>{
     try{       
@@ -15,7 +17,7 @@ timeIn = async (req, res)=>{
                   .status(400)
                   .send({status:false, message:"ไม่พบไอดีของท่านของท่านในระบบ"})
           }
-          const createTime = await timeInOut.create({employee_id:id, period:req.body.period});
+          const createTime = await timeInOut.create({employee_id:id});
           if (createTime){
               return res
                   .status(200)
@@ -30,19 +32,27 @@ timeIn = async (req, res)=>{
 
 timeOut = async (req, res)=>{
     try{
-      const id = req.params.id
-      const out = await timeInOut.findOneAndUpdate(
-        {_id:id},
-        {time_out: Date.now()},
-        {new:true})
-      if(out){
-        return res
-                .status(200)
-                .send({status:true, message: "ลงเวลาเลิกงานสำเร็จ", data: out})
-      }else{
-        return res
-                .status(400)
-                .send({status:false, message: "ไม่สามารถลงเวลางานได้"})
+      const day = dayjs(Date.now()).format('DD')
+      const mount = dayjs(Date.now()).format('MM')
+      const year = dayjs(Date.now()).format('YYYY')
+      const userid = req.decoded.user_id
+
+      const time = await timeInOut.findOne({employee_id:userid})
+      console.log(time)
+      if(day === time.day && mount === time.mount && year == time.year){
+        const out = await timeInOut.findOneAndUpdate(
+          {employee_id:userid},
+          {time_out: dayjs(Date.now()).format('HH:mm:ss')},
+          {new:true})
+          if(out){
+            return res
+                    .status(200)
+                    .send({status:true, message: "ลงเวลาเลิกงานสำเร็จ", data: out})
+          }else{
+            return res
+                    .status(400)
+                    .send({status:false, message: "ไม่สามารถลงเวลางานได้"})
+          }
       }
     }catch(err){
       console.log(err);

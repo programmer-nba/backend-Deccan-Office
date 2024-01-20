@@ -15,10 +15,12 @@ dayjs.tz.setDefault(timeZone);
 
 const timeSchema = new Schema({
     employee_id:{type:String, require: true},
-    period: {type:String},
-    time_in: {type:Date, default:Date.now},
-    time_out: {type: Date}
-},{timestamps:true});
+    day:{ type: String, default: () => dayjs(Date.now()).format('DD') },
+    mount:{ type: String, default: () => dayjs(Date.now()).format('MM') },
+    year:{ type: String, default: () => dayjs(Date.now()).format('YYYY') },
+    time_in: { type: String, default: () => dayjs(Date.now()).format('HH:mm:ss') },
+    time_out: { type: String, default: '00:00:00'},
+});
 
 timeSchema.pre('save', function(next) {
     //ตรวจสอบช่วงเวลาที่ทำการเริ่มงานเข้ามา
@@ -31,11 +33,11 @@ timeSchema.pre('save', function(next) {
     }*/
 
     // เปลี่ยน Time Zone จาก UTC เป็น ประเทศไทย
-    this.time_in = dayjs(this.time_in).tz(timeZone).toDate();
-    this.time_out = dayjs(this.time_out).tz(timeZone).toDate();
+    //this.time_in = dayjs(this.time_in).tz(timeZone).toDate();
+    //this.time_out = dayjs(this.time_out).tz(timeZone).toDate();
 
-    console.log(dayjs(this.time_in).format()); // แสดง time_in ว่าสามารถเปลี่ยน Time Zone ได้ไหม
-    console.log(dayjs(this.time_out).format()); // แสดง time_out ทดสอบว่าสามารถเปลี่ยน Time Zone ได้ไหม
+    //console.log(dayjs(this.time_in).format()); // แสดง time_in ว่าสามารถเปลี่ยน Time Zone ได้ไหม
+    //console.log(dayjs(this.time_out).format()); // แสดง time_out ทดสอบว่าสามารถเปลี่ยน Time Zone ได้ไหม
     
     next();
 });
@@ -45,9 +47,10 @@ const timeInOut = mongoose.model("TimeInOut", timeSchema);
 const Validate = (data)=>{
     const schema = Joi.object({
         employee_id: Joi.string().required().label('กรุณากรอกบัตรประชาชนพนักงาน'),
-        period: Joi.string().required().label('กรุณาระบุช่วงเวลาทำงาน'),
-        time_in: Joi.date(),
-        time_out: Joi.date()
+        day: Joi.string(),
+        mount: Joi.string(),
+        year: Joi.string(),
+        time_in: Joi.string(),
     });
     return schema.validate(data);
   };

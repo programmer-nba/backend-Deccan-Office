@@ -15,9 +15,11 @@ const timeInOut = mongoose.model("TimeInOut", timeSchema);
 
 const Validate = (data)=>{
     const schema = Joi.object({
-         employee_id: Joi.string().required().label('กรุณากรอกรหัสพนักงาน'),
-         break_time: Joi.date(),
-         limit_time: Joi.date()
+         project_name: Joi.string().required().label('กรุณากรอกรหัสพนักงาน'),
+         date: Joi.date(),
+         dead_line: Joi.date(),
+         employee: Joi.array(),
+         TOR:{type: string, require: false}
     });
     return schema.validate(data);
   };
