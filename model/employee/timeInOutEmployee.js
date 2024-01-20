@@ -18,17 +18,17 @@ const timeSchema = new Schema({
     period: {type:String},
     time_in: {type:Date, default:Date.now},
     time_out: {type: Date}
-});
+},{timestamps:true});
 
 timeSchema.pre('save', function(next) {
     //ตรวจสอบช่วงเวลาที่ทำการเริ่มงานเข้ามา
-    if(this.period == "morning"){
+    /*if(this.period == "morning"){
         this.time_out = dayjs().set('hour', 12).set('minute', 0).set('second', 0).set('millisecond', 0).toDate();
     } else if(this.period == "afternoon"){
         this.time_out = dayjs().set('hour', 18).set('minute', 0).set('second', 0).set('millisecond', 0).toDate();
     } else if(this.period == "day"){
         this.time_out = dayjs().set('hour', 18).set('minute', 0).set('second', 0).set('millisecond', 0).toDate();
-    }
+    }*/
 
     // เปลี่ยน Time Zone จาก UTC เป็น ประเทศไทย
     this.time_in = dayjs(this.time_in).tz(timeZone).toDate();

@@ -28,6 +28,30 @@ timeIn = async (req, res)=>{
     }
 }
 
+timeOut = async (req, res)=>{
+    try{
+      const id = req.params.id
+      const out = await timeInOut.findOneAndUpdate(
+        {_id:id},
+        {time_out: Date.now()},
+        {new:true})
+      if(out){
+        return res
+                .status(200)
+                .send({status:true, message: "ลงเวลาเลิกงานสำเร็จ", data: out})
+      }else{
+        return res
+                .status(400)
+                .send({status:false, message: "ไม่สามารถลงเวลางานได้"})
+      }
+    }catch(err){
+      console.log(err);
+      return res
+              .status(500)
+              .send({ message: "มีบางอย่างผิดพลาด" });
+    }
+}
+
 getAll = async (req, res)=>{
     try{
         const getTime = await timeInOut.find().select('employee_number period time_in time_out') //find หา รหัสพนักงาน เลือก feild timein(ตย. การต้องการมากกว่า 1 field = .select('time_in time_out) ก็จะได้ 2 field) 
@@ -84,4 +108,4 @@ deleteTime = async (req, res)=>{
     }
 }
 
-module.exports = { timeIn, getAll, updateTime, deleteTime }
+module.exports = { timeIn, getAll, updateTime, deleteTime, timeOut }

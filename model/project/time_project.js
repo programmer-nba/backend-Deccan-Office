@@ -2,10 +2,13 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema
 const Joi = require("joi");
 
-const project = new Schema({
-    employee_id: {type:String, require: true},
-    break_time: {type:Date, default:Date.now},
-    limit_time: {type: Date}
+const projectSchema = new Schema({
+    project_name: {type:String, require: true},
+    date: {type:Date, require: true},
+    dead_line: {type: Date, require: true},
+    employee: {type: Array, require: false},
+    TOR:{type: String, require: false}
+    
 });
 
 const timeInOut = mongoose.model("TimeInOut", timeSchema);
