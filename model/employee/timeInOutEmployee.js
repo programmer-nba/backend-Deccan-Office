@@ -10,7 +10,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone)
 
 //ตั้งค่าโซนเวลาท้องถิ่น
-const timeZone = 'Asia/Bangkok';
+const timeZone = 'UTC';
 dayjs.tz.setDefault(timeZone);
 
 const timeSchema = new Schema({
@@ -20,7 +20,7 @@ const timeSchema = new Schema({
     year:{ type: String, default: () => dayjs(Date.now()).format('YYYY') },
     time_in: { type: String, default: () => dayjs(Date.now()).format('HH:mm:ss') },
     time_out: { type: String, default: '00:00:00'},
-});
+},{timestamps:true});
 
 timeSchema.pre('save', function(next) {
     //ตรวจสอบช่วงเวลาที่ทำการเริ่มงานเข้ามา
