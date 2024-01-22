@@ -75,12 +75,19 @@ timeOut = async (req, res)=>{
     }
 }
 
-getAll = async (req, res)=>{
+getMe = async (req, res)=>{
     try{
-        const getTime = await timeInOut.find().select('employee_number period time_in time_out') //find หา รหัสพนักงาน เลือก feild timein(ตย. การต้องการมากกว่า 1 field = .select('time_in time_out) ก็จะได้ 2 field) 
-        res.send({status:true,
-            data: getTime})
-
+      const time = req.decoded.user_id
+      const getTime = await timeInOut.find({employee_id:time})
+      if(getTime){
+          return res
+                  .status(200)
+                  .send({status: true, data: getTime})
+      }else{
+          return res
+                  .status(400)
+                  .send({status: false, message:"ไม่สามารถเรียกเวลาดูได้"})
+      }
     } catch(err) {
         console.log(err);
         return res.status(500).send({ message: "มีบางอย่างผิดพลาด" });
@@ -131,4 +138,4 @@ deleteTime = async (req, res)=>{
     }
 }
 
-module.exports = { timeIn, getAll, updateTime, deleteTime, timeOut }
+module.exports = { timeIn, getMe, updateTime, deleteTime, timeOut }

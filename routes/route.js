@@ -25,7 +25,7 @@ router.route('/ddsc-office/login').post( login.loginController )
 //TimeInOut
 router.route('/ddsc-office/time').post( auth, time.timeIn )
 router.route('/ddsc-office/timeout').put( auth, time.timeOut ) //ลงเวลาเลิกงาน
-router.route('/ddsc-office/gettime').get( authAdmin, time.getAll )
+router.route('/ddsc-office/time/getme').get( auth, time.getMe )
 router.route('/ddsc-office/uptime/:id').put( authAdmin, time.updateTime )
 router.route('/ddsc-office/deltime/:id').delete( authAdmin, time.deleteTime )
 
