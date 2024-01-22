@@ -21,8 +21,8 @@ timeIn = async (req, res)=>{
                   .send({status:false, message:"ไม่พบไอดีของท่านของท่านในระบบ"})
           }
           const checkTime = await timeInOut.findOne(
-            {employee_id:id},
-            {day:day,
+            {employee_id:id,
+            day:day,
             mount:mount,
             year:year})
           if(checkTime){
@@ -50,12 +50,11 @@ timeOut = async (req, res)=>{
       const mount = dayjs(Date.now()).format('MM')
       const year = dayjs(Date.now()).format('YYYY')
       const userid = req.decoded.user_id
-
-      const time = await timeInOut.findOne({employee_id:userid})
-      console.log(time)
-      if(day === time.day && mount === time.mount && year == time.year){
-        const out = await timeInOut.findOneAndUpdate(
-          {_id:time._id},
+      const out = await timeInOut.findOneAndUpdate(
+          {employee_id:userid,
+          day:day,
+          mount:mount,
+          year:year},
           {time_out: dayjs(Date.now()).format('HH:mm:ss')},
           {new:true})
           if(out){
@@ -67,7 +66,7 @@ timeOut = async (req, res)=>{
                     .status(400)
                     .send({status:false, message: "ไม่สามารถลงเวลางานได้"})
           }
-      }
+
     }catch(err){
       console.log(err);
       return res
