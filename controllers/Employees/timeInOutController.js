@@ -37,11 +37,11 @@ timeOut = async (req, res)=>{
       const year = dayjs(Date.now()).format('YYYY')
       const userid = req.decoded.user_id
 
-      const time = await timeInOut.findOne({employee_id:userid})
+      const time = await timeInOut.find({employee_id:userid})
       console.log(time)
       if(day === time.day && mount === time.mount && year == time.year){
         const out = await timeInOut.findOneAndUpdate(
-          {employee_id:userid},
+          {_id:time._id},
           {time_out: dayjs(Date.now()).format('HH:mm:ss')},
           {new:true})
           if(out){
