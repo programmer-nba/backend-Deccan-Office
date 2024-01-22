@@ -6,6 +6,9 @@ const { date } = require("joi");
 timeIn = async (req, res)=>{
     try{       
         const id = req.decoded.user_id
+        const day = dayjs(Date.now()).format('DD')
+        const mount = dayjs(Date.now()).format('MM')
+        const year = dayjs(Date.now()).format('YYYY')
         if (req.decoded.level !== "users"){
             return res
                     .status(400)
@@ -17,6 +20,17 @@ timeIn = async (req, res)=>{
                   .status(400)
                   .send({status:false, message:"ไม่พบไอดีของท่านของท่านในระบบ"})
           }
+          const checkTime = await timeInOut.findOne(
+            {employee_id:id},
+            {day:day,
+            mount:mount,
+            year:year})
+          if(checkTime){
+              return res
+                  .status(400)
+                  .send({status:false, message:"ท่านได้ลงเวลาเข้างานไปแล้ว"})
+          }
+          
           const createTime = await timeInOut.create({employee_id:id});
           if (createTime){
               return res
@@ -37,7 +51,7 @@ timeOut = async (req, res)=>{
       const year = dayjs(Date.now()).format('YYYY')
       const userid = req.decoded.user_id
 
-      const time = await timeInOut.find({employee_id:userid})
+      const time = await timeInOut.findOne({employee_id:userid})
       console.log(time)
       if(day === time.day && mount === time.mount && year == time.year){
         const out = await timeInOut.findOneAndUpdate(
