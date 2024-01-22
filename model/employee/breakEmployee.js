@@ -6,9 +6,9 @@ const breakSchema = new Schema({
     employee_id: {type:String, require: true},
     break_time: {type:Date, default:Date.now},
     limit_time: {type: Date}
-});
+},{timestamps:true});
 
-const timeInOut = mongoose.model("TimeInOut", timeSchema);
+const breakTime = mongoose.model("TimeInOut", breakSchema);
 
 const Validate = (data)=>{
     const schema = Joi.object({
@@ -19,4 +19,4 @@ const Validate = (data)=>{
     return schema.validate(data);
   };
 
-module.exports = {timeInOut, Validate };
+module.exports = {breakTime, Validate };

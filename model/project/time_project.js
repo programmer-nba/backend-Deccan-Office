@@ -11,7 +11,7 @@ const projectSchema = new Schema({
     
 });
 
-const timeInOut = mongoose.model("TimeInOut", timeSchema);
+const projectTime = mongoose.model("TimeInOut", projectSchema);
 
 const Validate = (data)=>{
     const schema = Joi.object({
@@ -24,4 +24,4 @@ const Validate = (data)=>{
     return schema.validate(data);
   };
 
-module.exports = {timeInOut, Validate };
+module.exports = {projectTime, Validate };

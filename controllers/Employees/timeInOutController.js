@@ -94,6 +94,34 @@ getMe = async (req, res)=>{
     }
 }
 
+getTimeDay = async (req, res)=>{
+  try{
+    const id = req.decoded.user_id
+    const day = dayjs(Date.now()).format('DD')
+    const mount = dayjs(Date.now()).format('MM')
+    const year = dayjs(Date.now()).format('YYYY')
+
+    const findId = await timeInOut.findOne(
+      {employee_id:id,
+      day:day,
+      mount:mount,
+      year:year})
+    if(findId){
+      return res  
+              .status(200)
+              .send({status:true, data: findId})
+    }else{
+      return res
+              .status(400)
+              .send({status:true, message:"ไม่สามารถดึงเวลาได้"})
+    }
+  }catch(err){
+    return res
+            .status(500)
+            .send({status: false, message:"มีบางอย่างผิดพลาด"})
+  }
+}
+
 updateTime = async (req, res)=>{
     try{
       const upID = req.params.id; //รับไอดีที่ต้องการอัพเดท
@@ -138,4 +166,4 @@ deleteTime = async (req, res)=>{
     }
 }
 
-module.exports = { timeIn, getMe, updateTime, deleteTime, timeOut }
+module.exports = { timeIn, getMe, updateTime, deleteTime, timeOut, getTimeDay }

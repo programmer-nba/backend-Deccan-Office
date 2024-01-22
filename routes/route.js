@@ -28,6 +28,7 @@ router.route('/ddsc-office/timeout').put( auth, time.timeOut ) //ลงเวล
 router.route('/ddsc-office/time/getme').get( auth, time.getMe )
 router.route('/ddsc-office/uptime/:id').put( authAdmin, time.updateTime )
 router.route('/ddsc-office/deltime/:id').delete( authAdmin, time.deleteTime )
+router.route('/ddsc-office/time/getday').get( auth, time.getTimeDay )
 
 
 
