@@ -5,6 +5,7 @@ const login = require('../controllers/Employees/loginController');
 const time = require('../controllers/Employees/timeInOutController')
 const auth = require("../lib/auth");
 const authAdmin = require("../lib/authAdmin");
+//const bt = require('../controllers/Employees/breakTimeController')
 
 //CRUD employees table(Admin Only)
 router.route('/ddsc-office/post').post(authAdmin, main.Post) //ใช้กำหนด path ที่ต้องการทำให้ไม่ต้องไปประกาศใน File Server แล้ว
@@ -29,6 +30,9 @@ router.route('/ddsc-office/time/getme').get( auth, time.getMe )
 router.route('/ddsc-office/uptime/:id').put( authAdmin, time.updateTime )
 router.route('/ddsc-office/deltime/:id').delete( authAdmin, time.deleteTime )
 router.route('/ddsc-office/time/getday').get( auth, time.getTimeDay )
+
+//breakTime
+//router.route('/ddsc-office/break').post( auth, bt.break_time )
 
 
 

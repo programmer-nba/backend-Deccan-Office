@@ -113,7 +113,7 @@ getTimeDay = async (req, res)=>{
     }else{
       return res
               .status(400)
-              .send({status:true, message:"ไม่สามารถดึงเวลาได้"})
+              .send({status:true, message:"วันนี้ท่านยังไม่ได้ลงเวลางาน"})
     }
   }catch(err){
     return res
@@ -145,7 +145,7 @@ updateTime = async (req, res)=>{
       console.log(err);
       return res.status(500).send({ message: "มีบางอย่างผิดพลาด" });
     }
-  }
+}
 
 deleteTime = async (req, res)=>{
     try{
