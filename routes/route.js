@@ -5,6 +5,7 @@ const login = require('../controllers/Employees/loginController');
 const time = require('../controllers/Employees/timeInOutController')
 const auth = require("../lib/auth");
 const authAdmin = require("../lib/authAdmin");
+const record = require('../controllers/record_report/record')
 //const bt = require('../controllers/Employees/breakTimeController')
 
 //CRUD employees table(Admin Only)
@@ -33,6 +34,9 @@ router.route('/ddsc-office/time/getday').get( auth, time.getTimeDay )
 
 //breakTime
 //router.route('/ddsc-office/break').post( auth, bt.break_time )
+
+//record
+router.route('/ddsc-office/record/post').post( record.create )
 
 
 
