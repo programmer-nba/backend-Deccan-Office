@@ -55,7 +55,8 @@ timeOut = async (req, res)=>{
           day:day,
           mount:mount,
           year:year},      
-          {time_out: Date.now()},
+          {time_out: Date.now(),
+          status_timeOut: "true"},
           // {time_out: dayjs(Date.now())},
           {new:true})
           if(out){

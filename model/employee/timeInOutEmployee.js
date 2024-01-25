@@ -19,7 +19,9 @@ const timeSchema = new Schema({
     mount:{ type: String, default: () => dayjs(Date.now()).format('MM') },
     year:{ type: String, default: () => dayjs(Date.now()).format('YYYY') },
     time_in: { type: String, default: () => dayjs(Date.now()).format('HH:mm:ss') },
+    status_timeIn: {type:String, default: "true", require: false},
     time_out: { type: Date, default: () => new Date().setUTCHours(0, 0, 0, 0)},
+    status_timeOut: {type:String, default: "false", require: false},
 },{timestamps:true});
 
 timeSchema.pre('save', function(next) {
