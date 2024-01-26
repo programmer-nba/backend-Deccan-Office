@@ -37,6 +37,9 @@ router.route('/ddsc-office/time/getday').get( auth, time.getTimeDay )
 
 //record
 router.route('/ddsc-office/record/post').post( record.create )
+router.route('/ddsc-office/record/getAll').get( record.getAll )
+router.route('/ddsc-office/record/del/:id').delete( record.delend )
+router.route('/ddsc-office/record/update/:id').put( record.update )
 
 
 
