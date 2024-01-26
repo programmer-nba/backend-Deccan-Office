@@ -79,8 +79,8 @@ timeOut = async (req, res)=>{
 
 getMe = async (req, res)=>{
     try{
-      const time = req.decoded.user_id
-      const getTime = await timeInOut.find({employee_id:time})
+      const time = req.decoded.id
+      const getTime = await timeInOut.find({employee_id:id})
       if(getTime){
           return res
                   .status(200)
@@ -98,7 +98,7 @@ getMe = async (req, res)=>{
 
 getTimeDay = async (req, res)=>{
   try{
-    const id = req.decoded.user_id
+    const id = req.decoded.id
     const day = dayjs(Date.now()).format('DD')
     const mount = dayjs(Date.now()).format('MM')
     const year = dayjs(Date.now()).format('YYYY')
