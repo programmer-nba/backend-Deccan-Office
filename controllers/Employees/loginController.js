@@ -14,7 +14,7 @@ loginController = async(req,res) =>{
                         const secretKey = process.env.JWTPRIVATEKEY
                         const payload = {
                             id: Employees._id,
-                            userid: Employees.userid,
+                            user_id: Employees.userid,
                             role: Employees.role,
                             department: Employees.department
                         }
@@ -25,8 +25,8 @@ loginController = async(req,res) =>{
                                     message:"เข้าสู่ระบบสำเร็จ",
                                     token: token,
                                     id: Employees._id,
-                                    employee_number: Employees.employee_number,
-                                    employee_iden: Employees.iden_number,
+                                    user_id: Employees.userid,
+                                    role: Employees.role,
                                     firstname: Employees.first_name,
                                     lastname: Employees.last_name,
                                 })
