@@ -16,7 +16,6 @@ loginController = async(req,res) =>{
                             id: Employees._id,
                             user_id: Employees.userid,
                             role: Employees.role,
-                            department: Employees.department
                         }
                         const token = jwt.sign(payload, secretKey, { expiresIn: '90 years'})
                         return res

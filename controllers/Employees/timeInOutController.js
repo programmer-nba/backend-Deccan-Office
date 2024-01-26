@@ -5,7 +5,7 @@ const { date } = require("joi");
 
 timeIn = async (req, res)=>{
     try{       
-        const id = req.decoded.user_id
+        const id = req.decoded.id
         const day = dayjs(Date.now()).format('DD')
         const mount = dayjs(Date.now()).format('MM')
         const year = dayjs(Date.now()).format('YYYY')
