@@ -9,7 +9,7 @@ timeIn = async (req, res)=>{
         const day = dayjs(Date.now()).format('DD')
         const mount = dayjs(Date.now()).format('MM')
         const year = dayjs(Date.now()).format('YYYY')
-        if (req.decoded.level !== "users"){
+        if (req.decoded.role !== "employee" && req.decoded.role !== "manager"){
             return res
                     .status(400)
                     .send({status:false, message:"ท่านไม่มีสิทธิ์ใช้ฟังค์ชั่นนี้"})
