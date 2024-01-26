@@ -14,7 +14,6 @@ const EmployeeSchema = new Schema({
     job_position: {type:String, require: true},
     department: {type:String, require: true},
     role: {type:String, default:"employee", require: true},
-    level: {type:String, default: "users", require: true},
     tel: {type:Number, require: true},
     address: {type:String, require:true},
     subdistrict: {type:String, require: true},

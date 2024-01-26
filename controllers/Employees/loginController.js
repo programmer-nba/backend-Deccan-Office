@@ -13,9 +13,10 @@ loginController = async(req,res) =>{
                     if(match){
                         const secretKey = process.env.JWTPRIVATEKEY
                         const payload = {
-                            user_id: Employees._id,
-                            email: Employees.email,
-                            level: Employees.level
+                            id: Employees._id,
+                            userid: Employees.userid,
+                            role: Employees.role,
+                            department: Employees.department
                         }
                         const token = jwt.sign(payload, secretKey, { expiresIn: '90 years'})
                         return res
@@ -28,7 +29,6 @@ loginController = async(req,res) =>{
                                     employee_iden: Employees.iden_number,
                                     firstname: Employees.first_name,
                                     lastname: Employees.last_name,
-                                    level: Employees.level,
                                 })
                     }else{
                         return res
