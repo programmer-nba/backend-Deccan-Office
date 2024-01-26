@@ -18,7 +18,11 @@ Post = async (req, res) => {
         .status(401)
         .send({ status: false, message: "มีรายชื่อพนักงานภายในบริษัทแล้ว" });
 
-    const employee = await Employees.create(req.body); //เพิ่มพนักงานเข้าระบบ
+    const employee = await Employees.create(
+      {...req.body,
+      "position.department":req.body.department,
+      "position.department_head":req.body.department_head,
+      "position.job_position":req.body.job_position}); //เพิ่มพนักงานเข้าระบบ
     if (employee) {
       return res
         .status(201)
