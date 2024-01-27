@@ -49,7 +49,7 @@ timeOut = async (req, res)=>{
       const day = dayjs(Date.now()).format('DD')
       const mount = dayjs(Date.now()).format('MM')
       const year = dayjs(Date.now()).format('YYYY')
-      const userid = req.decoded.user_id
+      const userid = req.decoded.id
       const out = await timeInOut.findOneAndUpdate(
           {employee_id:userid,
           day:day,
