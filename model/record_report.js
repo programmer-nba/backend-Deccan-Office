@@ -15,28 +15,11 @@ const recordSchema = new Schema({
     date_out: {type: String, require: false}
 },{timestamps:true});
 
-recordSchema.plugin(AutoIncrement, { inc_field: 'number_report', start_seq: '0001', prefix: '0000' }).toString().padStart(4, '0');
 
-recordSchema.pre('save', async function(next) { 
-  // เช็คว่าไม่ใช่ครั้งแรกที่บันทึก
-  if (this.isNew) {
-      try {
-          const lastRecord = await this.constructor.findOne({}, {}, { sort: { 'number_report': -1 } });
-          if (lastRecord) {
-              // หากมี record อื่นอยู่ ให้เพิ่มค่า number_report ทีละ 1
-              const lastNumber = parseInt(lastRecord.number_report);
-              this.number_report = (lastNumber + 1).toString().padStart(4, '0');
-          } else {
-              // หากไม่มี record อื่นอยู่ในฐานข้อมูล
-              this.number_report = '0001';
-          }
-      } catch (error) {
-          console.error(error);
-      }
-  }
+recordSchema.pre('save', function (next) {
 
-  next();
 });
+
 
 const recordReport = mongoose.model("record", recordSchema);
 

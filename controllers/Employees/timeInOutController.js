@@ -80,7 +80,7 @@ timeOut = async (req, res)=>{
 getMe = async (req, res)=>{
     try{
       const time = req.decoded.id
-      const getTime = await timeInOut.find({employee_id:id})
+      const getTime = await timeInOut.find({employee_id:time})
       if(getTime){
           return res
                   .status(200)
