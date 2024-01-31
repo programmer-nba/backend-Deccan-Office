@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema
 const Joi = require("joi");
-const AutoIncrement = require('mongoose-sequence')(mongoose);
+// const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 const recordSchema = new Schema({
     title: {type: String, require: true},
@@ -14,12 +14,6 @@ const recordSchema = new Schema({
     date_in: {type: String, require: false},
     date_out: {type: String, require: false}
 },{timestamps:true});
-
-
-recordSchema.pre('save', function (next) {
-
-});
-
 
 const recordReport = mongoose.model("record", recordSchema);
 
