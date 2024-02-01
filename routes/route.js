@@ -54,7 +54,7 @@ router.get("/ddsc-office/partners/me",Partner.me)
 router.get('/ddsc-office/partners/',auth,Partner.getall)
 //ดึงข้อมูล by id
 router.get('/ddsc-office/partners/byid/:id',auth,Partner.getbyid)
-// แก้ไขข้อมูล partner 
+// แก้ไขข้อมูล partner
 router.put('/ddsc-office/partners/:id',auth,Partner.edit)
 // ลบข้อมูล partner
 router.delete('/ddsc-office/partners/:id',auth,Partner.delete)

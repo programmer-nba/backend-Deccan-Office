@@ -47,16 +47,18 @@ getAll = async (req, res) => {
     const getAllEmployee = await Employees.find(); //ดึงข้อมูลพนักงานทุกคนออกมา
     if (getAllEmployee) {
       return res
-        .status(200)
-        .send({ status: true, data: getAllEmployee });
+              .status(200)
+              .send({ status: true, data: getAllEmployee });
     } else {
       return res
-        .status(400)
-        .send({ status: false, message: "ดึงข้อมูลไม่สำเร็จ" });
+              .status(400)
+              .send({ status: false, message: "ดึงข้อมูลไม่สำเร็จ" });
     }
   } catch (err) {
     console.log(err);
-    return res.status(500).send({ message: "มีบางอย่างผิดพลาด" });
+    return res
+            .status(500)
+            .send({ message: "มีบางอย่างผิดพลาด" });
   }
 };
 
