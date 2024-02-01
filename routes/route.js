@@ -6,6 +6,7 @@ const time = require('../controllers/Employees/timeInOutController')
 const auth = require("../lib/auth");
 const authAdmin = require("../lib/authAdmin");
 const record = require('../controllers/record_report/record')
+const project = require('../controllers/project/project_detail')
 //const bt = require('../controllers/Employees/breakTimeController')
 
 //CRUD employees table(Admin Only)
@@ -40,6 +41,9 @@ router.route('/ddsc-office/record/post').post( record.create )
 router.route('/ddsc-office/record/getAll').get( record.getAll )
 router.route('/ddsc-office/record/del/:id').delete( record.delend )
 router.route('/ddsc-office/record/update/:id').put( record.update )
+
+//project
+router.route('/ddsc-office/project/post').post( project.createProject)
 
 
 

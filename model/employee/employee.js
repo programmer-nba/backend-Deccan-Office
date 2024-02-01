@@ -65,6 +65,6 @@ const Employees = mongoose.model("employees", EmployeeSchema);
         email: Joi.string().required().label('กรุณากรอกอีเมล์'),
    });
    return schema.validate(data);
- };
+  };
 
 module.exports = {Employees, Validate};
