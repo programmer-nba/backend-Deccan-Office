@@ -8,6 +8,7 @@ const authAdmin = require("../lib/authAdmin");
 const record = require('../controllers/record_report/record')
 const project = require('../controllers/project/project_detail')
 const Partner = require('../controllers/partners/partner')
+const admin = require('../controllers/Admin/admin.controller')
 //const bt = require('../controllers/Employees/breakTimeController')
 
 //CRUD employees table(Admin Only)
@@ -58,5 +59,9 @@ router.get('/ddsc-office/partners/byid/:id',auth,Partner.getbyid)
 router.put('/ddsc-office/partners/:id',auth,Partner.edit)
 // ลบข้อมูล partner
 router.delete('/ddsc-office/partners/:id',auth,Partner.delete)
+
+//admin
+router.route('/ddsc-office/admin/partner/confirm/:id').put(authAdmin, admin.confirmPartner)
+router.route('/ddsc-office/admin/partner/cancel/:id').put(authAdmin, admin.cancelPartner)
 
 module.exports = router;
