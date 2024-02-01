@@ -48,7 +48,7 @@ router.route('/ddsc-office/project/post').post( project.createProject)
 
 //สมัคร
 router.post('/ddsc-office/partners/register',Partner.register)
-router.post ('/ddsc-office/partners/login',Partner.login)
+router.post ('/ddsc-office/partners/login/',Partner.login)
 router.get("/ddsc-office/partners/me",Partner.me)
 //ดึงข้อมูลทั้งหมด
 router.get('/ddsc-office/partners/',auth,Partner.getall)

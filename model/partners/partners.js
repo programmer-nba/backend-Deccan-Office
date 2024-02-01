@@ -1,24 +1,29 @@
 const mongoose = require("mongoose");
-
+const bcrypt = require("bcrypt")
 // Define the schema for the HotelUser entity
 const partnerSchema = new mongoose.Schema(
   {
     username: {type: String, required: true,unique: true},
     password: {type: String, required: true},
-    firstname:{type:String, required:true},
-    lastname :{type:String,required:true},
-    name: {type: String, required: true},
-    telephone :{type:String,required : true},
-    email:{type:String,required:true},
-    address :{type:String,required:true},
-    provice:{type:String,required:true},
-    amphure:{type:String,required:true},
-    tambon :{type:String,required:true},
-    postcode:{type:String,required:true},
-    position:{type:String,required:true},
-    idcard:{type:String,required:true},
-    fileidcard:{type:String,default:""},
-    image:{type:String,default:""}
+    partner_name: { type: String, required: true },
+    partner_address: { type: String, required: true },
+    partner_phone: { type: String, required: true },
+    partner_status: { type: Boolean, required: false, default: false },
+    partner_status_promiss: {
+      type: String,
+      required: false,
+      default: "รอตรวจสอบ",
+    }, //
+    partner_bookbank: { type: String, required: false, default: "" }, // images
+    partner_bookbank_name: { type: String, required: false, default: "" },
+    partner_bookbank_number: { type: String, required: true },
+    partner_iden: { type: String, required: false, default: "" }, // images
+    partner_iden_number: { type: String, required: true },
+    partner_company_name: { type: String, required: false, default: "ไม่มี" },
+    partner_company_number: { type: String, required: false, default: "ไม่มี" },
+    partner_company_address: { type: String, required: false, default: "ไม่มี" },
+    partner_timestamp: { type: Array, required: false, default: [] },
+    signature:{type:String,default:""}
   },
   {timestamps: true}
 );
