@@ -7,6 +7,7 @@ const auth = require("../lib/auth");
 const authAdmin = require("../lib/authAdmin");
 const record = require('../controllers/record_report/record')
 const project = require('../controllers/project/project_detail')
+const Partner = require('../controllers/partners/partner')
 //const bt = require('../controllers/Employees/breakTimeController')
 
 //CRUD employees table(Admin Only)
@@ -45,6 +46,17 @@ router.route('/ddsc-office/record/update/:id').put( record.update )
 //project
 router.route('/ddsc-office/project/post').post( project.createProject)
 
-
+//สมัคร
+router.post('/ddsc-office/partners/register',Partner.register)
+router.post ('/ddsc-office/partners/login',Partner.login)
+router.get("/ddsc-office/partners/me",Partner.me)
+//ดึงข้อมูลทั้งหมด
+router.get('/ddsc-office/partners/',auth,Partner.getall)
+//ดึงข้อมูล by id
+router.get('/ddsc-office/partners/byid/:id',auth,Partner.getbyid)
+// แก้ไขข้อมูล partner 
+router.put('/ddsc-office/partners/:id',auth,Partner.edit)
+// ลบข้อมูล partner
+router.delete('/ddsc-office/partners/:id',auth,Partner.delete)
 
 module.exports = router;
