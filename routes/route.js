@@ -51,7 +51,7 @@ router.post('/ddsc-office/partners/register',Partner.register)
 router.post ('/ddsc-office/partners/login/',Partner.login)
 router.get("/ddsc-office/partners/me",Partner.me)
 //ดึงข้อมูลทั้งหมด
-router.get('/ddsc-office/partners/',auth,Partner.getall)
+router.get('/ddsc-office/partners',authAdmin,Partner.getall)
 //ดึงข้อมูล by id
 router.get('/ddsc-office/partners/byid/:id',auth,Partner.getbyid)
 // แก้ไขข้อมูล partner
