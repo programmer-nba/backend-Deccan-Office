@@ -30,6 +30,22 @@ createProject = async (req, res)=>{
                         .json({ status: false, message: `พนักงานหมายเลข ${employeeNumber} ไม่อยู่ในระบบ` });
             }
         }
+        // const fixName = await Promise.all(req.body.employee.map(async (employee) => {
+        //     const find = await Employees.findOne({ employee_number: employee.employee_number });
+        //     if (find) {
+        //         console.log(find.position.department)
+        //         console.log(find.first_name)
+        //       ถ้าพบข้อมูล employee จาก findOne
+        //       return {
+        //         department: find.position.department || '',
+        //         job_position: find.position.job_position || '',
+        //         name: find.first_name + ' ' + find.last_name
+        //       };
+        //     } else {
+        //       console.log("ไม่สามารถดึงข้อมูลได้")
+        //     }
+        //   }));
+        // console.log(fixName)
         const createData = await projectTime.create(Data)
         if(createData){
             return res
@@ -48,4 +64,23 @@ createProject = async (req, res)=>{
     }
 }
 
-module.exports = { createProject }
+getAll = async(req, res)=>{
+    try{
+        const get = await projectTime.find()
+        if(get){
+            return res
+                    .status(200)
+                    .send({status:false, data: get})
+        }else{
+            return res
+                    .status(400)
+                    .send({status:false, message:"ไม่สามารถค้นหาโปรเจ็คได้"})
+        }
+    }catch(err){
+        console.log(err)
+        return res
+                .status(500)
+                .send({status:false, message:"มีบางอย่างผิดพลาด"})
+    }
+}
+module.exports = { createProject, getAll }

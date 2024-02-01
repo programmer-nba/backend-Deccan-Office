@@ -20,9 +20,10 @@ Post = async (req, res) => {
 
     const employee = await Employees.create(
       {...req.body,
-      "position.department":req.body.department,
-      "position.department_head":req.body.department_head,
-      "position.job_position":req.body.job_position}); //เพิ่มพนักงานเข้าระบบ
+      "role.role":req.body.role,
+      "role.position":req.body.position,
+      "role.department":req.body.department,
+      "role.job_position":req.body.job_position}); //เพิ่มพนักงานเข้าระบบ
     if (employee) {
       return res
         .status(201)

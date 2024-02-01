@@ -8,7 +8,7 @@ const recordSchema = new Schema({
     detail: {type: String, require: true},
     number_report: {type: Number, require: false},
     amount: {type: String, require: false},
-    status: {type: String, default:"NEW", require: false},
+    status: {type: String, default:"รออนุมัติ", require: false},
     time_in: {type: String, require: false},
     time_out: {type: String, require: false},
     date_in: {type: String, require: false},
