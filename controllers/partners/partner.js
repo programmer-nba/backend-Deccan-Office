@@ -14,6 +14,7 @@ module.exports.register = async (req, res) => {
         }        
 
         const data = new Partner({
+            _id: req.body._id,
             username: req.body.username,
             password: req.body.password,
             partner_name: req.body.partner_name,

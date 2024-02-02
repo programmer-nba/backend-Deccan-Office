@@ -9,6 +9,7 @@ const record = require('../controllers/record_report/record')
 const project = require('../controllers/project/project_detail')
 const Partner = require('../controllers/partners/partner')
 const admin = require('../controllers/Admin/admin.controller')
+const partnerProject = require('../controllers/project/peojectCreate')
 //const bt = require('../controllers/Employees/breakTimeController')
 
 //CRUD employees table(Admin Only)
@@ -63,5 +64,9 @@ router.delete('/ddsc-office/partners/:id',auth,Partner.delete)
 //admin
 router.route('/ddsc-office/admin/partner/confirm/:id').put(authAdmin, admin.confirmPartner)
 router.route('/ddsc-office/admin/partner/cancel/:id').put(authAdmin, admin.cancelPartner)
+
+//project partner
+router.route('/ddsc-office/project/partner/create').post( partnerProject.create)
+router.route('/ddsc-office/project/partner/del/:id').delete( partnerProject.delend)
 
 module.exports = router;
