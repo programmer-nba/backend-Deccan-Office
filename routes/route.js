@@ -68,5 +68,6 @@ router.route('/ddsc-office/admin/partner/cancel/:id').put(authAdmin, admin.cance
 //project partner
 router.route('/ddsc-office/project/partner/create').post( partnerProject.create)
 router.route('/ddsc-office/project/partner/del/:id').delete( partnerProject.delend)
-
+router.route('/ddsc-office/project/partner/getAll').get( partnerProject.getAll)
+router.route('/ddsc-office/project/partner/update/:id').put( partnerProject.updateProject)
 module.exports = router;
