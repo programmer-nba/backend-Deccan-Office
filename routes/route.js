@@ -72,9 +72,12 @@ router.route('/ddsc-office/project/partner/getAll').get( partnerProject.getAll)
 router.route('/ddsc-office/project/partner/update/:id').put( partnerProject.updateProject)
 
 //เพิ่มรูป partner
-router.route('/ddsc-office/partners/upBookbank/:id').put( Partner.bookbank)
+router.route('/ddsc-office/partners/upLogo/:id').put( Partner.logo)
 router.route('/ddsc-office/partners/upIden/:id').put( Partner.iden)
-router.route('/ddsc-office/partners/upSignature/:id').put( Partner.signature)
+router.route('/ddsc-office/partners/upCompany/:id').put( Partner.fileCompany)
+
+router.route('/ddsc-office/partners/approve/:id').put( Partner.approve)
+
 
 
 module.exports = router;

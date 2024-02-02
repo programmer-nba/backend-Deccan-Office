@@ -1,6 +1,7 @@
 const Partner = require('../../model/partners/partners')
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken");
+const axios = require('axios')
 //เรียกใช้ function เช็คชื่อซ้ำ
 
 //สร้างไอดี Partner
@@ -179,17 +180,17 @@ module.exports.delete = async (req,res) =>{
 
 }
 
-module.exports.bookbank = async (req, res)=>{
+module.exports.logo = async (req, res)=>{
     try{
         const id = req.params.id
-        const upBookbank = await Partner.findByIdAndUpdate(id,
+        const upLogo = await Partner.findByIdAndUpdate(id,
             {
-                partner_bookbank: req.body.partner_bookbank
+                logo: req.body.logo
             },{new:true})
-        if(upBookbank){
+        if(upLogo){
             return res
                     .status(200)
-                    .send({status:true, data:upBookbank})
+                    .send({status:true, data:upLogo})
         }else{
             return res
                     .status(400)
@@ -227,21 +228,52 @@ module.exports.iden = async (req, res)=>{
     }
 }
 
-module.exports.signature = async (req, res)=>{
+module.exports.fileCompany = async (req, res)=>{
     try{
         const id = req.params.id
-        const upSignature = await Partner.findByIdAndUpdate(id,
+        const upCompany = await Partner.findByIdAndUpdate(id,
             {
-                signature: req.body.signature
+                filecompany: req.body.filecompany
             },{new:true})
-        if(upSignature){
+        if(upCompany){
             return res
                     .status(200)
-                    .send({status:true, data:upSignature})
+                    .send({status:true, data:upCompany})
         }else{
             return res
                     .status(400)
                     .send({status:false, message:"ค้นหาพาร์ทเนอร์ไม่เจอ"})
+        }
+    }catch(err){
+        console.log(err)
+        return res
+                .status(500)
+                .send({status:false, message:"มีบางอย่างผิดพลาด"})
+    }
+}
+module.exports.approve = async (req, res)=>{
+    try{
+        const Url = process.env.PARTNER
+        const id = req.params.id
+          const response = await axios.put(`${Url}/partner/accept/${id}`,{
+              headers: {
+                  'Accept': 'application/json',
+              }
+          })
+        if(!response){
+            return res
+                    .status(400)
+                    .send({status:false, message:"ไม่สามารถเชื่อมต่อได้"})
+        }else{
+            const fixData = await Partner.findByIdAndUpdate(id,{status_appover:"อนุมัติแล้ว"},{new:true})
+            if(!fixData){
+                return res
+                        .status(400)
+                        .send({status:false, message:"ไม่สามารถแก้ไขข้อมูลได้"})
+            }
+            return res
+                    .status(200)
+                    .send({status:true, message:"เชื่อมต่อสำเร็จ", data:response.data, fix:fixData})
         }
     }catch(err){
         console.log(err)
