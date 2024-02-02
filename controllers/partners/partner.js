@@ -328,17 +328,34 @@ module.exports.addsignature = async (req, res) => {
         {
               res.status(400).send({status:false,message:"ไม่มีข้อมูล"});
         }
-  
-        const data = {
-          name: req.body.name,
-          role: req.body.role,
-          position: req.body.position,
-          sign: req.body.sign
-        }
-        partner.signature.push(data);
-        const edit = await Partner.findByIdAndUpdate(req.params.id,{signature:partner.signature},{new:true})
+
+        const edit = await Partner.findByIdAndUpdate(req.params.id,{signature:req.body.signature},{new:true})
         return res.status(200).send({status: true,message: "คุณได้รูปภาพเรียบร้อยแล้ว",data: edit});
     } catch (error) {
       return res.status(500).send({ status: false, error: error.message });
     }
   };
+
+module.exports.OTP = async (req, res)=>{
+    try{
+        const id = req.params.id
+        const upOTP = await Partner.findByIdAndUpdate(id,
+            {
+                status_opt: req.body.status_opt
+            },{new:true})
+        if(upOTP){
+            return res
+                    .status(200)
+                    .send({status:true, data:upOTP})
+        }else{
+            return res
+                    .status(400)
+                    .send({status:false, message:"ค้นหาพาร์ทเนอร์ไม่เจอ"})
+        }
+    }catch(err){
+        console.log(err)
+        return res
+                .status(500)
+                .send({status:false, message:"มีบางอย่างผิดพลาด"})
+    }
+}
