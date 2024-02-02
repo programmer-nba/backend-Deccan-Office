@@ -9,7 +9,7 @@ const record = require('../controllers/record_report/record')
 const project = require('../controllers/project/project_detail')
 const Partner = require('../controllers/partners/partner')
 const admin = require('../controllers/Admin/admin.controller')
-const partnerProject = require('../controllers/project/projectCreate')
+const partnerProject = require('../controllers/project/peojectCreate')
 //const bt = require('../controllers/Employees/breakTimeController')
 
 //CRUD employees table(Admin Only)

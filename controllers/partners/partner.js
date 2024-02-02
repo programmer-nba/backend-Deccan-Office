@@ -6,31 +6,25 @@ const jwt = require("jsonwebtoken");
 //สร้างไอดี Partner
 module.exports.register = async (req, res) => {
     try {
-
-        const checkusername = await Partner.findOne({username:req.body.username})
-        if(checkusername)
-        {
-            res.status(409).send({status:false,message:"usernameนี้ใช้งานไม่ได้"});
-        }        
-
+        console.log(req.body)
+        const duplicate = await Partner.findOne({ //ตรวจสอบบัตรประชาชนพนักงานว่ามีซ้ำกันหรือไม่
+            username: req.body.username,
+          });
+          if (duplicate){
+            return res
+                    .status(400)
+                    .send({ status: false, message: "มีรายชื่อพนักงานภายในบริษัทแล้ว" });
+          }
         const data = new Partner({
             _id: req.body._id,
-            username: req.body.username,
+            username: req.body.username, 
             password: req.body.password,
+            antecedent:req.body.antecedent,
             partner_name: req.body.partner_name,
-            partner_address: req.body.partner_address,
             partner_phone: req.body.partner_phone,
-            partner_status: false,
-            partner_status_promiss: "รออนุมัติ",
-            partner_bookbank: "", 
-            partner_bookbank_name: req.body.partner_bookbank_name,
-            partner_bookbank_number: req.body.partner_bookbank_number,
-            partner_iden: "", // images
+            partner_email:req.body.partner_email,
             partner_iden_number: req.body.partner_iden_number,
-            partner_company_name: req.body.partner_company_name,
-            partner_company_number: req.body.partner_company_number,
-            partner_company_address: req.body.partner_company_address,
-            signature:"",
+            partner_address: req.body.partner_address,
             
         })
         const add = await data.save()
@@ -182,6 +176,7 @@ module.exports.delete = async (req,res) =>{
     }catch (error) {
         return res.status(500).send({status:false,error:error.message});
     }
+
 }
 
 module.exports.bookbank = async (req, res)=>{
