@@ -184,3 +184,75 @@ module.exports.delete = async (req,res) =>{
     }
     
 }
+
+module.exports.bookbank = async (req, res)=>{
+    try{
+        const id = req.params.id
+        const upBookbank = await Partner.findByIdAndUpdate(id,
+            {
+                partner_bookbank: req.body.partner_bookbank
+            },{new:true})
+        if(upBookbank){
+            return res
+                    .status(200)
+                    .send({status:true, data:upBookbank})
+        }else{
+            return res
+                    .status(400)
+                    .send({status:false, message:"ค้นหาพาร์ทเนอร์ไม่เจอ"})
+        }
+    }catch(err){
+        console.log(err)
+        return res
+                .status(500)
+                .send({status:false, message:"มีบางอย่างผิดพลาด"})
+    }
+}
+
+module.exports.iden = async (req, res)=>{
+    try{
+        const id = req.params.id
+        const upIden = await Partner.findByIdAndUpdate(id,
+            {
+                partner_iden: req.body.partner_iden
+            },{new:true})
+        if(upIden){
+            return res
+                    .status(200)
+                    .send({status:true, data:upIden})
+        }else{
+            return res
+                    .status(400)
+                    .send({status:false, message:"ค้นหาพาร์ทเนอร์ไม่เจอ"})
+        }
+    }catch(err){
+        console.log(err)
+        return res
+                .status(500)
+                .send({status:false, message:"มีบางอย่างผิดพลาด"})
+    }
+}
+
+module.exports.signature = async (req, res)=>{
+    try{
+        const id = req.params.id
+        const upSignature = await Partner.findByIdAndUpdate(id,
+            {
+                signature: req.body.signature
+            },{new:true})
+        if(upSignature){
+            return res
+                    .status(200)
+                    .send({status:true, data:upSignature})
+        }else{
+            return res
+                    .status(400)
+                    .send({status:false, message:"ค้นหาพาร์ทเนอร์ไม่เจอ"})
+        }
+    }catch(err){
+        console.log(err)
+        return res
+                .status(500)
+                .send({status:false, message:"มีบางอย่างผิดพลาด"})
+    }
+}
