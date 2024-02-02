@@ -77,7 +77,8 @@ router.route('/ddsc-office/partners/upIden/:id').put( Partner.iden)
 router.route('/ddsc-office/partners/upCompany/:id').put( Partner.fileCompany)
 
 router.route('/ddsc-office/partners/approve/:id').put( Partner.approve)
-
+router.route('/ddsc-office/partners/wait/:id').put( Partner.waitStatus)
+router.route('/ddsc-office/partners/addSignature/:id').put( Partner.addsignature)
 
 
 module.exports = router;

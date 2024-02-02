@@ -251,6 +251,7 @@ module.exports.fileCompany = async (req, res)=>{
                 .send({status:false, message:"มีบางอย่างผิดพลาด"})
     }
 }
+
 module.exports.approve = async (req, res)=>{
     try{
         const Url = process.env.PARTNER
@@ -282,3 +283,62 @@ module.exports.approve = async (req, res)=>{
                 .send({status:false, message:"มีบางอย่างผิดพลาด"})
     }
 }
+
+module.exports.waitStatus = async (req, res)=>{
+    try{
+        const id = req.params.id
+        const Data = {
+            username: req.body.username, 
+            password: req.body.password,
+            antecedent:req.body.antecedent,
+            partner_name: req.body.partner_name,
+            partner_phone: req.body.partner_phone,
+            partner_email:req.body.partner_email,
+            partner_iden_number: req.body.partner_iden_number,
+            partner_address: req.body.partner_address,
+            status_appover : "รออนุมัติ",
+            /// บริษัท
+            partner_company_name: req.body.partner_company_name,
+            partner_company_number: req.body.partner_company_number,
+            partner_company_address: req.body.partner_company_address,  
+            partner_company_phone:req.body.partner_company_phone
+        }
+        const fixData = await Partner.findByIdAndUpdate(id,Data,{new:true})
+        if(!fixData){
+            return res
+                    .status(400)
+                    .send({status:false, message:"ไม่สามารถแก้ไขข้อมูลได้"})
+        }
+            return res
+                    .status(200)
+                    .send({status:true, message:"เชื่อมต่อสำเร็จ", fix:fixData})
+        
+    }catch(err){
+        console.log(err)
+        return res
+                .status(500)
+                .send({status:false, message:"มีบางอย่างผิดพลาด"})
+    }
+}
+
+module.exports.addsignature = async (req, res) => {
+    try {
+        const partner = await Partner.findById(req.params.id)
+        if(!partner)
+        {
+              res.status(400).send({status:false,message:"ไม่มีข้อมูล"});
+        }
+  
+        const data = {
+          name: req.body.name,
+          role: req.body.role,
+          position: req.body.position,
+          sign: req.body.sign
+        }
+        partner.signature.push(data);
+        const edit = await Partner.findByIdAndUpdate(req.params.id,{signature:partner.signature},{new:true})
+        return res.status(200).send({status: true,message: "คุณได้รูปภาพเรียบร้อยแล้ว",data: edit});
+    } catch (error) {
+      return res.status(500).send({ status: false, error: error.message });
+    }
+  };
