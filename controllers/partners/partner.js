@@ -341,7 +341,7 @@ module.exports.OTP = async (req, res)=>{
         const id = req.params.id
         const upOTP = await Partner.findByIdAndUpdate(id,
             {
-                status_opt: req.body.status_opt
+                status_opt: "true"
             },{new:true})
         if(upOTP){
             return res
