@@ -150,6 +150,7 @@ module.exports.edit = async (req,res) =>{
         const data = {
             username: req.body.username,
             password: req.body.password,
+            antecedent: req.body.antecedent,
             partner_name: req.body.partner_name,
             partner_address: req.body.partner_address,
             partner_phone: req.body.partner_phone,
@@ -160,8 +161,7 @@ module.exports.edit = async (req,res) =>{
             partner_iden_number: req.body.partner_iden_number,
             partner_company_name: req.body.partner_company_name,
             partner_company_number: req.body.partner_company_number,
-            partner_company_address: req.body.partner_company_address,
-            signature:"",
+            partner_company_address: req.body.partner_company_address
         }
         const edit = await Partner.findByIdAndUpdate(req.params.id,data,{new:true})
         return res.status(200).send({status:true,data:edit,message:"แก้ไขข้อมูลสำเร็จ"})

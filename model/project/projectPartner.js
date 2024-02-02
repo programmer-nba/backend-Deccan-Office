@@ -26,6 +26,7 @@ projectPartnerSchema.pre('save',async function(next){
     user.project_number = randomShopNumber;
     next();
   })
+  
 const projectPartner = mongoose.model("project_partner", projectPartnerSchema);
 
 module.exports = {projectPartner};

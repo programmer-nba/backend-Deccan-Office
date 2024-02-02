@@ -5,6 +5,7 @@ const partnerSchema = new mongoose.Schema(
   {
     username: {type: String, required: true,unique: true},
     password: {type: String, required: true},
+    antecedent:{type:String,required:true},
     partner_name: { type: String, required: true },
     partner_address: { type: String, required: true },
     partner_phone: { type: String, required: true },
@@ -23,7 +24,16 @@ const partnerSchema = new mongoose.Schema(
     partner_company_number: { type: String, required: false, default: "ไม่มี" },
     partner_company_address: { type: String, required: false, default: "ไม่มี" },
     partner_timestamp: { type: Array, required: false, default: [] },
-    signature:{type:String,default:""}
+    signature:{type:[{
+      name: {type:String},
+      role: {type:String},
+      position: {type:String},
+      sign: {type:String}
+    }],default:null},
+    logo:{type:String,default:""},
+    filecompany:{type:String,default:""},
+    statusready :{ type: Boolean, required: false, default: false },
+    statusdetail:{type:String,default:"ข้อมูลยังไม่ครบ"}
   },
   {timestamps: true}
 );
