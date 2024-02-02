@@ -85,7 +85,7 @@ getByID = async (req, res) => {
 getMe = async (req, res) => {
   try{
     //const iden = req.body.iden_number //ดึงเฉพาะข้อมูลบัตรประชาชน
-    const  getId = req.decoded.user_id
+    const  getId = req.decoded.id
     console.log(getId)
     const findId= await Employees.findById(getId) // 1 คือให้แสดงข้อมูล 0 คือไม่ให้แสดงข้อมูล
     if (findId){
