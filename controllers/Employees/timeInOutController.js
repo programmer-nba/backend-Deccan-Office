@@ -9,38 +9,34 @@ timeIn = async (req, res)=>{
         const day = dayjs(Date.now()).format('DD')
         const mount = dayjs(Date.now()).format('MM')
         const year = dayjs(Date.now()).format('YYYY')
-        if (req.decoded.role !== "employee" && req.decoded.role !== "manager"){
-            return res
-                    .status(400)
-                    .send({status:false, message:"ท่านไม่มีสิทธิ์ใช้ฟังค์ชั่นนี้"})
-        }else{
-          const findIden = await Employees.findOne({_id:id})
+
+        const findIden = await Employees.findOne({_id:id})
           if (!findIden){
               return res
-                  .status(400)
-                  .send({status:false, message:"ไม่พบไอดีของท่านของท่านในระบบ"})
+                      .status(400)
+                      .send({status:false, message:"ไม่พบไอดีของท่านของท่านในระบบ"})
           }
-          const checkTime = await timeInOut.findOne(
+        const checkTime = await timeInOut.findOne(
             {employee_id:id,
             day:day,
             mount:mount,
             year:year})
           if(checkTime){
               return res
-                  .status(400)
-                  .send({status:false, message:"ท่านได้ลงเวลาเข้างานไปแล้ว"})
+                      .status(400)
+                      .send({status:false, message:"ท่านได้ลงเวลาเข้างานไปแล้ว"})
           }
-          
-          const createTime = await timeInOut.create({employee_id:id});
+        const createTime = await timeInOut.create({employee_id:id});
           if (createTime){
               return res
-                  .status(200)
-                  .send({data: createTime})
+                      .status(200)
+                      .send({status:true, data: createTime})
           }
-        }
     } catch(err) {
         console.log(err);
-        return res.status(500).send({ message: "มีบางอย่างผิดพลาด" });
+        return res
+                .status(500)
+                .send({ status:false, message: "มีบางอย่างผิดพลาด" });
     }
 }
 
@@ -68,7 +64,6 @@ timeOut = async (req, res)=>{
                     .status(400)
                     .send({status:false, message: "ไม่สามารถลงเวลางานได้"})
           }
-
     }catch(err){
       console.log(err);
       return res

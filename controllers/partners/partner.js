@@ -146,7 +146,7 @@ module.exports.edit = async (req,res) =>{
         {
             return res.status(404).send({status:false,message:"ไม่มีข้อมูล"})
         }
-        const data ={
+        const data = {
             username: req.body.username,
             password: req.body.password,
             partner_name: req.body.partner_name,
