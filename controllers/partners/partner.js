@@ -330,11 +330,15 @@ module.exports.addsignature = async (req, res) => {
         }
 
         const edit = await Partner.findByIdAndUpdate(req.params.id,{signature:req.body.signature},{new:true})
-        return res.status(200).send({status: true,message: "คุณได้รูปภาพเรียบร้อยแล้ว",data: edit});
+        return res
+                .status(200)
+                .send({status: true,message: "คุณได้รูปภาพเรียบร้อยแล้ว",data: edit});
     } catch (error) {
-      return res.status(500).send({ status: false, error: error.message });
+        return res
+                .status(500)
+                .send({ status: false, error: error.message });
     }
-  };
+}
 
 module.exports.OTP = async (req, res)=>{
     try{
@@ -359,3 +363,5 @@ module.exports.OTP = async (req, res)=>{
                 .send({status:false, message:"มีบางอย่างผิดพลาด"})
     }
 }
+
+

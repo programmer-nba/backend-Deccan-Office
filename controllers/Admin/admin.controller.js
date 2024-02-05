@@ -48,4 +48,5 @@ cancelPartner = async (req, res)=>{
     }
 }
 
+
 module.exports = { confirmPartner, cancelPartner }

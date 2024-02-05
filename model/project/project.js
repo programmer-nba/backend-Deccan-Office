@@ -12,7 +12,6 @@ const projectSchema = new Schema({
         department: {type: String, require: false},
         job_position: {type: String, require: false},
         name: {type: String, require: false},
-        detail: {type: String, require: false}
       }
     ],
     TOR:[
