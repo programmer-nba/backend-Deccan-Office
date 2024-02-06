@@ -291,28 +291,8 @@ module.exports.waitStatus = async (req, res)=>{
     try{
         const id = req.params.id
         const Data = {
-            username: req.body.username, 
-            password: req.body.password,
-            antecedent:req.body.antecedent,
-            partner_name: req.body.partner_name,
-            partner_phone: req.body.partner_phone,
-            partner_email:req.body.partner_email,
-            partner_iden_number: req.body.partner_iden_number,
-            partner_address: req.body.partner_address,
-            partner_district: req.body.partner_district,
-            partner_amphure: req.body.partner_amphure,
-            partner_province: req.body.partner_province,
-            partner_postcode: req.body.partner_postcode,
             status_appover : "รออนุมัติ",
             // บริษัท
-            partner_company_name: req.body.partner_company_name,
-            partner_company_number: req.body.partner_company_number,
-            partner_company_address: req.body.partner_company_address, 
-            partner_company_district: req.body.partner_company_district, 
-            partner_company_amphure: req.body.partner_company_amphure,
-            partner_company_province: req.body.partner_company_province,
-            partner_company_postcode: req.body.partner_company_postcode,
-            partner_company_phone: req.body.partner_company_phone,
         }
         const fixData = await Partner.findByIdAndUpdate(id,Data,{new:true})
         if(!fixData){
