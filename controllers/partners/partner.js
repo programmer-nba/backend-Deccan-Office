@@ -291,31 +291,6 @@ module.exports.waitStatus = async (req, res)=>{
     try{
         const id = req.params.id
         const Data = {
-            status_appover : "รออนุมัติ",
-            // บริษัท
-        }
-        const fixData = await Partner.findByIdAndUpdate(id,Data,{new:true})
-        if(!fixData){
-            return res
-                    .status(400)
-                    .send({status:false, message:"ไม่สามารถแก้ไขข้อมูลได้"})
-        }
-            return res
-                    .status(200)
-                    .send({status:true, message:"เชื่อมต่อสำเร็จ", fix:fixData})
-        
-    }catch(err){
-        console.log(err)
-        return res
-                .status(500)
-                .send({status:false, message:"มีบางอย่างผิดพลาด"})
-    }
-}
-
-module.exports.update = async (req, res)=>{
-    try{
-        const id = req.params.id
-        const Data = {
             username: req.body.username, 
             password: req.body.password,
             antecedent:req.body.antecedent,
@@ -336,6 +311,31 @@ module.exports.update = async (req, res)=>{
             partner_company_province: req.body.partner_company_province,
             partner_company_postcode: req.body.partner_company_postcode,
             partner_company_phone: req.body.partner_company_phone,
+        }
+        const fixData = await Partner.findByIdAndUpdate(id,Data,{new:true})
+        if(!fixData){
+            return res
+                    .status(400)
+                    .send({status:false, message:"ไม่สามารถแก้ไขข้อมูลได้"})
+        }
+            return res
+                    .status(200)
+                    .send({status:true, message:"เชื่อมต่อสำเร็จ", fix:fixData})
+        
+    }catch(err){
+        console.log(err)
+        return res
+                .status(500)
+                .send({status:false, message:"มีบางอย่างผิดพลาด"})
+    }
+}
+
+module.exports.updateStatus = async (req, res)=>{
+    try{
+        const id = req.params.id
+        const Data = {
+            status_appover : "รออนุมัติ",
+            // บริษัท
         }
         const fixData = await Partner.findByIdAndUpdate(id,Data,{new:true})
         if(!fixData){
