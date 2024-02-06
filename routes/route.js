@@ -47,6 +47,8 @@ router.route('/ddsc-office/record/update/:id').put( record.update )
 
 //project
 router.route('/ddsc-office/project/post').post( project.createProject)
+router.route('/ddsc-office/project/editTOR').put( project.updateTOR)
+router.route('/ddsc-office/project/delTOR').delete( project.deleteTOR)
 
 //สมัคร
 router.post('/ddsc-office/partners/register',Partner.register)
@@ -75,7 +77,6 @@ router.route('/ddsc-office/project/partner/update/:id').put( partnerProject.upda
 router.route('/ddsc-office/partners/upLogo/:id').put( Partner.logo)
 router.route('/ddsc-office/partners/upIden/:id').put( Partner.iden)
 router.route('/ddsc-office/partners/upCompany/:id').put( Partner.fileCompany)
-
 router.route('/ddsc-office/partners/approve/:id').put( Partner.approve)
 router.route('/ddsc-office/partners/wait/:id').put( Partner.waitStatus)
 router.route('/ddsc-office/partners/addSignature/:id').put( Partner.addsignature)
