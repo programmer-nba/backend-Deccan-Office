@@ -75,6 +75,7 @@ router.route('/ddsc-office/project/partner/update/:id').put( partnerProject.upda
 
 //เพิ่มรูป partner
 router.route('/ddsc-office/partners/upLogo/:id').put( Partner.logo)
+router.route('/ddsc-office/partners/update/:id').put( Partner.update)
 router.route('/ddsc-office/partners/upIden/:id').put( Partner.iden)
 router.route('/ddsc-office/partners/upCompany/:id').put( Partner.fileCompany)
 router.route('/ddsc-office/partners/approve/:id').put( Partner.approve)
