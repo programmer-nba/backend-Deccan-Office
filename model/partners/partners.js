@@ -12,10 +12,13 @@ const partnerSchema = new mongoose.Schema(
     partner_email:{type:String,required:true},
     partner_iden_number: { type: String, required: true },
     partner_address: { type: String, required: true },
+    partner_district: { type: String, required: false }, //ตำบล
+    partner_amphure: { type: String, required: false }, //อำเภอ
+    partner_province: { type: String, required: false }, //จังหวัด
+    partner_postcode: { type: String, required: false }, //รหัสไปรษณีย์
     //otp
     status_opt :{ type: Boolean, default: false },
     status_appover :{type:String,default:"ยังกรอกข้อมูลไม่ครบ"},
-
 
     // นิติบุคคล 
     partner_iden: { type: String, required: false, default: "" }, // เลขบัตรประชาชน
@@ -23,8 +26,12 @@ const partnerSchema = new mongoose.Schema(
     /// บริษัท
     partner_company_name: { type: String, required: false, default: "" },
     partner_company_number: { type: String, required: false, default: "" },
-    partner_company_address: { type: String, required: false, default: "" },  
-    partner_company_phone:{type:String,default:""},
+    partner_company_address: { type: String, required: false, default: "" },
+    partner_company_district: { type: String, required: false, default: "" }, //ตำบล
+    partner_company_amphure: { type: String, required: false, default: "" }, //อำเภอ
+    partner_company_province: { type: String, required: false, default: "" }, //จังหวัด
+    partner_company_postcode: { type: String, required: false, default: "" }, //รหัสไปรษณีย์
+    partner_company_phone: { type: String, default: "" },
     filecompany:{type:String,default:""},
     logo:{type:String,default:""},
     // ลายเซ็นต์
