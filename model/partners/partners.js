@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt")
 const partnerSchema = new mongoose.Schema(
   {
     //บุคคล
-    username: {type: String, required: true,unique: true}, 
+    username: {type: String, required: false }, 
     password: {type: String, required: true},
     antecedent:{type:String,required:true},
     partner_name: { type: String, required: true },
@@ -32,6 +32,7 @@ const partnerSchema = new mongoose.Schema(
     partner_company_province: { type: String, required: false, default: "" }, //จังหวัด
     partner_company_postcode: { type: String, required: false, default: "" }, //รหัสไปรษณีย์
     partner_company_phone: { type: String, default: "" },
+    contract_type: { type: String, default: "", required: false },
     filecompany:{type:String,default:""},
     logo:{type:String,default:""},
     // ลายเซ็นต์
@@ -49,4 +50,4 @@ const partnerSchema = new mongoose.Schema(
 
 const Partner = mongoose.model("partner", partnerSchema);
 
-module.exports = Partner;
+module.exports = {Partner};

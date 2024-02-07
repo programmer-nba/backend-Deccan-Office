@@ -1,4 +1,4 @@
-const Partner = require('../../model/partners/partners')
+const {Partner} = require('../../model/partners/partners')
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken");
 const axios = require('axios')
@@ -29,7 +29,15 @@ module.exports.register = async (req, res) => {
             partner_district: req.body.partner_district,
             partner_amphure: req.body.partner_amphure,
             partner_province: req.body.partner_province,
-            partner_postcode: req.body.partner_postcode
+            partner_postcode: req.body.partner_postcode,
+            // partner_company_name: req.body.partner_company_name,
+            // partner_company_number: req.body.partner_company_name,
+            // partner_company_address: req.body.partner_company_name,
+            // partner_company_district: req.body.partner_company_name,
+            // partner_company_amphure: req.body.partner_company_name,
+            // partner_company_province: req.body.partner_company_name,
+            // partner_company_postcode: req.body.partner_company_name,
+            // partner_company_phone: req.body.partner_company_name,
         })
         const add = await data.save()
         res.status(200).send({status:true,message:"คุณได้สร้างไอดี Partner เรียบร้อย",data:add});
@@ -354,7 +362,7 @@ module.exports.updateStatus = async (req, res)=>{
                 .send({status:false, message:"มีบางอย่างผิดพลาด"})
     }
 }
-
+//ลายเซ็น
 module.exports.addsignature = async (req, res) => {
     try {
         const partner = await Partner.findById(req.params.id)
@@ -373,7 +381,7 @@ module.exports.addsignature = async (req, res) => {
                 .send({ status: false, error: error.message });
     }
 }
-
+//ยืนยัน OTP
 module.exports.OTP = async (req, res)=>{
     try{
         const id = req.params.id
@@ -397,5 +405,73 @@ module.exports.OTP = async (req, res)=>{
                 .send({status:false, message:"มีบางอย่างผิดพลาด"})
     }
 }
+//ส่งประเภทสัญญา
+module.exports.contract = async (req, res)=>{
+    try{
+        const id = req.params.id
+        const contractName = req.body.contract_type
+        // const Url = process.env.PARTNER
+        const UrlContract = process.env.CONTRACT
+        console.log(UrlContract)
+        const findPartner = await Partner.findByIdAndUpdate(
+            id,
+            {contract_type: contractName},
+            {new:true})
+        if(!findPartner){
+            return res
+                    .status(400)
+                    .send({status:false, message:"ไม่มีพาร์ทเนอร์ไอดีที่ท่านต้องการ"})
+        }
+        const updatedData = { 
+            antecedent: findPartner.antecedent,
+            partner_name: findPartner.partner_name,
+            partner_phone: findPartner.partner_phone,
+            partner_email: findPartner.partner_email,
+            partner_iden_number: findPartner.partner_iden_number,
+            partner_address: findPartner.partner_address,
+            partner_district: findPartner.partner_district,
+            partner_amphure: findPartner.partner_amphure,
+            partner_province: findPartner.partner_province,
+            partner_postcode: findPartner.partner_postcode,
+            partner_company_name: findPartner.partner_company_name,
+            partner_company_number: findPartner.partner_company_number,
+            partner_company_address: findPartner.partner_company_address,
+            partner_company_district: findPartner.partner_company_district,
+            partner_company_amphure: findPartner.partner_company_amphure,
+            partner_company_province: findPartner.partner_company_province,
+            partner_company_postcode: findPartner.partner_company_postcode,
+            partner_company_phone: findPartner.partner_company_phone,
+            contract_type: findPartner.contract_type,
+            filecompany: findPartner.filecompany,
+            logo: findPartner.logo,
+            signature: findPartner.signature
+            };
+              
+        const response = await axios.post(`${UrlContract}/partner/create`,updatedData,{
+            headers: {
+                'Accept': 'application/json',
+            }
+        })
+        return res
+                .status(200)
+                .send({status:true, data: updatedData})
+    }catch(err){
+        console.log("testy")
+        console.log(err)
+        return res
+                .status(500)
+                .send({status:false, message:err})
+    }
+}
 
 
+// const responseToFix = await axios.put(`${Url}/partner/sendtypecontract/${id}`,{
+        //     headers: {
+        //         'Accept': 'application/json',
+        //     }
+        // })
+        // if(!responseToFix){
+        //     return res
+        //             .status(400)
+        //             .send({status:false, message:"ไม่สามารถเชื่อมต่อได้ของนนท์ได้"})
+        // }
