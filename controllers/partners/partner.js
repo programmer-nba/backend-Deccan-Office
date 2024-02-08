@@ -267,7 +267,7 @@ module.exports.approve = async (req, res)=>{
     try{
         const Url = process.env.PARTNER
         const id = req.params.id
-          const response = await axios.put(`${Url}/partner/accept/${id}`,{
+        const response = await axios.put(`${Url}/partner/accept/${id}`,{
               headers: {
                   'Accept': 'application/json',
               }
