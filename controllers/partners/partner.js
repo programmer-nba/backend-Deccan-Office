@@ -423,6 +423,7 @@ module.exports.contract = async (req, res)=>{
                     .send({status:false, message:"ไม่มีพาร์ทเนอร์ไอดีที่ท่านต้องการ"})
         }
         const updatedData = { 
+            _id: findPartner._id,
             antecedent: findPartner.antecedent,
             partner_name: findPartner.partner_name,
             partner_phone: findPartner.partner_phone,
