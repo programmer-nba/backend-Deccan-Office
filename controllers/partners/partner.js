@@ -342,7 +342,7 @@ module.exports.updateStatus = async (req, res)=>{
     try{
         const id = req.params.id
         const Data = {
-            status_appover : "dfssddfdsf",
+            status_appover : "รออนุมัติ",
             // บริษัท
         }
         const fixData = await Partner.findByIdAndUpdate(id,Data,{new:true})
