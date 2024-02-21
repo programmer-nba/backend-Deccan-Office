@@ -13,7 +13,7 @@ const partnerProject = require('../controllers/project/peojectCreate')
 //const bt = require('../controllers/Employees/breakTimeController')
 
 //CRUD employees table(Admin Only)
-router.route('/ddsc-office/post').post(authAdmin, main.Post) //ใช้กำหนด path ที่ต้องการทำให้ไม่ต้องไปประกาศใน File Server แล้ว
+router.route('/ddsc-office/post').post( main.Post) //ใช้กำหนด path ที่ต้องการทำให้ไม่ต้องไปประกาศใน File Server แล้ว
 router.route('/ddsc-office/get').get(authAdmin, main.getAll)
 router.route('/ddsc-office/getid/:id').get(authAdmin, main.getByID)
 router.route('/ddsc-office/update/:id').put(authAdmin, main.Update)
@@ -23,8 +23,7 @@ router.route('/ddsc-office/del/:id').delete(authAdmin, main.Delete)
 router.route('/ddsc-office/getme').get(auth, main.getMe)
 
 //Register
-router.route('/ddsc-office/register').post( regis.CreateRegister )
-
+// router.route('/ddsc-office/register').post( regis.CreateRegister )
 //Login
 router.route('/ddsc-office/login').post( login.loginController )
 
