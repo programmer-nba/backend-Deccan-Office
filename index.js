@@ -5,11 +5,10 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 var router = require('./routes/route')
 
-app.use(bodyParser.json({limit: '50mb', type: 'application/json'}));
+app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }));
 app.use(bodyParser.urlencoded({ extended: true }));
 mongoose.set("strictQuery", true);
-mongoose.connect(process.env.DB)
-.then(() => console.log('Connected!'));
+mongoose.connect(process.env.DB).then(() => console.log('Connected!'));
 const cors = require("cors");
 
 app.use(express.json());
