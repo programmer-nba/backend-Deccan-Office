@@ -9,30 +9,39 @@ Post = async (req, res) => {
       return res
               .status(403)
               .send({ status: false, message: error.details[0].message });
-
+    console.log(req.body.userid)
     const duplicate = await Employees.findOne({ //ตรวจสอบบัตรประชาชนพนักงานว่ามีซ้ำกันหรือไม่
-      iden_number: req.body.iden_number,
+        $or: [
+          { iden_number: req.body.iden_number },
+          { userid: req.body.userid }
+        ]
     });
-    if (duplicate)
-      return res
-              .status(401)
-              .send({ status: false, message: "มีรายชื่อพนักงานภายในบริษัทแล้ว" });
-
+    if (duplicate) {
+      if (duplicate.iden_number === req.body.iden_number) {
+        // ถ้าพบว่า iden_number ซ้ำ
+        return res
+                .status(200)
+                .json({status:false, message: 'มีผู้ใช้บัตรประชาชนนี้ในระบบแล้ว'});
+      } else if (duplicate.userid === req.body.userid) {
+        // ถ้าพบว่า userid ซ้ำ
+        return res
+                .status(200)
+                .json({status:false, message: 'มีผู้ใช้ยูสเซอร์ไอดีนี้ในระบบแล้ว'});
+      }
+    }
+    
     const employee = await Employees.create(
-      {...req.body,
-      "role.role":req.body.role,
-      "role.position":req.body.position,
-      "role.department":req.body.department,
-      "role.job_position":req.body.job_position}); //เพิ่มพนักงานเข้าระบบ
+      {
+          ...req.body,
+          role:req.body.role,
+          position:req.body.position
+      }); //เพิ่มพนักงานเข้าระบบ
     if (employee) {
       return res
               .status(201)
               .send({ status: true, message: "เพิ่มรายชื่อพนักงานเสร็จสิ้น" });
     }
-    /*const count = Employees.length;
-    let data = null;
-    const employee_number = `DDSC000${count}`;
-    console.log(employee_number);*/
+
   } catch (err) {
       console.log(err);
       return res
