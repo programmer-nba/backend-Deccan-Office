@@ -19,7 +19,7 @@ const EmployeeSchema = new Schema({
   district: { type: String, required: true },
   provice: { type: String, required: true },
   postcode: { type: String, required: true },
-  birthday: { type: Date, required: true },
+  birthday: { type: String, required: false },
   age: { type: Number, required: true },
   email: { type: String, required: true },
 }, { timestamps: true });
