@@ -5,11 +5,13 @@ const login = require('../controllers/Employees/loginController');
 const time = require('../controllers/Employees/timeInOutController')
 const auth = require("../lib/auth");
 const authAdmin = require("../lib/authAdmin");
+
 const record = require('../controllers/record_report/record')
 const project = require('../controllers/project/project_detail')
 const Partner = require('../controllers/partners/partner')
 const admin = require('../controllers/Admin/admin.controller')
 const partnerProject = require('../controllers/project/projectCreate')
+
 //const bt = require('../controllers/Employees/breakTimeController')
 
 //CRUD employees table(Admin Only)
