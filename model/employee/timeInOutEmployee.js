@@ -18,24 +18,16 @@ const timeSchema = new Schema({
     day:{ type: String, default: () => dayjs(Date.now()).format('DD') },
     mount:{ type: String, default: () => dayjs(Date.now()).format('MM') },
     year:{ type: String, default: () => dayjs(Date.now()).format('YYYY') },
-    time_in: { type: String, default: () => dayjs(Date.now()).format('HH:mm:ss') },
-    status_timeIn: {type:String, default: "true", require: false},
-    time_out: { type: Date, default: () => new Date().setUTCHours(0, 0, 0, 0)},
-    status_timeOut: {type:String, default: "false", require: false},
+    morning_timeIn: { type: String, default: () => dayjs(Date.now()).format('HH:mm:ss') },
+    status_morningIn: {type:Boolean, default: true},
+    morning_timeOut: { type: String, default: "00:00:00" },
+    status_morningOut: {type:Boolean, default: false},
+    after_timeIn: { type: String, default: "00:00:00"},
+    status_afterIn: {type:Boolean, default: false},
+    after_timeOut: { type: String, default: "00:00:00"},
+    status_afterOut: {type:Boolean, default: false},
 },{timestamps:true});
-
 
 const timeInOut = mongoose.model("TimeInOut", timeSchema);
 
-const Validate = (data)=>{
-    const schema = Joi.object({
-        employee_id: Joi.string().required().label('กรุณากรอกบัตรประชาชนพนักงาน'),
-        day: Joi.string(),
-        mount: Joi.string(),
-        year: Joi.string(),
-        time_in: Joi.string(),
-    });
-    return schema.validate(data);
-  };
-
-module.exports = {timeInOut, Validate };
+module.exports = {timeInOut};

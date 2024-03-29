@@ -4,41 +4,41 @@ const Joi = require("joi");
 var bcrypt = require("bcrypt");
 
 const EmployeeSchema = new Schema({
-  employee_number: { type: Number, required: true },
+  employee_number: { type: Number, required: false },
 
-  userid: { type: String, require: true },
+  userid: { type: String, require: false },
 
-  first_name: { type: String, require: true },
+  first_name: { type: String, require: false },
 
-  last_name: { type: String, require: true },
+  last_name: { type: String, require: false },
 
-  nick_name: { type: String, require: true },
+  nick_name: { type: String, require: false },
 
-  iden_number: { type: String, require: true },
+  iden_number: { type: String, require: false },
 
-  password: { type: String, require: true },
+  password: { type: String, require: false },
 
   role: { type: String, require: false },
 
   position: { type: String, require: false},
 
-  tel: { type: Number, require: true },
+  tel: { type: Number, require: false },
 
-  address: { type: String, require: true },
+  address: { type: String, require: false },
 
-  subdistrict: { type: String, require: true },
+  subdistrict: { type: String, require: false },
 
-  district: { type: String, required: true },
+  district: { type: String, required: false },
 
-  provice: { type: String, required: true },
+  provice: { type: String, required: false },
 
-  postcode: { type: String, required: true },
+  postcode: { type: String, required: false },
 
   birthday: { type: String, required: false },
 
-  age: { type: Number, required: true },
+  age: { type: Number, required: false },
 
-  email: { type: String, required: true },
+  email: { type: String, required: false },
   
 }, { timestamps: true });
 

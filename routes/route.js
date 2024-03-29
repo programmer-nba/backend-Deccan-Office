@@ -5,7 +5,6 @@ const login = require('../controllers/Employees/loginController');
 const time = require('../controllers/Employees/timeInOutController')
 const auth = require("../lib/auth");
 const authAdmin = require("../lib/authAdmin");
-
 const record = require('../controllers/record_report/record')
 const project = require('../controllers/project/project_detail')
 const Partner = require('../controllers/partners/partner')
@@ -26,12 +25,15 @@ router.route('/ddsc-office/getme').get(auth, main.getMe)
 
 //Register
 // router.route('/ddsc-office/register').post( regis.CreateRegister )
+
 //Login
 router.route('/ddsc-office/login').post(login.loginController)
 
 //TimeInOut
-router.route('/ddsc-office/time').post(auth, time.timeIn)
-router.route('/ddsc-office/timeout').put(auth, time.timeOut) //ลงเวลาเลิกงาน
+router.route('/ddsc-office/time/morning/in').post(auth, time.timeInMorning)
+router.route('/ddsc-office/time/morning/out/:id').put(auth, time.timeOutMorning)
+router.route('/ddsc-office/time/afternoon/in/:id').put(auth, time.timeInAfternoon)
+router.route('/ddsc-office/time/afternoon/out/:id').put(auth, time.timeOutAfternoon)
 router.route('/ddsc-office/time/getme').get(auth, time.getMe)
 router.route('/ddsc-office/uptime/:id').put(authAdmin, time.updateTime)
 router.route('/ddsc-office/deltime/:id').delete(authAdmin, time.deleteTime)

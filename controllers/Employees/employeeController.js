@@ -160,7 +160,7 @@ Delete = async (req, res)=>{
     if(delEmployee){
       return res
         .status(200)
-        .send({status: true, massge: "ลบข้อมูลสำเร็จ"})
+        .send({status: true, massge: "ลบข้อมูลสำเร็จ", data:delEmployee})
     } else {
       return res
         .status(400)
