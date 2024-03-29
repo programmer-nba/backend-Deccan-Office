@@ -362,6 +362,7 @@ module.exports.updateStatus = async (req, res)=>{
                 .send({status:false, message:"มีบางอย่างผิดพลาด"})
     }
 }
+
 //ลายเซ็น
 module.exports.addsignature = async (req, res) => {
     try {
@@ -381,6 +382,7 @@ module.exports.addsignature = async (req, res) => {
                 .send({ status: false, error: error.message });
     }
 }
+
 //ยืนยัน OTP
 module.exports.OTP = async (req, res)=>{
     try{
@@ -405,6 +407,7 @@ module.exports.OTP = async (req, res)=>{
                 .send({status:false, message:"มีบางอย่างผิดพลาด"})
     }
 }
+
 //ส่งประเภทสัญญา
 module.exports.contract = async (req, res)=>{
     try{
