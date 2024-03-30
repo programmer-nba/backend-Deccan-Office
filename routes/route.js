@@ -31,9 +31,6 @@ router.route('/ddsc-office/login').post(login.loginController)
 
 //TimeInOut
 router.route('/ddsc-office/time/morning/in').post(auth, time.timeInMorning)
-router.route('/ddsc-office/time/morning/out/:id').put(auth, time.timeOutMorning)
-router.route('/ddsc-office/time/afternoon/in/:id').put(auth, time.timeInAfternoon)
-router.route('/ddsc-office/time/afternoon/out/:id').put(auth, time.timeOutAfternoon)
 router.route('/ddsc-office/time/getme').get(auth, time.getMe)
 router.route('/ddsc-office/uptime/:id').put(authAdmin, time.updateTime)
 router.route('/ddsc-office/deltime/:id').delete(authAdmin, time.deleteTime)

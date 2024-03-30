@@ -10,7 +10,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone)
 
 //ตั้งค่าโซนเวลาท้องถิ่น
-const timeZone = 'UTC';
+const timeZone = 'Asia/Bangkok';
 dayjs.tz.setDefault(timeZone);
 
 const timeSchema = new Schema({
@@ -18,14 +18,8 @@ const timeSchema = new Schema({
     day:{ type: String, default: () => dayjs(Date.now()).format('DD') },
     mount:{ type: String, default: () => dayjs(Date.now()).format('MM') },
     year:{ type: String, default: () => dayjs(Date.now()).format('YYYY') },
-    morning_timeIn: { type: String, default: () => dayjs(Date.now()).format('HH:mm:ss') },
-    status_morningIn: {type:Boolean, default: true},
-    morning_timeOut: { type: String, default: "00:00:00" },
-    status_morningOut: {type:Boolean, default: false},
-    after_timeIn: { type: String, default: "00:00:00"},
-    status_afterIn: {type:Boolean, default: false},
-    after_timeOut: { type: String, default: "00:00:00"},
-    status_afterOut: {type:Boolean, default: false},
+    time: { type: String, default: "00:00:00" },
+    time_line: { type: String, require: false },
 },{timestamps:true});
 
 const timeInOut = mongoose.model("TimeInOut", timeSchema);
