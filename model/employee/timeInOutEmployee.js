@@ -9,24 +9,28 @@ const timezone = require('dayjs/plugin/timezone');
 dayjs.extend(utc);
 dayjs.extend(timezone)
 
+let dayjsTimestamp
 //ตั้งค่าโซนเวลาท้องถิ่น
-const timeZone = 'UTC';
-dayjs.tz.setDefault(timeZone);
+function updateRealTime() {
+    dayjsTimestamp = dayjs().tz('Asia/Bangkok');
+}
+// เรียกใช้ฟังก์ชัน updateRealTime() ทุก 1 วินาที
+setInterval(updateRealTime, 500);
 
 const timeSchema = new Schema({
     employee_id:{type:String, require: true},
-    day:{ type: String, default: () => dayjs(Date.now()).format('DD') },
-    mount:{ type: String, default: () => dayjs(Date.now()).format('MM') },
-    year:{ type: String, default: () => dayjs(Date.now()).format('YYYY') },
-    morning_timeIn: { type: String, default: () => dayjs(Date.now()).format('HH:mm:ss') },
-    status_morningIn: {type:Boolean, default: true},
-    morning_timeOut: { type: String, default: "00:00:00" },
-    status_morningOut: {type:Boolean, default: false},
-    after_timeIn: { type: String, default: "00:00:00"},
-    status_afterIn: {type:Boolean, default: false},
-    after_timeOut: { type: String, default: "00:00:00"},
-    status_afterOut: {type:Boolean, default: false},
+    day:{ type: String, default: () => dayjsTimestamp.format('DD') },
+    mount:{ type: String, default: () => dayjsTimestamp.format('MM') },
+    year:{ type: String, default: () => dayjsTimestamp.format('YYYY') },
+    time: { type: String, default: "00:00:00" },
+    time_line: { type: String, require: false },
 },{timestamps:true});
+
+timeSchema.pre('save', function (next) { 
+    const time = dayjsTimestamp.format('YYYY-MM-DD HH:mm:ss')
+    console.log(time)
+    next()
+})
 
 const timeInOut = mongoose.model("TimeInOut", timeSchema);
 

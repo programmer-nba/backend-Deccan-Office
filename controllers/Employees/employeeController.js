@@ -2,7 +2,7 @@ const { Employees, Validate } = require("../../model/employee/employee");
 const jwt = require("jsonwebtoken");
 var bcrypt = require("bcrypt");
 
-Post = async (req, res) => {
+exports.Post = async (req, res) => {
   try {
 
     console.log(req.body.userid)
@@ -46,7 +46,7 @@ Post = async (req, res) => {
   }
 };
 
-getAll = async (req, res) => {
+exports.getAll = async (req, res) => {
   try {
     // console.log(req.decoded.role.role.role)
     const getAllEmployee = await Employees.find(); //ดึงข้อมูลพนักงานทุกคนออกมา
@@ -67,7 +67,7 @@ getAll = async (req, res) => {
   }
 };
 
-getByID = async (req, res) => {
+exports.getByID = async (req, res) => {
   try{
     //const iden = req.body.iden_number //ดึงเฉพาะข้อมูลบัตรประชาชน
     const  getId = req.params.id;
@@ -87,28 +87,27 @@ getByID = async (req, res) => {
   }
 }
 
-getMe = async (req, res) => {
-  try{
-    //const iden = req.body.iden_number //ดึงเฉพาะข้อมูลบัตรประชาชน
-    const  getId = req.decoded.id
-    console.log(getId)
-    const findId= await Employees.findById(getId) // 1 คือให้แสดงข้อมูล 0 คือไม่ให้แสดงข้อมูล
-    if (findId){
-      return res
-        .status(200)
-        .send({status: true, data: findId})
-    } else {
-      return res
-        .status(400)
-        .send({ status: false, message: "ดึงข้อมูลไม่สำเร็จ" });
-    }
-  } catch(err){
-    console.log(err);
-    return res.status(500).send({ message: "มีบางอย่างผิดพลาด" });
+exports.getMe = async (req, res) => {
+  try {
+    let token = req.headers["auth-token"]
+    const secretKey = process.env.JWTPRIVATEKEY // ใช้ JWTPRIVATEKEY จาก .env
+    const decoded =  jwt.verify(token, secretKey)
+    return res.json({
+        message: 'This token',
+        status: true,
+        data: decoded
+    });
+  } catch (err) {
+      console.log(err);
+      return res.json({
+          message: 'Login failed: ' + err.message,
+          status: false,
+          data: null
+      });
   }
 }
 
-Update = async (req, res)=>{
+exports.Update = async (req, res)=>{
   try{
     const upID = req.params.id; //รับไอดีที่ต้องการอัพเดท
     console.log(req.body);
@@ -168,22 +167,15 @@ Update = async (req, res)=>{
   }
 }
 
-Delete = async (req, res)=>{
-  try{
-    const delID = req.params.id;
-    const delEmployee = await Employees.findOneAndDelete(delID)
-    if(delEmployee){
-      return res
-        .status(200)
-        .send({status: true, massge: "ลบข้อมูลสำเร็จ", data:delEmployee})
-    } else {
-      return res
-        .status(400)
-        .send({ status: false, message: "ลบข้อมูลไม่สำเร็จ" });
-    }
-  } catch(err){
-    console.log(err);
-    return res.status(500).send({ message: "มีบางอย่างผิดพลาด" });
-  }
+exports.Delete = async (req, res)=>{
+  try {
+    const employees = await Employees.findByIdAndDelete(req.params.id);
+    res.json({
+        message: 'Delete employees successfully!',
+        status: true,
+        data: employees
+    });
+} catch (err) {
+    next(err);
 }
-module.exports = { Post, getAll, getByID, Update, Delete, getMe };
+}

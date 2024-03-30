@@ -1,52 +1,62 @@
 const router = require('express').Router();
+
+//Controller
 const main = require('../controllers/Employees/employeeController');
 const regis = require('../controllers/Employees/registerController');
 const login = require('../controllers/Employees/loginController');
-const time = require('../controllers/Employees/timeInOutController')
+const time = require('../controllers/Employees/timeInOutController');
+
+const record = require('../controllers/record_report/record');
+
+const project = require('../controllers/project/project_detail');
+
+const Partner = require('../controllers/partners/partner');
+
+const admin = require('../controllers/Admin/admin.controller');
+
+const partnerProject = require('../controllers/project/projectCreate');
+
+//Auth
 const auth = require("../lib/auth");
 const authAdmin = require("../lib/authAdmin");
-const record = require('../controllers/record_report/record')
-const project = require('../controllers/project/project_detail')
-const Partner = require('../controllers/partners/partner')
-const admin = require('../controllers/Admin/admin.controller')
-const partnerProject = require('../controllers/project/projectCreate')
+
+
+
+
 
 //const bt = require('../controllers/Employees/breakTimeController')
 
 //CRUD employees table(Admin Only)
-router.route('/ddsc-office/post').post( authAdmin, main.Post) //ใช้กำหนด path ที่ต้องการทำให้ไม่ต้องไปประกาศใน File Server แล้ว
-router.route('/ddsc-office/get').get(authAdmin, main.getAll)
-router.route('/ddsc-office/getid/:id').get(authAdmin, main.getByID)
-router.route('/ddsc-office/update/:id').put(authAdmin, main.Update)
-router.route('/ddsc-office/del/:id').delete(authAdmin, main.Delete)
+// router.route('/ddsc-office/post').post( authAdmin, main.Post) //ใช้กำหนด path ที่ต้องการทำให้ไม่ต้องไปประกาศใน File Server แล้ว
+// router.route('/ddsc-office/get').get(authAdmin, main.getAll)
+// router.route('/ddsc-office/getid/:id').get(authAdmin, main.getByID)
+// router.route('/ddsc-office/update/:id').put(authAdmin, main.Update)
+// router.route('/ddsc-office/del/:id').delete(authAdmin, main.Delete)
 
 //GET ME
-router.route('/ddsc-office/getme').get(auth, main.getMe)
+// router.route('/ddsc-office/getme').get(auth, main.getMe)
 
 //Register
 // router.route('/ddsc-office/register').post( regis.CreateRegister )
 
 //Login
-router.route('/ddsc-office/login').post(login.loginController)
+// router.route('/ddsc-office/login').post(login.loginController)
 
 //TimeInOut
-router.route('/ddsc-office/time/morning/in').post(auth, time.timeInMorning)
-router.route('/ddsc-office/time/morning/out/:id').put(auth, time.timeOutMorning)
-router.route('/ddsc-office/time/afternoon/in/:id').put(auth, time.timeInAfternoon)
-router.route('/ddsc-office/time/afternoon/out/:id').put(auth, time.timeOutAfternoon)
-router.route('/ddsc-office/time/getme').get(auth, time.getMe)
-router.route('/ddsc-office/uptime/:id').put(authAdmin, time.updateTime)
-router.route('/ddsc-office/deltime/:id').delete(authAdmin, time.deleteTime)
-router.route('/ddsc-office/time/getday').get(auth, time.getTimeDay)
+// router.route('/ddsc-office/time/morning/in').post(auth, time.timeInMorning)
+// router.route('/ddsc-office/time/getme').get(auth, time.getMe)
+// router.route('/ddsc-office/uptime/:id').put(authAdmin, time.updateTime)
+// router.route('/ddsc-office/deltime/:id').delete(authAdmin, time.deleteTime)
+// router.route('/ddsc-office/time/getday').get(auth, time.getTimeDay)
 
 //breakTime
 //router.route('/ddsc-office/break').post( auth, bt.break_time )
 
 //record
-router.route('/ddsc-office/record/post').post(record.create)
-router.route('/ddsc-office/record/getAll').get(record.getAll)
-router.route('/ddsc-office/record/del/:id').delete(record.delend)
-router.route('/ddsc-office/record/update/:id').put(record.update)
+// router.route('/ddsc-office/record/post').post(record.create)
+// router.route('/ddsc-office/record/getAll').get(record.getAll)
+// router.route('/ddsc-office/record/del/:id').delete(record.delend)
+// router.route('/ddsc-office/record/update/:id').put(record.update)
 
 //project
 router.route('/ddsc-office/project/post').post(project.createProject)

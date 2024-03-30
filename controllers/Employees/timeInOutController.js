@@ -1,4 +1,4 @@
-const { timeInOut, Validate } = require("../../model/employee/timeInOutEmployee");
+const { timeInOut } = require("../../model/employee/timeInOutEmployee");
 const { Employees } = require("../../model/employee/employee");
 const dayjs = require("dayjs");
 const utc = require('dayjs/plugin/utc');
@@ -11,12 +11,11 @@ dayjs.extend(timezone);
 
 let dayjsTimestamp
 let dayTime
-let dayTimePlusOneHour
 
 //เมื่อใช้ dayjs และ ทำการใช้ format จะทำให้ค่าที่ได้เป็น String อัตโนมันติ
  function updateRealTime() {
     dayjsTimestamp = dayjs().tz('Asia/Bangkok');
-    dayTime = dayjsTimestamp.format('HH:mm:ss');
+    dayTime = dayjsTimestamp.format('08:00:00');
 }
 // เรียกใช้ฟังก์ชัน updateRealTime() ทุก 1 วินาที
 setInterval(updateRealTime, 1000);
@@ -27,24 +26,40 @@ timeInMorning = async (req, res)=>{
         const day = dayjs(Date.now()).format('DD')
         const mount = dayjs(Date.now()).format('MM')
         const year = dayjs(Date.now()).format('YYYY')
-
-        const findIden = await Employees.findOne({_id:id})
-          if (!findIden){
+        let time_line
+          if(dayTime >= '08:00:00' && dayTime <= '11:59:59'){
+            time_line = "เข้างานช่วงเช้า"
+          }else if(dayTime >= '12:00:00' && dayTime <= '12:30:00'){
+            time_line = "พักเที่ยง"
+          }else if(dayTime >= '12:31:00' && dayTime <= '18:00:00'){
+            time_line = "เข้างานช่วงบ่าย"
+          }else if(dayTime >= '18:01:00' && dayTime <= '23:59:59'){
+            time_line = "ลงเวลาออกงาน"
+          }else{
               return res
                       .status(400)
-                      .send({status:false, message:"ไม่พบไอดีของท่านของท่านในระบบ"})
+                      .send({status:false, message:"ยังไม่ถึงเวลาใช้งาน"})
           }
+ 
         const checkTime = await timeInOut.findOne(
             {employee_id:id,
             day:day,
             mount:mount,
-            year:year})
+            year:year,
+            time_line:time_line
+            })
           if(checkTime){
               return res
                       .status(400)
-                      .send({status:false, message:"ท่านได้ลงเวลาเข้างานช่วงเช้าวันนี้ไปแล้ว"})
+                      .send({status:false, message:`ท่านได้ลงเวลา ${time_line} วันนี้ไปแล้ว`})
           }
-        const createTime = await timeInOut.create({employee_id:id});
+        const createTime = await timeInOut.create(
+          {
+            employee_id:id,
+            time:dayTime,
+            time_line:time_line
+          });
+          // console.log(createTime)
           if (createTime){
               return res
                       .status(200)
@@ -58,118 +73,11 @@ timeInMorning = async (req, res)=>{
     }
 }
 
-timeOutMorning = async (req, res)=>{
-  try{       
-      const id = req.params.id
-    
-      const checkTime = await timeInOut.findOne(
-            {
-              _id:id,
-              status_morningOut: true
-            })
-        if(checkTime){
-            return res
-                    .status(400)
-                    .send({status:false, message:"ท่านได้ลงเวลาออกงานช่วงเช้าไปแล้ว"})
-        }
-      const timeOutMN = await timeInOut.findOneAndUpdate(
-          {_id:id},
-          {
-            morning_timeOut:dayTime,
-            status_morningOut: true
-          },{new:true})
-          if(!timeOutMN){
-            return res
-                    .status(404)
-                    .send({status:false, message:"ไม่สามารถลงเวลาออกตอนเช้าได้"})
-        }
-      return res
-              .status(200)
-              .send({status:true, data:timeOutMN})
-  } catch(err) {
-      console.log(err);
-      return res
-              .status(500)
-              .send({ status:false, message: "มีบางอย่างผิดพลาด" });
-  }
-}
-
-timeInAfternoon = async (req, res)=>{
-  try{       
-      const id = req.params.id
- 
-      const checkTime = await timeInOut.findOne(
-            {
-              _id:id,
-              status_afterIn: true
-            })
-        if(checkTime){
-            return res
-                    .status(400)
-                    .send({status:false, message:"ท่านได้ลงเวลาออกงานช่วงเช้าไปแล้ว"})
-        }
-      const timeInAT = await timeInOut.findOneAndUpdate(
-          {_id:id},
-          {
-            after_timeIn:dayTime,
-            status_afterIn: true
-          },{new:true})
-          if(!timeInAT){
-            return res
-                    .status(404)
-                    .send({status:false, message:"ไม่สามารถลงเวลาออกตอนเช้าได้"})
-        }
-      return res
-              .status(200)
-              .send({status:true, data:timeInAT})
-  } catch(err) {
-      console.log(err);
-      return res
-              .status(500)
-              .send({ status:false, message: "มีบางอย่างผิดพลาด" });
-  }
-}
-
-timeOutAfternoon = async (req, res)=>{
-  try{       
-      const id = req.params.id
-    
-      const checkTime = await timeInOut.findOne(
-            {
-              _id:id,
-              status_afterOut: true
-            })
-        if(checkTime){
-            return res
-                    .status(400)
-                    .send({status:false, message:"ท่านได้ลงเวลาออกงานช่วงเช้าไปแล้ว"})
-        }
-      const timeOutAT = await timeInOut.findOneAndUpdate(
-          {_id:id},
-          {
-            after_timeOut:dayTime,
-            status_afterOut: true
-          },{new:true})
-          if(!timeOutAT){
-            return res
-                    .status(404)
-                    .send({status:false, message:"ไม่สามารถลงเวลาออกตอนเช้าได้"})
-        }
-      return res
-              .status(200)
-              .send({status:true, data:timeOutAT})
-  } catch(err) {
-      console.log(err);
-      return res
-              .status(500)
-              .send({ status:false, message: "มีบางอย่างผิดพลาด" });
-  }
-}
-
 getMe = async (req, res)=>{
     try{
-      const time = req.decoded.id
-      const getTime = await timeInOut.find({employee_id:time})
+      const id = req.decoded.id
+ 
+      const getTime = await timeInOut.find({employee_id:id})
       if(getTime){
           return res
                   .status(200)
@@ -192,7 +100,7 @@ getTimeDay = async (req, res)=>{
     const mount = dayjs(Date.now()).format('MM')
     const year = dayjs(Date.now()).format('YYYY')
 
-    const findId = await timeInOut.findOne(
+    const findId = await timeInOut.find(
       {employee_id:id,
       day:day,
       mount:mount,
@@ -257,4 +165,4 @@ deleteTime = async (req, res)=>{
     }
 }
 
-module.exports = { timeInMorning,timeOutMorning, timeInAfternoon, timeOutAfternoon, getMe, updateTime, deleteTime, getTimeDay }
+module.exports = { timeInMorning, getMe, updateTime, deleteTime, getTimeDay }
