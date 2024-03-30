@@ -21,9 +21,6 @@ const auth = require("../lib/auth");
 const authAdmin = require("../lib/authAdmin");
 
 
-
-
-
 //const bt = require('../controllers/Employees/breakTimeController')
 
 //CRUD employees table(Admin Only)

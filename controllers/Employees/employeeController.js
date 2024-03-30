@@ -88,22 +88,23 @@ exports.getByID = async (req, res) => {
 }
 
 exports.getMe = async (req, res) => {
-  try {
-    let token = req.headers["auth-token"]
-    const secretKey = process.env.JWTPRIVATEKEY // ใช้ JWTPRIVATEKEY จาก .env
-    const decoded =  jwt.verify(token, secretKey)
-    return res.json({
-        message: 'This token',
-        status: true,
-        data: decoded
-    });
-  } catch (err) {
-      console.log(err);
-      return res.json({
-          message: 'Login failed: ' + err.message,
-          status: false,
-          data: null
-      });
+  try{
+    //const iden = req.body.iden_number //ดึงเฉพาะข้อมูลบัตรประชาชน
+    const  getId = req.decoded.id
+    console.log(getId)
+    const findId = await Employees.findById(getId) // 1 คือให้แสดงข้อมูล 0 คือไม่ให้แสดงข้อมูล
+    if (findId){
+      return res
+        .status(200)
+        .send({status: true, data: findId})
+    } else {
+      return res
+        .status(400)
+        .send({ status: false, message: "ดึงข้อมูลไม่สำเร็จ employeeController => getMe" });
+    }
+  } catch(err){
+    console.log(err);
+    return res.status(500).send({ message: "มีบางอย่างผิดพลาดใน employeeController => getMe" });
   }
 }
 
