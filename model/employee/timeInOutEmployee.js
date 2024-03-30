@@ -9,8 +9,13 @@ const timezone = require('dayjs/plugin/timezone');
 dayjs.extend(utc);
 dayjs.extend(timezone)
 
+let dayjsTimestamp
 //ตั้งค่าโซนเวลาท้องถิ่น
-dayjsTimestamp = dayjs().tz('Asia/Bangkok');
+function updateRealTime() {
+    dayjsTimestamp = dayjs().tz('Asia/Bangkok');
+}
+// เรียกใช้ฟังก์ชัน updateRealTime() ทุก 1 วินาที
+setInterval(updateRealTime, 500);
 
 const timeSchema = new Schema({
     employee_id:{type:String, require: true},
