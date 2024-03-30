@@ -22,6 +22,12 @@ const timeSchema = new Schema({
     time_line: { type: String, require: false },
 },{timestamps:true});
 
+timeSchema.pre('save', function (next) { 
+    const time = dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+    console.log(time)
+    next()
+})
+
 const timeInOut = mongoose.model("TimeInOut", timeSchema);
 
 module.exports = {timeInOut};
