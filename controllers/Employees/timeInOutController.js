@@ -165,4 +165,5 @@ deleteTime = async (req, res)=>{
     }
 }
 
+
 module.exports = { timeInMorning, getMe, updateTime, deleteTime, getTimeDay }

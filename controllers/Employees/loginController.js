@@ -7,10 +7,12 @@ loginController = async(req,res) =>{
         const UserID = req.body.userid //รับ UserId ที่ User กรอกมา
         const Password = req.body.password //รับ Password ที่ User กรอกมา
         Employees.findOne({
+
             $or: [
             { userid: UserID },
             { iden_number: UserID }
         ]}).then((Employees)=>{
+
             if(Employees){
                 let cmp = bcrypt.compare(Password, Employees.password).then((match)=>{
                     console.log(match)

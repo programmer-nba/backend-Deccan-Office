@@ -42,7 +42,9 @@ const EmployeeSchema = new Schema({
 
   email: { type: String, default:"", required: false },
 
+
   blacklist : {type: Boolean, default:false, required: false},
+
 
   salary: { type: Number, default:0, required: false },
   

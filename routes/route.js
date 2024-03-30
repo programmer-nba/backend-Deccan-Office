@@ -43,11 +43,13 @@ const authAdmin = require("../lib/authAdmin");
 // router.route('/ddsc-office/login').post(login.loginController)
 
 //TimeInOut
+
 // router.route('/ddsc-office/time/morning/in').post(auth, time.timeInMorning)
 // router.route('/ddsc-office/time/getme').get(auth, time.getMe)
 // router.route('/ddsc-office/uptime/:id').put(authAdmin, time.updateTime)
 // router.route('/ddsc-office/deltime/:id').delete(authAdmin, time.deleteTime)
 // router.route('/ddsc-office/time/getday').get(auth, time.getTimeDay)
+
 
 //breakTime
 //router.route('/ddsc-office/break').post( auth, bt.break_time )
