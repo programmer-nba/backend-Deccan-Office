@@ -4,11 +4,7 @@ var bcrypt = require("bcrypt");
 
 Post = async (req, res) => {
   try {
-    const {error} = Validate(req.body); //ตรวจสอบความถูกต้องของข้อมูลที่เข้ามา
-    if (error)
-      return res
-              .status(403)
-              .send({ status: false, message: error.details[0].message });
+
     console.log(req.body.userid)
     const duplicate = await Employees.findOne({ //ตรวจสอบบัตรประชาชนพนักงานว่ามีซ้ำกันหรือไม่
         $or: [
@@ -117,26 +113,45 @@ Update = async (req, res)=>{
     const upID = req.params.id; //รับไอดีที่ต้องการอัพเดท
     console.log(req.body);
     if(!req.body.password){ //กรณีที่ไม่ได้ยิง password
-      Employees.findByIdAndUpdate(upID,req.body, {new:true}).then((data) =>{
-        if (!data) {
-          res
-            .status(400)
-            .send({status:false, message: "ไม่สามารถแก้ไขผู้ใช้งานนี้ได้"})
-        }else {
-          res
-            .status(200)
-            .send({status:true, message: "อัพเดทข้อมูลแล้ว",data: data})
-        }
-      })
-      .catch((err)=>{
-        res
-          .status(500)
-          .send({status: false, message: "มีบางอย่างผิดพลาด"})
+      Employees.findByIdAndUpdate(
+            upID,
+            {
+              ...req.body,
+              "leave.business_leave": req.body.business_leave,
+              "leave.sick_leave": req.body.sick_leave,
+              "leave.annual_leave": req.body.annual_leave,
+              "leave.disbursement": req.body.disbursement,
+            }, 
+            {new:true}).then((data) =>{
+                if (!data) {
+                  res
+                    .status(400)
+                    .send({status:false, message: "ไม่สามารถแก้ไขผู้ใช้งานนี้ได้"})
+                }else {
+                  res
+                    .status(200)
+                    .send({status:true, message: "อัพเดทข้อมูลแล้ว",data: data})
+                }
+            })
+            .catch((err)=>{
+              res
+                .status(500)
+                .send({status: false, message: "มีบางอย่างผิดพลาด"})
     })
   } else { //กรณีที่ได้ยิง password
       const salt = await bcrypt.genSalt(Number(process.env.SALT));
       const hashPassword = await bcrypt.hash(req.body.password, salt);
-      const updateEmployee = await Employees.findByIdAndUpdate(upID, {...req.body,password: hashPassword}, {new:true}); //หา id ที่ต้องการจากนั้นทำการอัพเดท
+      const updateEmployee = await Employees.findByIdAndUpdate(
+              upID, 
+              {
+                ...req.body,
+                password: hashPassword,
+                "leave.business_leave": req.body.business_leave,
+                "leave.sick_leave": req.body.sick_leave,
+                "leave.annual_leave": req.body.annual_leave,
+                "leave.disbursement": req.body.disbursement,
+              }, 
+              {new:true}); //หา id ที่ต้องการจากนั้นทำการอัพเดท
     if(updateEmployee){
       return res
         .status(200)
@@ -144,7 +159,7 @@ Update = async (req, res)=>{
     } else {
       return res
         .status(400)
-        .send({ status: false, message: " อัพเดทข้อมูลไม่สำเร็จ" });
+        .send({ status: false, message: "อัพเดทข้อมูลไม่สำเร็จ" });
     }
   }
 } catch(err){

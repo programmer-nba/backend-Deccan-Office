@@ -39,6 +39,15 @@ const EmployeeSchema = new Schema({
   age: { type: Number, required: false },
 
   email: { type: String, required: false },
+
+  salary: { type: Number, required: false },
+  
+  leave:{
+      business_leave: { type: Number, default:7, required: false }, //ลากิจ
+      sick_leave: { type: Number, default:30, required: false }, //ลาป่วย
+      annual_leave: { type: Number, default:4, required: false }, //ลาพักร้อน
+      disbursement: { type: Number, default:3000, required: false } //การเบิกจ่าย
+  }
   
 }, { timestamps: true });
 
