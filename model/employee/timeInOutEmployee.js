@@ -10,20 +10,19 @@ dayjs.extend(utc);
 dayjs.extend(timezone)
 
 //ตั้งค่าโซนเวลาท้องถิ่น
-const timeZone = 'Asia/Bangkok';
-dayjs.tz.setDefault(timeZone);
+dayjsTimestamp = dayjs().tz('Asia/Bangkok');
 
 const timeSchema = new Schema({
     employee_id:{type:String, require: true},
-    day:{ type: String, default: () => dayjs(Date.now()).format('DD') },
-    mount:{ type: String, default: () => dayjs(Date.now()).format('MM') },
-    year:{ type: String, default: () => dayjs(Date.now()).format('YYYY') },
+    day:{ type: String, default: () => dayjsTimestamp.format('DD') },
+    mount:{ type: String, default: () => dayjsTimestamp.format('MM') },
+    year:{ type: String, default: () => dayjsTimestamp.format('YYYY') },
     time: { type: String, default: "00:00:00" },
     time_line: { type: String, require: false },
 },{timestamps:true});
 
 timeSchema.pre('save', function (next) { 
-    const time = dayjs(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+    const time = dayjsTimestamp.format('YYYY-MM-DD HH:mm:ss')
     console.log(time)
     next()
 })

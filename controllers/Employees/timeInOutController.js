@@ -11,7 +11,6 @@ dayjs.extend(timezone);
 
 let dayjsTimestamp
 let dayTime
-let dayTimePlusOneHour
 
 //เมื่อใช้ dayjs และ ทำการใช้ format จะทำให้ค่าที่ได้เป็น String อัตโนมันติ
  function updateRealTime() {
@@ -60,6 +59,7 @@ timeInMorning = async (req, res)=>{
             time:dayTime,
             time_line:time_line
           });
+          // console.log(createTime)
           if (createTime){
               return res
                       .status(200)
