@@ -214,5 +214,54 @@ deleteTime = async (req, res)=>{
     }
 }
 
+approveTime = async(req, res)=>{
+  try{
+    const { day, mount, year, time, id } = req.body
+      let time_line
+      if(time >= '08:00:00' && time <= '11:59:59'){
+        time_line = "เข้างานช่วงเช้า"
+      }else if(time >= '12:00:00' && time <= '12:30:00'){
+        time_line = "พักเที่ยง"
+      }else if(time >= '12:31:00' && time <= '18:00:00'){
+        time_line = "เข้างานช่วงบ่าย"
+      }else if(time >= '18:01:00' && time <= '23:59:59'){
+        time_line = "ลงเวลาออกงาน"
+      }
+      console.log(time_line)
+    const checkTime = await timeInOut.findOne(
+        {
+          employee_id:id,
+          day:day,
+          mount:mount,
+          year:year,
+          time_line:time_line
+        })
+      if(checkTime){
+          return res
+                  .status(400)
+                  .send({status:false, message:`ท่านได้ลงเวลา ${time_line} วันนี้ไปแล้ว`})
+      }
+    const createTime = await timeInOut.create(
+        {
+          employee_id:id,
+          day:day,
+          mount:mount,
+          year:year,
+          time:time,
+          time_line:time_line
+        });
+      // console.log(createTime)
+      if (createTime){
+          return res
+                  .status(200)
+                  .send({status:true, data: createTime})
+      }
+  }catch(err){
+    console.log(err)
+    return res
+            .status(500)
+            .send({status:false, message:err})
+  }
+}
 
-module.exports = { timeInMorning, getMe, updateTime, deleteTime, getTimeDay }
+module.exports = { timeInMorning, getMe, updateTime, deleteTime, getTimeDay, approveTime }

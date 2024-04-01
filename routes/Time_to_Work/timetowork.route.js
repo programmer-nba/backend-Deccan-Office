@@ -16,4 +16,6 @@ router.delete('/deltime/:id',authAdmin,TimeToWorkController.deleteTime)
 
 router.get('/time/getday',auth,TimeToWorkController.getTimeDay)
 
+router.post('/time/approve',auth,TimeToWorkController.approveTime)
+
 module.exports = router;

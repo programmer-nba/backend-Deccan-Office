@@ -4,9 +4,9 @@ const Joi = require("joi");
 // const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 const recordSchema = new Schema({
-    title: {type: String, require: true},
-    detail: {type: String, require: true},
-    number_report: {type: Number, require: false},
+    title: {type: String, require: false},
+    detail: {type: String, require: false},
+    number_report: {type: String, require: false},
     amount: {type: String, require: false},
     status: {type: String, default:"รออนุมัติ", require: false},
     time_in: {type: String, require: false},
@@ -15,22 +15,26 @@ const recordSchema = new Schema({
     date_out: {type: String, require: false}
 },{timestamps:true});
 
+recordSchema.pre('save',async function (next) {
+  try {
+    const user = this;
+    const findNumber = await recordReport.find();
+    const length = findNumber.length + 1;
+    
+    if(length <= 99){
+      // สร้างค่า number_report ใหม่โดยเพิ่มเลข 0 ข้างหน้าเสมอ ให้ความยาวเป็น 3 หลัก
+      user.number_report = String(length).padStart(3, '0');
+    }else{
+      user.number_report = String(parseInt(user.number_report) + 1);
+    }
+
+    next();
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+})
+
 const recordReport = mongoose.model("record", recordSchema);
 
-const Validate = (data)=>{
-    const schema = Joi.object({
-         title: Joi.string().required().label('กรุณากรอกหัวข้อบันทึกข้อความ'),
-         detail: Joi.string().required().label('กรุณากรอกรายละเอียด'),
-         number_report: Joi.number(),
-         amount: Joi.string().required().label('กรุณากรอกจำนวนคน'),
-         status: Joi.string(),
-         time_in: Joi.string().required().label('กรุณากรอกเวลาเข้า'),
-         time_out: Joi.string().required().label('กรุณากรอกเวลาออก'),
-         date_in: Joi.string(),
-         date_out: Joi.string(),
-         
-    });
-    return schema.validate(data);
-  };
-
-module.exports = { recordReport, Validate };
+module.exports = { recordReport};

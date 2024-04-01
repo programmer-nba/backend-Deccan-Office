@@ -1,14 +1,8 @@
 const { Employees } = require("../../model/employee/employee");
-const { recordReport, Validate } = require("../../model/record_report");
+const { recordReport } = require("../../model/record_report");
 
 create = async (req, res)=>{
     try{
-        const {error} = Validate(req.body); //ตรวจสอบความถูกต้องของข้อมูลที่เข้ามา
-            if (error){
-                return res
-                        .status(403)
-                        .send({ status: false, message: error.details[0].message });
-            }
         const record = await recordReport.create(req.body)
             if(record){
                 return res
