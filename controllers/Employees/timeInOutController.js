@@ -15,7 +15,7 @@ let dayTime
 //เมื่อใช้ dayjs และ ทำการใช้ format จะทำให้ค่าที่ได้เป็น String อัตโนมันติ
  function updateRealTime() {
     dayjsTimestamp = dayjs().tz('Asia/Bangkok');
-    dayTime = dayjsTimestamp.format('HH:mm:ss');
+    dayTime = dayjsTimestamp.format('12:02:00');
 }
 // เรียกใช้ฟังก์ชัน updateRealTime() ทุก 1 วินาที
 setInterval(updateRealTime, 1000);
@@ -76,12 +76,41 @@ timeInMorning = async (req, res)=>{
 getMe = async (req, res)=>{
     try{
       const id = req.decoded.id
- 
+      const data = []
       const getTime = await timeInOut.find({employee_id:id})
       if(getTime){
-          return res
-                  .status(200)
-                  .send({status: true, data: getTime})
+              const groupedData = getTime.reduce((acc, cur) => {
+                const key = cur.year + '/' + cur.mount + '/' + cur.day;
+                if (!acc[key]) {
+                    acc[key] = {
+                        day: key,
+                        morningIn: null,
+                        morningOut: null,
+                        afterIn: null,
+                        afterOut: null
+                    };
+                }
+            
+                // เช็คเวลาและกำหนดค่าให้กับแต่ละช่วงเวลา
+                if (cur.time_line === "เข้างานช่วงเช้า") {
+                    acc[key].morningIn = cur.time;
+                } else if (cur.time_line === "พักเที่ยง") {
+                    acc[key].morningOut = cur.time;
+                } else if (cur.time_line === "เข้างานช่วงบ่าย") {
+                    acc[key].afterIn = cur.time;
+                } else if (cur.time_line === "ลงเวลาออกงาน") {
+                    acc[key].afterOut = cur.time;
+                }
+            
+                return acc;
+              }, {});
+              // แปลง object เป็น array โดยดึงค่าจาก property และสร้าง object ใหม่
+            const data = Object.values(groupedData);
+
+            return res
+                    .status(200)
+                    .send({ status: true, data: data });
+
       }else{
           return res
                   .status(400)
@@ -105,10 +134,30 @@ getTimeDay = async (req, res)=>{
       day:day,
       mount:mount,
       year:year})
+      // console.log(findId)
     if(findId){
-      return res
-              .status(200)
-              .send({status:true, data: findId})
+        const data = {
+            day: `${findId[0].year}/${findId[0].mount}/${findId[0].day}`,
+            morningIn: null,
+            morningOut: null,
+            afterIn: null,
+            afterOut: null
+        }
+          findId.forEach(item => {
+            // ทำสิ่งที่ต้องการกับแต่ละรายการ (item)
+            if (item.time_line === 'เข้างานช่วงเช้า') {
+                data.morningIn = item.time;
+            } else if (item.time_line === 'พักเที่ยง') {
+                data.morningOut = item.time;
+            } else if (item.time_line === 'เข้างานช่วงบ่าย') {
+                data.afterIn = item.time;
+            } else if (item.time_line === 'ลงเวลาออกงาน') {
+                data.afterOut = item.time;
+            }
+          });
+        return res
+                .status(200)
+                .send({status:true, data: data})
     }else{
       return res
               .status(400)
