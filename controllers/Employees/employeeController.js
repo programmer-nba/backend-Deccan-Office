@@ -32,6 +32,7 @@ exports.Post = async (req, res) => {
       }); //เพิ่มพนักงานเข้าระบบ
     if (employee) {
       return res
+              .json({message : "เพิ่มพนักงานในระบบสำเร็จแล้ว !!"})
               .status(201)
               .send({ status: true, data: employee });
     }

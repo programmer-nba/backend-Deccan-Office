@@ -44,7 +44,6 @@ const EmployeeSchema = new Schema({
 
   blacklist : {type: Boolean, default:false, required: false},
 
-
   salary: { type: Number, default:0, required: false },
   
   leave:{

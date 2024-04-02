@@ -14,7 +14,7 @@ const LeaveSchema = new Schema({
     Employees_position : {type: String, required: false},
     Department : {type: String, required: false},
 
-    Leave_Type : {type : String, required: false}, // ประเภทลา
+    Leave_Type : {type : String, required: false,}, // ประเภทลา
     Details : {type: String, required: false},
 
     Date_Start_leave : {type: Date, required: false, default : Date.now}, //วันที่เริ่มลา

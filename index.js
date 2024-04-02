@@ -10,10 +10,11 @@ const mongoose = require("mongoose");
 const EmployeesRoutes = require('./routes/Employees/employees.route');
 const RecordsRoutes = require('./routes/Record/record.route');
 const TimeInOut = require('./routes/Time_to_Work/timetowork.route');
-
 const LeaveRoutes = require('./routes/Leave/leave.route');
 const PartnerRoutes = require('./routes/Partner/partner.route')
 const AdminRoutes = require('./routes/Admin/admin.route');
+const DocumentRoutes = require('./routes/Document/document.route');
+
 
 
 app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }));
@@ -31,7 +32,8 @@ app.use('/ddsc-office', RecordsRoutes);
 app.use('/ddsc-office', TimeInOut);
 app.use('/ddsc-office/leave', LeaveRoutes);
 app.use('/ddsc-office/admin',AdminRoutes);
-app.use('/ddsc-office/partners',PartnerRoutes)
+app.use('/ddsc-office/partners',PartnerRoutes);
+app.use('/ddsc-office/document',DocumentRoutes);
 
 
 const port = process.env.PORT || 9996;
