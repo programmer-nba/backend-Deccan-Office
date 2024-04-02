@@ -1,20 +1,20 @@
 const router = require('express').Router();
 
 //Controller
-const main = require('../controllers/Employees/employeeController');
-const regis = require('../controllers/Employees/registerController');
-const login = require('../controllers/Employees/loginController');
-const time = require('../controllers/Employees/timeInOutController');
+// const main = require('../controllers/Employees/employeeController');
+// const regis = require('../controllers/Employees/registerController');
+// const login = require('../controllers/Employees/loginController');
+// const time = require('../controllers/Employees/timeInOutController');
 
-const record = require('../controllers/record_report/record');
+// const record = require('../controllers/record_report/record');
 
 const project = require('../controllers/project/project_detail');
 
-const Partner = require('../controllers/partners/partner');
+// const Partner = require('../controllers/partners/partner');
 
-const admin = require('../controllers/Admin/admin.controller');
+// const admin = require('../controllers/Admin/admin.controller');
 
-const partnerProject = require('../controllers/project/projectCreate');
+// const partnerProject = require('../controllers/project/projectCreate');
 
 //Auth
 const auth = require("../lib/auth");
@@ -80,10 +80,10 @@ router.route('/ddsc-office/project/delTOR').delete(project.deleteTOR)
 // router.route('/ddsc-office/admin/partner/cancel/:id').put(authAdmin, admin.cancelPartner)
 
 //project partner
-router.route('/ddsc-office/project/partner/create').post(partnerProject.create)
-router.route('/ddsc-office/project/partner/del/:id').delete(partnerProject.delend)
-router.route('/ddsc-office/project/partner/getAll').get(partnerProject.getAll)
-router.route('/ddsc-office/project/partner/update/:id').put(partnerProject.updateProject)
+// router.route('/ddsc-office/project/partner/create').post(partnerProject.create)
+// router.route('/ddsc-office/project/partner/del/:id').delete(partnerProject.delend)
+// router.route('/ddsc-office/project/partner/getAll').get(partnerProject.getAll)
+// router.route('/ddsc-office/project/partner/update/:id').put(partnerProject.updateProject)
 
 //เพิ่มรูป partner
 // router.route('/ddsc-office/partners/upLogo/:id').put(Partner.logo)

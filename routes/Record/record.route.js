@@ -6,12 +6,14 @@ const Record = require('../../controllers/record_report/record');
 const auth = require("../../lib/auth");
 const authAdmin = require("../../lib/authAdmin");
 
-router.post('/record/post',Record.create);
+router.post('/record/post', auth,Record.create);
 
-router.get('/record/getAll',Record.getAll);
+router.get('/record/byid/:user_id', auth, Record.getbyid);
 
-router.put('/record/update/:id',Record.update);
+router.get('/record/getAll', authAdmin, Record.getAll);
 
-router.delete('/record/del/:id',Record.delend);
+router.put('/record/update/:id', authAdmin, Record.update);
+
+router.delete('/record/del/:id', authAdmin, Record.delend);
 
 module.exports = router;

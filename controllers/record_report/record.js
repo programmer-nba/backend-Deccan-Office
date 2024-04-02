@@ -1,5 +1,7 @@
 const { Employees } = require("../../model/employee/employee");
 const { recordReport } = require("../../model/record_report");
+const { recordReport, Validate } = require("../../model/record_report");
+const mongoose = require('mongoose');
 
 create = async (req, res)=>{
     try{
@@ -13,6 +15,26 @@ create = async (req, res)=>{
         return res  
                 .status(500)
                 .send({status:false, message:"มีบางอย่างผิดพลาด"})
+    }
+}
+
+getbyid = async (req, res) => {
+    try {
+        const { user_id } = req.params; // สมมติว่าคุณใช้ parameter ในการระบุ user_id
+        const get = await recordReport.find({ user_id: user_id });
+        if (get) {
+            return res
+                .status(200)
+                .send({ status: true, data: get });
+        } else {
+            return res
+                .status(400)
+                .send({ status: false, message: "ไม่สามารถเรียกดูข้อมูลได้" });
+        }
+    } catch (err) {
+        return res
+            .status(500)
+            .send({ status: false, message: "มีบางอย่างผิดพลาด" });
     }
 }
 
@@ -75,4 +97,4 @@ update = async (req, res)=>{
     }
 }
 
-module.exports = { create, getAll, delend, update }
+module.exports = { create, getAll, delend, update, getbyid}

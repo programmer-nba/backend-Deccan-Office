@@ -4,7 +4,6 @@ var bcrypt = require("bcrypt");
 
 exports.Post = async (req, res) => {
   try {
-
     console.log(req.body.userid)
     const duplicate = await Employees.findOne({ //ตรวจสอบบัตรประชาชนพนักงานว่ามีซ้ำกันหรือไม่
         $or: [
@@ -16,7 +15,7 @@ exports.Post = async (req, res) => {
       if (duplicate.iden_number === req.body.iden_number) {
         // ถ้าพบว่า iden_number ซ้ำ
         return res
-                .status(200)
+                .status(409)
                 .json({status:false, message: 'มีผู้ใช้บัตรประชาชนนี้ในระบบแล้ว'});
       } else if (duplicate.userid === req.body.userid) {
         // ถ้าพบว่า userid ซ้ำ
@@ -25,7 +24,6 @@ exports.Post = async (req, res) => {
                 .json({status:false, message: 'มีผู้ใช้ยูสเซอร์ไอดีนี้ในระบบแล้ว'});
       }
     }
-    
     const employee = await Employees.create(
       {
           ...req.body,
@@ -37,7 +35,6 @@ exports.Post = async (req, res) => {
               .status(201)
               .send({ status: true, data: employee });
     }
-
   } catch (err) {
       console.log(err);
       return res
@@ -91,7 +88,7 @@ exports.getMe = async (req, res) => {
   try{
     //const iden = req.body.iden_number //ดึงเฉพาะข้อมูลบัตรประชาชน
     const  getId = req.decoded.id
-    console.log(getId)
+    console.log(getId)  
     const findId = await Employees.findById(getId) // 1 คือให้แสดงข้อมูล 0 คือไม่ให้แสดงข้อมูล
     if (findId){
       return res
@@ -100,11 +97,11 @@ exports.getMe = async (req, res) => {
     } else {
       return res
         .status(400)
-        .send({ status: false, message: "ดึงข้อมูลไม่สำเร็จ employeeController => getMe" });
+        .send({ status: false, message: "ดึงข้อมูลไม่สำเร็จ" });
     }
   } catch(err){
     console.log(err);
-    return res.status(500).send({ message: "มีบางอย่างผิดพลาดใน employeeController => getMe" });
+    return res.status(500).send({ message: "มีบางอย่างผิดพลาดใน getMe" });
   }
 }
 

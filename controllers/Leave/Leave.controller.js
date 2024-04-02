@@ -171,6 +171,7 @@ exports.Delete = async (req, res, next) => {
 exports.calculateSick = async (req, res) => {
   try {
       const { Employees_id } = req.params;
+
       const stats = await Leave.aggregate([
           {
               $match: {
