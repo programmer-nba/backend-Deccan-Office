@@ -24,10 +24,16 @@ exports.Post = async (req, res) => {
                 .json({status:false, message: 'มีผู้ใช้ยูสเซอร์ไอดีนี้ในระบบแล้ว'});
       }
     }
+    let chose
+    if(!req.body.password){
+      chose = req.body.iden_number
+    }else{
+      chose = req.body.password
+    }
     const employee = await Employees.create(
       {
           ...req.body,
-          password:req.body.iden_number,
+          password:chose,
           role:req.body.role,
           position:req.body.position
       }); //เพิ่มพนักงานเข้าระบบ
