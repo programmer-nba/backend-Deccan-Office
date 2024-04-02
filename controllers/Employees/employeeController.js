@@ -4,7 +4,7 @@ var bcrypt = require("bcrypt");
 
 exports.Post = async (req, res) => {
   try {
-    console.log(req.body.userid)
+    // console.log(req.body.userid)
     const duplicate = await Employees.findOne({ //ตรวจสอบบัตรประชาชนพนักงานว่ามีซ้ำกันหรือไม่
         $or: [
           { iden_number: req.body.iden_number },
@@ -27,14 +27,18 @@ exports.Post = async (req, res) => {
     const employee = await Employees.create(
       {
           ...req.body,
+          password:req.body.iden_number,
           role:req.body.role,
           position:req.body.position
       }); //เพิ่มพนักงานเข้าระบบ
     if (employee) {
       return res
-              .json({message : "เพิ่มพนักงานในระบบสำเร็จแล้ว !!"})
               .status(201)
-              .send({ status: true, data: employee });
+              .send({ 
+                status: true, 
+                data: employee,
+                message : "เพิ่มพนักงานในระบบสำเร็จแล้ว !!"
+               });
     }
   } catch (err) {
       console.log(err);

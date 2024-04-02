@@ -29,11 +29,11 @@ timeInMorning = async (req, res)=>{
         let time_line
           if(dayTime >= '08:00:00' && dayTime <= '11:59:59'){
             time_line = "เข้างานช่วงเช้า"
-          }else if(dayTime >= '12:00:00' && dayTime <= '12:30:00'){
+          }else if(dayTime >= '12:00:00' && dayTime <= '12:30:59'){
             time_line = "พักเที่ยง"
-          }else if(dayTime >= '12:31:00' && dayTime <= '18:00:00'){
+          }else if(dayTime >= '12:31:00' && dayTime <= '17:59:59'){
             time_line = "เข้างานช่วงบ่าย"
-          }else if(dayTime >= '18:01:00' && dayTime <= '23:59:59'){
+          }else if(dayTime >= '18:00:00' && dayTime <= '23:59:59'){
             time_line = "ลงเวลาออกงาน"
           }else{
               return res
@@ -49,6 +49,15 @@ timeInMorning = async (req, res)=>{
             time_line:time_line
             })
           if(checkTime){
+              if(time_line == 'พักเที่ยง'){
+                return res
+                        .status(400)
+                        .send({status:false, message:`ท่านได้ลงเวลา ${time_line} วันนี้ไปแล้ว กรุณารอลงเวลาเข้าช่วงบ่ายตั้งแต่ 12.30 น. เป็นต้นไป`})
+              }else if(time_line == 'ลงเวลาออกงาน'){
+                  return res
+                          .status(400)
+                          .send({status:false, message:`ท่านได้ ${time_line} วันนี้ไปแล้ว`})
+              }
               return res
                       .status(400)
                       .send({status:false, message:`ท่านได้ลงเวลา ${time_line} วันนี้ไปแล้ว`})
