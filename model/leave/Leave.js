@@ -9,12 +9,12 @@ const LeaveSchema = new Schema({
     Leave_date : {type: Date, required: false, default: Date.now},
     Head_Leave_type : {type: String, required: false},
     Leave_head : {type: String, required: false},
-    
+
     Employees_name : {type: String, required: false},
     Employees_position : {type: String, required: false},
     Department : {type: String, required: false},
 
-    Leave_Type : {type : String, required: false, default : false}, // ประเภทลา
+    Leave_Type : {type : String, required: false}, // ประเภทลา
     Details : {type: String, required: false},
 
     Date_Start_leave : {type: Date, required: false, default : Date.now}, //วันที่เริ่มลา
@@ -38,7 +38,6 @@ const LeaveSchema = new Schema({
     Commander_Date : {type : String, required: false},
     Inspector : {type: String, required: false}, //ผู้ตรวจสอบ
     Inspector_Date : {type : String, required: false},
-
 
     Status : { type : String, require: true ,default : "Waiting"},  //Allow , Waiting , Not_Allow
 

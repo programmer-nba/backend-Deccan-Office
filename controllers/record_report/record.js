@@ -1,6 +1,5 @@
 const { Employees } = require("../../model/employee/employee");
 const { recordReport } = require("../../model/record_report");
-const { recordReport, Validate } = require("../../model/record_report");
 const mongoose = require('mongoose');
 
 create = async (req, res)=>{
