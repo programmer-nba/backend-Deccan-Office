@@ -6,20 +6,20 @@ const LeaveController = require('../../controllers/Leave/Leave.controller');
 const auth = require("../../lib/auth");
 const authAdmin = require("../../lib/authAdmin");
 
-router.get('/getall',LeaveController.getAll);
+router.get('/getall', authAdmin, LeaveController.getAll);
 
-router.get('/byid/:id',LeaveController.getByID);
+router.get('/byid/:id', auth, LeaveController.getByID);
 
-router.post('/insert', LeaveController.InsertLeave);
+router.post('/insert', auth, LeaveController.InsertLeave);
 
-router.put('/update/:id', LeaveController.Update);
+router.put('/update/:id', authAdmin, LeaveController.Update);
 
-router.delete('/delete/:id', LeaveController.Delete);
+router.delete('/delete/:id', authAdmin, LeaveController.Delete);
 
-router.get('/sick/:Employees_id', LeaveController.calculateSick);
+router.get('/sick/:Employees_id', auth, LeaveController.calculateSick);
 
-router.get('/businecss/:Employees_id', LeaveController.calculateBusinecss);
+router.get('/businecss/:Employees_id', auth, LeaveController.calculateBusinecss);
 
-router.get('/maternity/:Employees_id', LeaveController.calculateMaternity)
+router.get('/maternity/:Employees_id', auth, LeaveController.calculateMaternity)
 
 module.exports = router;

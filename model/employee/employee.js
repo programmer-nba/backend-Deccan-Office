@@ -56,14 +56,66 @@ const EmployeeSchema = new Schema({
   }
 }, { timestamps: true });
 
-EmployeeSchema.pre('save', function (next) {   //ทำ Middleware การ Hash ก่อน EmployeeScheme ที่ User กรอกมาจะ save
-  const user = this
-  bcrypt.hash(user.password, 10).then(hash => {
-    user.password = hash
-    next()
-  }).catch(error => {
-    console.error(error)
-  })
+EmployeeSchema.pre('save',async function (next) {   //ทำ Middleware การ Hash ก่อน EmployeeScheme ที่ User กรอกมาจะ save
+  try{
+    const user = this
+      bcrypt.hash(user.password, 10).then(hash => {
+          user.password = hash
+        }).catch(error => {
+          console.error(error)
+        })
+    const findNumber = await Employees.find();
+    console.log(findNumber.length)
+    const length = findNumber.length + 1;
+      // console.log(findNumber)
+    
+    let data
+      if (user.position == 'owner') {
+          user.employee_number = 'OWNER';
+          next();
+      }else if(user.position == 'admin'){
+          user.employee_number = 'ADMIN';
+          next();
+      } else {
+        if (user.position == 'programmer') {
+          data = 'DEV';
+        } else if (user.position == 'graphic') {
+          data = 'GRP';
+        } else if (user.position == 'accounting') {
+          data = 'ACC';
+        } else if (user.position == 'manager') {
+          data = 'MNG';
+        }
+        if (findNumber.length == 0) {
+          user.employee_number = data + String(length).padStart(6, '0');
+        } else {
+            const sortedEmployees = await findNumber.filter(employee => {
+              // ถ้า employee_number เป็นตัวเลขสามารถแปลงเป็นตัวเลขได้ เราจะเก็บรายการนี้
+              // console.log(employee)
+                if (!isNaN(parseInt(employee.employee_number.substring(3), 10))) {
+                    return true; // เก็บรายการที่เป็นตัวเลขเท่านั้น
+                }
+                return false; // กรองออกถ้าไม่สามารถแปลงเป็นตัวเลขได้
+            }).sort((a, b) => {
+                const numberA = parseInt(a.employee_number.substring(3), 10);
+                const numberB = parseInt(b.employee_number.substring(3), 10);
+                return numberB - numberA;
+            });
+            let number = 1;
+              if (sortedEmployees.length > 0) {
+                  number = parseInt(sortedEmployees[0].employee_number.substring(3), 10) + 1;
+              }
+            const stringNumber = String(number).padStart(6, '0');
+            console.log(stringNumber);
+            user.employee_number = data + stringNumber;
+        }
+        next();
+      }
+  }catch(err){
+    console.error(err);
+    next(err);
+  }
+  
 })
 
 const Employees = mongoose.model("employees", EmployeeSchema);

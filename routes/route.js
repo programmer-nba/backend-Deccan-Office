@@ -94,6 +94,6 @@ router.route('/ddsc-office/project/partner/update/:id').put(partnerProject.updat
 // router.route('/ddsc-office/partners/wait/:id').put(Partner.waitStatus)
 // router.route('/ddsc-office/partners/addSignature/:id').put(Partner.addsignature)
 // router.route('/ddsc-office/partners/OTP/:id').put(Partner.OTP)
-router.route('/ddsc-office/partners/contract/:id').put(Partner.contract)
+// router.route('/ddsc-office/partners/contract/:id').put(Partner.contract)
 
 module.exports = router;

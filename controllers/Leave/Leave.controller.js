@@ -1,5 +1,6 @@
 const { trusted } = require("mongoose");
 const Leave = require("../../model/leave/Leave");
+const dayjs = require('dayjs');
 
 exports.getAll = async (req, res) => {
   try {
@@ -16,94 +17,91 @@ exports.getAll = async (req, res) => {
 };
 
 exports.InsertLeave = async (req, res, next) => {
-  try {
-    const latestleave = await Leave.findOne().sort({ Leave_id: -1 }).limit(1);
+    try {
+        const latestleave = await Leave.findOne().sort({ Leave_id: -1 }).limit(1);
 
-    let leaveid = 1; // ค่าเริ่มต้นสำหรับ leaveid
-    if (latestleave) {
-      leaveid = parseInt(latestleave.Leave_id.slice(2)) + 1; // เพิ่มค่า leaveid
-    }
-    const leaveidString = leaveid.toString().padStart(4, '0'); // แปลง leaveid เป็นสตริงพร้อมเติมเลข 0 ข้างหน้า
+        let leaveid = 1; // ค่าเริ่มต้นสำหรับ leaveid
+        if (latestleave) {
+            leaveid = parseInt(latestleave.Leave_id.slice(2)) + 1; // เพิ่มค่า leaveid
+        }
+        const leaveidString = leaveid.toString().padStart(6, '0'); // แปลง leaveid เป็นสตริงพร้อมเติมเลข 0 ข้างหน้า
 
-    const { Employees_id, Leave_date, Leave_type, Leave_head, Employees_name, Employees_position, Department, Sick, Business, Maternity, Details, Day_Start_leave, Month_Start_leave, Year_Start_leave, Day_End_leave, Month_End_leave, Year_End_leave, Set_Day, Last_Sick, Last_Business, Last_Maternity, Last_Start_Day_Leave, Last_Start_Month_Leave, Last_Start_Year_Leave, Last_End_Day_Leave, Last_End_Month_Leave, Last_End_Year_Leave, Last_Set_Day, Contact, Tel, Name_again, Commander, Commander_Date, Inspector, Inspector_Date, Allow, Not_Allowed, Approver, Approver_Date } = req.body
+        const { Employees_id, Leave_date, Head_Leave_type, Leave_head, Employees_name, Employees_position, Department, Leave_Type, Details, Date_Start_leave, Date_End_leave, Last_Leave_Type, Last_Start_Date_Leave, Last_End_Date_Leave, Contact, Tel, Name_again, Commander, Commander_Date, Inspector, Inspector_Date, Status, Approver, Approver_Date } = req.body;
 
-    const leave = new Leave({
-        Leave_id : leaveidString,
-        Employees_id : Employees_id,
-        Leave_date : Leave_date,
-        Leave_type : Leave_type,
-        Leave_head : Leave_head,
-
-        Employees_name : Employees_name,
-        Employees_position:  Employees_position,
-        Department : Department,
-
-        Sick : Sick,
-        Business : Business,
-        Maternity : Maternity,
-
-        Details : Details,
+        const startDate = dayjs(Date_Start_leave);
+        const endDate = dayjs(Date_End_leave);
         
-        Day_Start_leave : Day_Start_leave,
-        Month_Start_leave : Month_Start_leave,
-        Year_Start_leave : Year_Start_leave,
+        const daysDiff = endDate.diff(startDate, 'day');
 
-        Day_End_leave : Day_End_leave,
-        Month_End_leave : Month_End_leave,
-        Year_End_leave : Year_End_leave,
-
-        Set_Day : Set_Day,
-
-        Last_Sick : Last_Sick,
-        Last_Business : Last_Business,
-        Last_Maternity : Last_Maternity,
+        const laststartDate = dayjs(Last_Start_Date_Leave);
+        const lastendDate = dayjs(Last_End_Date_Leave);
         
-        Last_Start_Day_Leave : Last_Start_Day_Leave,
-        Last_Start_Month_Leave : Last_Start_Month_Leave,
-        Last_Start_Year_Leave : Last_Start_Year_Leave,
+        const lastdaysDiff = lastendDate.diff(laststartDate, 'day')
 
-        Last_End_Day_Leave : Last_End_Day_Leave,
-        Last_End_Month_Leave : Last_End_Month_Leave,
-        Last_End_Year_Leave : Last_End_Year_Leave,
+        const leave = new Leave({
+            Leave_id: leaveidString,
+            Employees_id: Employees_id,
+            Year: (new Date().getFullYear() + 543).toString(), // เพิ่มฟิลด์ Year เข้าไปและใส่ค่าปีปัจจุบันในรูปแบบพ.ศ.
 
-        Last_Set_Day : Last_Set_Day,
+            Leave_date: Leave_date,
+            Head_Leave_type: Head_Leave_type,
+            Leave_head: Leave_head,
 
-        Contact : Contact,
-        Tel : Tel,
-        Name_again : Name_again,
-        Commander : Commander,
-        Commander_Date : Commander_Date,
-        Inspector : Inspector,
-        Inspector_Date : Inspector_Date,
-        Allow : Allow,
-        Not_Allowed : Not_Allowed,
-        Approver : Approver,
-        Approver_Date : Approver_Date,
-        Year: (new Date().getFullYear() + 543).toString() // เพิ่มฟิลด์ Year เข้าไปและใส่ค่าปีปัจจุบันในรูปแบบพ.ศ.
+            Employees_name: Employees_name,
+            Employees_position: Employees_position,
+            Department: Department,
 
-    })
-    const saved_leave = await leave.save()
-    if (!saved_leave) {
+            Leave_Type: Leave_Type,
+            Details: Details,
+
+            Date_Start_leave: Date_Start_leave,
+            Date_End_leave: Date_End_leave,
+
+            Last_Leave_Type: Last_Leave_Type,
+
+            Last_Start_Date_Leave: Last_Start_Date_Leave,
+            Last_End_Date_Leave: Last_End_Date_Leave,
+
+            Contact: Contact,
+            Tel: Tel,
+
+            Name_again: Name_again,
+
+            Commander: Commander,
+            Commander_Date: Commander_Date,
+            Inspector: Inspector,
+            Inspector_Date: Inspector_Date,
+
+            Status: Status,
+
+            Approver: Approver,
+            Approver_Date: Approver_Date,
+
+            Set_Day: daysDiff,
+            Last_Set_Day : lastdaysDiff
+        });
+
+        const saved_leave = await leave.save();
+        if (!saved_leave) {
+            return res.json({
+                message: 'ไม่สามารถบันทึกข้อมูลใบลาได้',
+                status: false,
+                data: null
+            });
+        }
         return res.json({
-            message: 'ไม่สามารถบันทึกข้อมูลพนักงานได้',
+            message: 'บันทึกข้อมูลใบลาสำเร็จ!',
+            status: true,
+            data: saved_leave
+        });
+    } catch (err) {
+        console.log(err);
+        return res.json({
+            message: err.message,
             status: false,
             data: null
-        })
+        });
     }
-    return res.json({
-        message: 'บันทึกข้อมูลพนักงานสำเร็จ!',
-        status: true,
-        data: saved_leave
-    })
-}
-catch (err) {
-    console.log(err)
-    return res.json({
-        message: err.message,
-        status: false,
-        data: null
-    })
-}
 };
 
 exports.getByID = async (req, res, next) => {
@@ -173,13 +171,14 @@ exports.Delete = async (req, res, next) => {
 exports.calculateSick = async (req, res) => {
   try {
       const { Employees_id } = req.params;
-
       const stats = await Leave.aggregate([
           {
               $match: {
                   Employees_id: Employees_id,
-                  Sick : true,
-                  Allow: true
+                  $and: [
+                    { Leave_Type: "Sick" },
+                    { Status: "Allow" }
+                  ]
               }
           },
           {
@@ -213,47 +212,48 @@ exports.calculateSick = async (req, res) => {
 };
 
 exports.calculateBusinecss = async (req, res) => {
-  try {
-      const { Employees_id } = req.params;
-
-      const stats = await Leave.aggregate([
-          {
+    try {
+        const { Employees_id } = req.params;
+        const stats = await Leave.aggregate([
+            {
               $match: {
                   Employees_id: Employees_id,
-                  Businecss : true,
-                  Allow: true
+                  $and: [
+                    { Leave_Type: "Business" },
+                    { Status: "Allow" }
+                  ]
               }
-          },
-          {
-              $group: {
-                  _id: '$Employees_id',
-                  totalSetDay: { $sum: '$Set_Day' }
-              }
-          }
-      ]);
-
-      if (stats.length === 0 || stats[0].totalSetDay <= 0) {
-          return res.json({
-              message: 'ผู้ใช้นี้ไม่มีวันที่เคยลากิจ',
-              status: false,
-              data: Employees_id + " ลาทั้งหมด " + 0 + " วัน"
-          });
-      } else {
-          return res.json({
-              message: 'คำนวณจำนวนจำนวนวันลาทั้งหมดสำเร็จ',
-              status: true,
-              data: stats
-          });
-      }
-  } catch (err) {
-      console.log(err);
-      return res.json({
-          message: 'เกิดข้อผิดพลาดในการคำนวณจำนวน Set_Day Businecss',
-          status: false
-      });
-  }
+            },
+            {
+                $group: {
+                    _id: '$Employees_id',
+                    totalSetDay: { $sum: '$Set_Day' }
+                }
+            }
+        ]);
+  
+        if (stats.length === 0 || stats[0].totalSetDay <= 0) {
+            return res.json({
+                message: 'ผู้ใช้นี้ไม่มีวันที่เคยลากิจ',
+                status: false,
+                data: Employees_id + " ลาทั้งหมด " + 0 + " วัน"
+            });
+        } else {
+            return res.json({
+                message: 'คำนวณจำนวนจำนวนวันลาทั้งหมดสำเร็จ',
+                status: true,
+                data: stats
+            });
+        }
+    } catch (err) {
+        console.log(err);
+        return res.json({
+            message: 'เกิดข้อผิดพลาดในการคำนวณจำนวน Set_Day Businecss',
+            status: false
+        });
+    }
 };
-
+  
 exports.calculateMaternity = async (req, res) => {
   try {
       const { Employees_id } = req.params;
@@ -262,8 +262,10 @@ exports.calculateMaternity = async (req, res) => {
           {
               $match: {
                   Employees_id: Employees_id,
-                  Maternity : true,
-                  Allow: true
+                  $and: [
+                    { Leave_Type: "Maternity" },
+                    { Status: "Allow" }
+                  ]
               }
           },
           {

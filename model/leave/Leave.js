@@ -5,42 +5,29 @@ const LeaveSchema = new Schema({
     Leave_id : {type: String, required: false}, // รันอัตโนมัติ
     Employees_id: { type: String, required: false },
     Year: {type: Number, required: false},
+
     Leave_date : {type: Date, required: false, default: Date.now},
-    Leave_type : {type: String, required: false},
+    Head_Leave_type : {type: String, required: false},
     Leave_head : {type: String, required: false},
+
     Employees_name : {type: String, required: false},
     Employees_position : {type: String, required: false},
     Department : {type: String, required: false},
 
-    Sick : {type : Boolean, required: false, default : false}, // ลาป่วย
-    Business : {type : Boolean, required: false, default : false}, // ลากิจ
-    Maternity : {type: Boolean, required: false, default : false}, // ลาคลอด
-
+    Leave_Type : {type : String, required: false, default : false}, // ประเภทลา
     Details : {type: String, required: false},
 
-    Day_Start_leave : {type: Number, required: false}, //วันที่เริ่มลา
-    Month_Start_leave : {type: String, required: false},
-    Year_Start_leave : {type: Number, required: false},
+    Date_Start_leave : {type: Date, required: false, default : Date.now}, //วันที่เริ่มลา
+    Date_End_leave : {type: Date, required: false, default : Date.now}, //ลาถึงวันที่
 
-    Day_End_leave : {type: Number, required: false}, //ลาถึงวันที่
-    Month_End_leave : {type: String, required: false},
-    Year_End_leave : {type: Number, required: false},
+    Set_Day : {type: Number, required: false ,default : 0}, //จำนวนวันที่ลา
 
-    Set_Day : {type: Number, required: false}, //จำนวนวันที่ลา
+    Last_Leave_Type : {type : String, required: false},
 
-    Last_Sick : {type: Boolean, required: false, default : false}, //ประเภทการลาครั้งสุดท้าย
-    Last_Business : {type : Boolean, required: false, default : false},
-    Last_Maternity : {type: Boolean, required: false, default : false},
+    Last_Start_Date_Leave : {type: Date, required: false}, //วันที่เริ่มลาครั้งล่าสุด
+    Last_End_Date_Leave : {type: Date, required: false}, //วันที่ลาลิ้นสุดครั้งล่าสุด
 
-    Last_Start_Day_Leave : {type: Number, required: false}, //วันที่เริ่มลาครั้งล่าสุด
-    Last_Start_Month_Leave : {type: String, required: false},
-    Last_Start_Year_Leave : {type: Number, required: false},
-
-    Last_End_Day_Leave : {type: Number, required: false}, //วันที่ลาลิ้นสุดครั้งล่าสุด
-    Last_End_Month_Leave : {type: String, required: false},
-    Last_End_Year_Leave : {type: Number, required: false},
-
-    Last_Set_Day : {type: Number, required: false}, // จำนวนการลาครั้งสุดท้าย
+    Last_Set_Day : {type: Number, required: false, default : 0}, //จำนวนการลาครั้งสุดท้าย
 
     Contact : {type: String, required: false},
     Tel : {type: String, required: false},
@@ -52,8 +39,7 @@ const LeaveSchema = new Schema({
     Inspector : {type: String, required: false}, //ผู้ตรวจสอบ
     Inspector_Date : {type : String, required: false},
 
-    Allow : {type: Boolean, required: false, default : false}, // การอนุญาติ
-    Not_Allowed : {type: Boolean, required: false, default : false},
+    Status : { type : String, require: true ,default : "Waiting"},  //Allow , Waiting , Not_Allow
 
     Approver : {type: String, required: false}, //ผู้อนุมัติ
     Approver_Date : {type: String, require: false}
