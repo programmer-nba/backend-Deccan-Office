@@ -205,6 +205,12 @@ exports.Delete = async (req, res)=>{
 exports.getMember = async (req, res)=>{
   try{
       const position = req.decoded.position
+      const role = req.decoded.role
+        if(role != 'head_department'){
+            return res
+                    .status(404)
+                    .send({status:false, message:"ไม่สามารถใช้งานได้"})
+        }
       const findMember = await Employees.find(
           {
             role:'employee',
