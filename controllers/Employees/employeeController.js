@@ -188,3 +188,41 @@ exports.Delete = async (req, res)=>{
     next(err);
 }
 }
+
+exports.Delete = async (req, res)=>{
+  try {
+    const employees = await Employees.findByIdAndDelete(req.params.id);
+    res.json({
+        message: 'Delete employees successfully!',
+        status: true,
+        data: employees
+    });
+} catch (err) {
+    next(err);
+}
+}
+
+exports.getMember = async (req, res)=>{
+  try{
+      const position = req.decoded.position
+      const findMember = await Employees.find(
+          {
+            role:'employee',
+            position:position
+          }
+      )
+        if (!findMember || findMember.length === 0) {
+          return res.status(400).send({
+              status: false,
+              message: "ไม่สามารถค้นหาสมาชิกได้"
+            });
+        }
+      return res
+              .status(200)
+              .send({status:true, message:"สำเร็จ", data:findMember})
+  }catch(err){
+      return res
+              .status(500)
+              .send({status:false, message:err})
+  }
+}

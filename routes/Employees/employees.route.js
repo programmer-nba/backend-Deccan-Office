@@ -13,6 +13,8 @@ router.get('/getid/:id',authAdmin,EmployeesController.getByID);
 
 router.get('/getme',auth,EmployeesController.getMe)
 
+router.get('/get/member',auth,EmployeesController.getMember)
+
 router.post('/post',authAdmin,EmployeesController.Post);
 
 router.put('/update/:id',authAdmin,EmployeesController.Update);
