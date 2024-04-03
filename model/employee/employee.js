@@ -82,7 +82,7 @@ EmployeeSchema.pre('save',async function (next) {   //ทำ Middleware กา�
         } else if (user.position == 'accounting') {
           data = 'ACC';
         } else if (user.position == 'manager') {
-          data = 'MNG';
+          data = 'MGR';
         }
         if (findNumber.length == 0) {
           user.employee_number = data + String(length).padStart(6, '0');
