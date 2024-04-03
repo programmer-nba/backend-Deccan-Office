@@ -1,4 +1,5 @@
 const Document = require('../../model/document/Document')
+const dayjs = require('dayjs');
 
 //Get Document
 exports.getdocument = async (req, res, next) => {
@@ -39,6 +40,25 @@ exports.getdocumentById = async (req, res, next) => {
     }
 };
 
+// Get Document By Requester
+exports.getdocumentByRequester = async (req, res, next) => {
+    try {
+        const documents = await Document.find({ Requester: req.params.Requester });
+        return res.json({
+            message: 'Get documents by Requester successfully!',
+            status: true,
+            data: documents
+        });
+    } catch (err) {
+        console.log(err);
+        return res.json({
+            message: 'Can not get documents by Requester: ' + err.message,
+            status: false,
+            data: null
+        });
+    }
+};//ใช้งานได้
+
 // Get Document By Status
 exports.getdocumentByStatus = async (req, res, next) => {
     try {
@@ -68,62 +88,61 @@ exports.InsertDocument = async (req, res, next) => {
             docid = parseInt(latestDoc.Document_id.slice(2)) + 1; // เพิ่มค่า docid
         }
         const docidString = docid.toString().padStart(5, '0'); // แปลง docid เป็นสตริงพร้อมเติมเลข 0 ข้างหน้า
-        const { Doc_Date, Headers, To, Detail, Employees, Head_department, Manager, CEO } = req.body;
+        const { Doc_Date, Headers, To, Timein, Timeout, Detail, Requester } = req.body;
+
         const document = new Document({
             Document_id: docidString,
-            Year: (new Date().getFullYear() + 543).toString(),
             Doc_Date: Doc_Date,
             Headers: Headers,
             To: To,
-            Employees: {
-                name: Employees.name,
-                position: Employees.position,
-                id: Employees.id
-            },
-            Head_department: {
-                head_name: Head_department.head_name,
-                head_position: Head_department.head_position,
-                head_id: Head_department.head_id
-            },
-            Manager: {
-                manager_name : Manager.manager_name,
-                manager_position : Manager.manager_position,
-                manager_id : Manager.manager_id
-            },
-            CEO: {
-                ceo_name: CEO.ceo_name,
-                ceo_position: CEO.ceo_position,
-                ceo_id: CEO.ceo_id
-            }
+            Requester: Requester
         });
-        Detail.forEach(item => {
-            document.Detail.push({
-                detail: item.detail,
-                price: item.price,
-                qty: item.qty
+        if (req.body.OT && req.body.OT.Timein && req.body.OT.Timeout) { //เมื่อไม่มีการส่งค่าของ OT มาจะไม่ทำขั้นตอนนี้
+            const timein = dayjs(req.body.OT.Timein);
+            const timeout = dayjs(req.body.OT.Timeout);
+            const totalHours = timeout.diff(timein, 'hour');
+            const totalMinutes = timeout.diff(timein, 'minute') % 60;
+            const totalSeconds = timeout.diff(timein, 'second') % 60;
+            const totalOTInSeconds = totalHours * 3600 + totalMinutes * 60 + totalSeconds;
+        
+            document.OT = {
+                Timein: timein,
+                Timeout: timeout,
+                Total_OT: {
+                    totaltime: (totalHours + " ชั่วโมง " + totalMinutes + " นาที " + totalSeconds + " วินาที"),
+                    totalseconds: totalOTInSeconds
+                }
+            };
+        }
+        if (Array.isArray(Detail) && Detail.length > 0) { //เมื่อไม่มีการส่งค่าของ Detail มาจะไม่ทำขั้นตอนนี้
+            Detail.forEach(item => {
+                document.Detail.push({
+                    detail: item.detail,
+                    price: item.price,
+                    qty: item.qty
+                });
             });
-        });
-        const saved_document = await document.save()
+        }
+        const saved_document = await document.save();
         if (!saved_document) {
             return res.json({
                 message: 'can not save document',
                 status: false,
                 data: null
-            })
+            });
         }
         return res.json({
             message: 'Insert document successfully!',
             status: true,
             data: saved_document
-        })
-    }
-    catch (err){
-        console.log (err)
+        });
+    } catch (err) {
+        console.log(err);
         return res.json({
-            message: 'Can not insert document : '+ err.message,
+            message: 'Can not insert document : ' + err.message,
             status: false,
-            data : null
-        })
+            data: null
+        });
     }
 };
 

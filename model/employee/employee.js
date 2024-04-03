@@ -36,7 +36,7 @@ const EmployeeSchema = new Schema({
 
   postcode: { type: String, default:"", required: false },
 
-  birthday: { type: Date, default:null, required: false },
+  birthday: { type: String, default:"", required: false },
 
   age: { type: Number, default:0, required: false },
 

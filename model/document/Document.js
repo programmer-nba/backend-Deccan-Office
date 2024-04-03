@@ -3,38 +3,41 @@ const Schema = mongoose.Schema;
 
 const DocumentSchema = new Schema({
     Document_id : {type: String, required: false}, // รันอัตโนมัติ
-    Year: {type: Number, required: false},
     Doc_Date: {type: Date, required:false, default : Date.now},
-    Headers : {type: String, required: false},//เรื่อง
-    To : {type: String, required: false },
+    Headers : {type: String, required: false, default : ""},//เรื่อง
+    To : {type: String, required: false, default : ""},
 
-    Status : {type : Number , required : false , default : 1},// 1 = รอหัวหน้า  /  2 = รอผู้จัดการ  /  3 = รอกรรมการ  /  4 = อนุมัติแล้ว
-                                                              // หัวหน้าเห็นได้แค่ 1  ผู้จัดการเห็นได้แค่ 2  กรรมการเห็นทั้งหมด 
+    OT : {
+        Timein : {type : Date, required : false},
+        Timeout : {type : Date, required : false},
+        Total_OT : {
+            totaltime : { type : String, required : false},//รวมเป็น HH : MM : SS
+            totalseconds : { type : Number, required : false} //รวมเป็นวินาที
+        } // รวมชั่วโมงการทำ OT
+    },
 
     Detail : [{
-        detail : {type : String, required : false},
-        price : {type : Number, required : false},
-        qty : {type : Number, required : false}
+        detail : {type : String, required : false, default : ""},
+        price : {type : Number, required : false, default : 0},
+        qty : {type : Number, required : false, default : 0}
     }],
-    Employees : {
-        name : {type : String, required : false},
-        position : {type : String, require : false},
-        id : {type : String, required : false}
-    },
+
+    Requester : { type : String, required : false, default : ""}, //ผู้ร้องขอ
+
+    Status : {type : Number , required : false , default : 1},// 1 = รอหัวหน้า  /  2 = รอผู้จัดการ  /  3 = รอกรรมการ  /  4 = อนุมัติแล้ว
+    // หัวหน้าเห็นได้แค่ 1  ผู้จัดการเห็นได้แค่ 2  กรรมการเห็นทั้งหมด 
+ 
     Head_department : {
-        head_name : {type : String, required : false},
-        head_position : {type : String, required : false},
-        head_id : {type : String, required : false}
+        head_id : {type : String, required : false, default : ""},
+        head_date : {type : String, required : false, default : null}
     },
     Manager : {
-        manager_name : {type : String, required : false},
-        manager_position : {type : String, required : false},
-        manager_id : {type : String, required : false}
+        manager_id : {type : String, required : false, default : ""},
+        manager_date : {type : String, required : false, default : null}
     },
     CEO : {
-        ceo_name : {type : String, required : false},
-        ceo_position : {type : String, required : false},
-        ceo_id : {type : String, required : false}
+        ceo_id : {type : String, required : false, default : ""},
+        ceo_date : {type : String, required : false, default : null}
     }
 
 }, { versionKey: false });
