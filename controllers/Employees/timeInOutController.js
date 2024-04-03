@@ -18,7 +18,7 @@ let dayTime
     dayTime = dayjsTimestamp.format('HH:mm:ss');
 }
 // เรียกใช้ฟังก์ชัน updateRealTime() ทุก 1 วินาที
-setInterval(updateRealTime, 1000);
+setInterval(updateRealTime, 500);
 
 timeInMorning = async (req, res)=>{
     try{       
@@ -29,9 +29,9 @@ timeInMorning = async (req, res)=>{
         let time_line
           if(dayTime >= '08:00:00' && dayTime <= '11:59:59'){
             time_line = "เข้างานช่วงเช้า"
-          }else if(dayTime >= '12:00:00' && dayTime <= '12:30:59'){
+          }else if(dayTime >= '12:00:00' && dayTime <= '12:29:59'){
             time_line = "พักเที่ยง"
-          }else if(dayTime >= '12:31:00' && dayTime <= '17:59:59'){
+          }else if(dayTime >= '12:30:00' && dayTime <= '17:59:59'){
             time_line = "เข้างานช่วงบ่าย"
           }else if(dayTime >= '18:00:00' && dayTime <= '23:59:59'){
             time_line = "ลงเวลาออกงาน"
@@ -50,9 +50,9 @@ timeInMorning = async (req, res)=>{
             })
           if(checkTime){
               if(time_line == 'พักเที่ยง'){
-                return res
-                        .status(400)
-                        .send({status:false, message:`ท่านได้ลงเวลา ${time_line} วันนี้ไปแล้ว กรุณารอลงเวลาเข้าช่วงบ่ายตั้งแต่ 12.30 น. เป็นต้นไป`})
+                  return res
+                          .status(400)
+                          .send({status:false, message:`ท่านได้ลงเวลา ${time_line} วันนี้ไปแล้ว กรุณารอลงเวลาเข้าช่วงบ่ายตั้งแต่ 12.30 น. เป็นต้นไป`})
               }else if(time_line == 'ลงเวลาออกงาน'){
                   return res
                           .status(400)
@@ -61,6 +61,41 @@ timeInMorning = async (req, res)=>{
               return res
                       .status(400)
                       .send({status:false, message:`ท่านได้ลงเวลา ${time_line} วันนี้ไปแล้ว`})
+          }else if(!checkTime){
+              if(time_line == 'พักเที่ยง'){
+                  const findMorning = await timeInOut.findOne(
+                    {
+                      employee_id:id,
+                      day:day,
+                      mount:mount,
+                      year:year,
+                      time_line:'เข้างานช่วงเช้า'
+                    }
+                  )
+                  if(!findMorning){
+                      return res
+                              .status(400)
+                              .send({status:false, message:"ท่านยังไม่ได้ลงเวลาเข้างานช่วงเช้า กรุณารอเข้างานช่วงบ่าย ตั้งแต่ 12.30 น. เป็นต้นไป"})
+                  }
+              }else if(time_line == 'ลงเวลาออกงาน'){
+                  const findTime = await timeInOut.findOne(
+                    {
+                      employee_id:id,
+                      day:day,
+                      mount:mount,
+                      year:year,
+                      $or:[
+                        {time_line:'เข้างานช่วงเช้า'},
+                        {time_line:'เข้างานช่วงบ่าย'}
+                      ]
+                    }
+                  )
+                  if(!findTime){
+                      return res
+                              .status(400)
+                              .send({status:false, message:"ท่านยังไม่ได้ลงเวลาเข้างานช่วงเช้าและช่วงบ่าย จึงไม่สามารถลงเวลาออกงานได้"})
+                  }
+              }
           }
         const createTime = await timeInOut.create(
           {
