@@ -291,7 +291,7 @@ exports.DeleteDetail = async (req, res, next) => {
 exports.updateDocumentHeadDepartment = async (req, res, next) => {
     try {
         const { id } = req.params; // รับ ID ของเอกสารที่ต้องการอัปเดต
-        const { head_name, head_position, head_id } = req.body; // รับข้อมูล Head_department ที่ต้องการอัปเดต
+        const { head_id } = req.body; // รับข้อมูล Head_department ที่ต้องการอัปเดต
     
         // ทำการตรวจสอบว่าเอกสารที่ต้องการอัปเดตอยู่หรือไม่
         const document = await Document.findById(id);
@@ -300,13 +300,13 @@ exports.updateDocumentHeadDepartment = async (req, res, next) => {
         }
     
         // ทำการอัปเดตข้อมูลของ Head_department ในเอกสาร
-        document.Head_department.head_name = head_name;
-        document.Head_department.head_position = head_position;
         document.Head_department.head_id = head_id;
+        document.Head_department.head_date = Date.now();
 
         // เพิ่มการอัปเดตข้อมูล Status เป็น 2
         document.Status = 2;
     
+        console.log("กำลังลงชื่อ Head_department");
         // บันทึกการเปลี่ยนแปลงลงในฐานข้อมูล
         await document.save();
     
@@ -324,7 +324,7 @@ exports.updateDocumentHeadDepartment = async (req, res, next) => {
 exports.updateDocumentManager = async (req, res, next) => {
     try {
         const { id } = req.params; // รับ ID ของเอกสารที่ต้องการอัปเดต
-        const { manager_name, manager_position, manager_id, Status} = req.body; // รับข้อมูล CEO ที่ต้องการอัปเดต
+        const { manager_id, manager_date} = req.body; // รับข้อมูล CEO ที่ต้องการอัปเดต
     
         // ทำการตรวจสอบว่าเอกสารที่ต้องการอัปเดตอยู่หรือไม่
         const document = await Document.findById(id);
@@ -333,14 +333,13 @@ exports.updateDocumentManager = async (req, res, next) => {
         }
     
         // ทำการอัปเดตข้อมูลของ CEO ในเอกสาร
-        document.Manager.manager_name = manager_name;
-        document.Manager.manager_position = manager_position;
         document.Manager.manager_id = manager_id;
-      
+        document.Manager.manager_date = manager_date;
+        
         // เพิ่มการอัปเดตข้อมูล Status เป็น 3
         document.Status = 3;
 
-  
+        console.log("กำลังลงชื่อ Manager")
         // บันทึกการเปลี่ยนแปลงลงในฐานข้อมูล
         await document.save();
     
@@ -358,23 +357,22 @@ exports.updateDocumentManager = async (req, res, next) => {
 exports.updateDocumentCEO = async (req, res, next) => {
     try {
         const { id } = req.params; // รับ ID ของเอกสารที่ต้องการอัปเดต
-        const { ceo_name, ceo_position, ceo_id, Status} = req.body; // รับข้อมูล CEO ที่ต้องการอัปเดต
-    
+        const { ceo_id, ceo_date} = req.body; // รับข้อมูล CEO ที่ต้องการอัปเดต
+
         // ทำการตรวจสอบว่าเอกสารที่ต้องการอัปเดตอยู่หรือไม่
         const document = await Document.findById(id);
         if (!document) {
             return res.status(404).json({ message: 'Document not found' });
         }
-    
+
         // ทำการอัปเดตข้อมูลของ CEO ในเอกสาร
-        document.CEO.ceo_name = ceo_name;
-        document.CEO.ceo_position = ceo_position;
         document.CEO.ceo_id = ceo_id;
+        document.CEO.ceo_date = ceo_date;
       
         // เพิ่มการอัปเดตข้อมูล Status เป็น 4
         document.Status = 4;
 
-  
+        console.log("กำลังลงชื่อ CEO");
         // บันทึกการเปลี่ยนแปลงลงในฐานข้อมูล
         await document.save();
     
