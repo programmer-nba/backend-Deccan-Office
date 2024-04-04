@@ -10,7 +10,7 @@ const authAdmin = require("../../lib/authAdmin");
 router.get('/getall', DocumentController.getdocument);
 router.get('/byid/:id', DocumentController.getdocumentById);
 router.get('/bystatus/:Status', DocumentController.getdocumentByStatus);
-router.get('/byreq/:Employees', DocumentController.getdocumentByRequester);
+router.get('/byreq/:employee_id', DocumentController.getdocumentByRequester);
 
 //Post
 router.post('/insert', auth, DocumentController.InsertDocument); // เพิ่ม Document

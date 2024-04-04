@@ -51,7 +51,7 @@ exports.getdocumentById = async (req, res, next) => {
 // Get Document By Requester
 exports.getdocumentByRequester = async (req, res, next) => {
     try {
-        const documents = await Document.find({ employee_id: req.params.employee_id });
+        const documents = await Document.find({ 'Employee.employee_id': req.params.employee_id });
         return res.json({
             message: 'Get documents by employee_id successfully!',
             status: true,
