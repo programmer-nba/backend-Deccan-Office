@@ -50,7 +50,10 @@ const EmployeeSchema = new Schema({
       business_leave: { type: Number, default:7, required: false }, //ลากิจ
       sick_leave: { type: Number, default:30, required: false }, //ลาป่วย
       annual_leave: { type: Number, default:4, required: false }, //ลาพักร้อน
+      maternity_leave : {type: Number, default: 0, required: false},
+      ordination_leave : {type: Number, default: 0 , required: false},
       disbursement: { type: Number, default:3000, required: false } //การเบิกจ่าย
+      
   }
 }, { timestamps: true });
 

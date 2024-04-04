@@ -51,16 +51,16 @@ exports.getdocumentById = async (req, res, next) => {
 // Get Document By Requester
 exports.getdocumentByRequester = async (req, res, next) => {
     try {
-        const documents = await Document.find({ Requester: req.params.Requester });
+        const documents = await Document.find({ employee_id: req.params.employee_id });
         return res.json({
-            message: 'Get documents by Requester successfully!',
+            message: 'Get documents by employee_id successfully!',
             status: true,
             data: documents
         });
     } catch (err) {
         console.log(err);
         return res.json({
-            message: 'Can not get documents by Requester: ' + err.message,
+            message: 'Can not get documents by employee_id: ' + err.message,
             status: false,
             data: null
         });
@@ -96,7 +96,7 @@ exports.InsertDocument = async (req, res, next) => {
             docid = parseInt(latestDoc.Document_id.slice(2)) + 1; // เพิ่มค่า docid
         }
         const docidString = docid.toString().padStart(5, '0'); // แปลง docid เป็นสตริงพร้อมเติมเลข 0 ข้างหน้า
-        const { Doc_Date, Headers, To, Timein, Timeout, Detail, Requester } = req.body;
+        const { Doc_Date, Headers, To, Timein, Timeout, Detail } = req.body;
 
         const document = new Document({
             Document_id: docidString,
