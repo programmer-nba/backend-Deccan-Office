@@ -267,7 +267,7 @@ exports.calculateSick = async (req, res) => {
         status: false
       });
     }
-  };
+};
   
 //คำนวนวันที่ลากิจตาม id พนักงาน
 exports.calculateBusinecss = async (req, res) => {
@@ -351,4 +351,47 @@ exports.calculateMaternity = async (req, res) => {
           status: false
       });
   }
-};   
+};
+
+//คำนวนวันที่ลาบวชตาม id พนักงาน
+exports.calculateOrdination = async (req, res) => {
+    try {
+        const { Employees_id } = req.params;
+  
+        const stats = await Leave.aggregate([
+          {
+              $match: {
+                Employees_id: Employees_id,
+                Leave_Type: "Ordination",
+                "Status.Status_name": "Allow"
+              }
+            },
+          {
+            $group: {
+              _id: "$Employees_id",
+              totalSetDay: { $sum: "$Set_Day" }
+            }
+          }
+      ]);
+  
+        if (stats.length === 0 || stats[0].totalSetDay <= 0) {
+            return res.json({
+                message: 'ผู้ใช้นี้ไม่มีวันที่เคยลาบวช',
+                status: false,
+                data: Employees_id + " ลาทั้งหมด 0 วัน"
+            });
+        } else {
+            return res.json({
+                message: 'คำนวณจำนวนจำนวนวันลาทั้งหมดสำเร็จ',
+                status: true,
+                data: stats
+            });
+        }
+    } catch (err) {
+        console.log(err);
+        return res.json({
+            message: 'เกิดข้อผิดพลาดในการคำนวณจำนวน Set_Day Ordination',
+            status: false
+        });
+    }
+}; 
