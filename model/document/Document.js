@@ -26,7 +26,10 @@ const DocumentSchema = new Schema({
 
     Status : {type : Number , required : false , default : 1},// 1 = รอหัวหน้า  /  2 = รอผู้จัดการ  /  3 = รอกรรมการ  /  4 = อนุมัติแล้ว
     // หัวหน้าเห็นได้แค่ 1  ผู้จัดการเห็นได้แค่ 2  กรรมการเห็นทั้งหมด 
- 
+    Employee:{
+        employee_id: {type : String, required : false, default : ""},
+        employee_date: {type : String, required : false, default : null}
+    },
     Head_department : {
         head_id : {type : String, required : false, default : ""},
         head_date : {type : String, required : false, default : null}

@@ -1,5 +1,13 @@
 const Document = require('../../model/document/Document')
 const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
+const timezone = require('dayjs/plugin/timezone');
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+dayjsTimestamp = dayjs().tz('Asia/Bangkok');
+dayTime = dayjsTimestamp.format('YYYY-MM-DD');
 
 //Get Document
 exports.getdocument = async (req, res, next) => {
@@ -82,7 +90,7 @@ exports.getdocumentByStatus = async (req, res, next) => {
 exports.InsertDocument = async (req, res, next) => {
     try {
         const latestDoc = await Document.findOne().sort({ Document_id: -1 }).limit(1);
-
+        const employee_id = req.decoded.id
         let docid = 1; // ค่าเริ่มต้นสำหรับ docid
         if (latestDoc) {
             docid = parseInt(latestDoc.Document_id.slice(2)) + 1; // เพิ่มค่า docid
@@ -95,7 +103,9 @@ exports.InsertDocument = async (req, res, next) => {
             Doc_Date: Doc_Date,
             Headers: Headers,
             To: To,
-            Requester: Requester
+            'Employee.employee_id':employee_id,
+            'Employee.employee_date': dayTime
+            // Requester: Requester
         });
         if (req.body.OT && req.body.OT.Timein && req.body.OT.Timeout) { //เมื่อไม่มีการส่งค่าของ OT มาจะไม่ทำขั้นตอนนี้
             const timein = dayjs(req.body.OT.Timein);
