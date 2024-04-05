@@ -123,13 +123,14 @@ exports.InsertDocument = async (req, res, next) => {
             docid = parseInt(latestDoc.Document_id.slice(2)) + 1; // เพิ่มค่า docid
         }
         const docidString = docid.toString().padStart(5, '0'); // แปลง docid เป็นสตริงพร้อมเติมเลข 0 ข้างหน้า
-        const { Doc_Date, Headers, To, Timein, Timeout, Detail } = req.body;
+        const { Doc_Date, Headers, Type, To, Timein, Timeout, Detail } = req.body;
         
 
         const document = new Document({
             Document_id: docidString,
             Doc_Date: Doc_Date,
             Headers: Headers,
+            Type : Type,
             To: To,
             'Employee.employee_id':employee_id,
             'Employee.employee_date': dayTime
