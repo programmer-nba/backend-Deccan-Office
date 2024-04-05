@@ -13,7 +13,7 @@ router.get('/bystatus/:Status', DocumentController.getdocumentByStatus);
 router.get('/byreq/:employee_id', DocumentController.getdocumentByRequester);
 
 //Post
-router.post('/insert', auth, DocumentController.InsertDocument); // เพิ่ม Document
+router.post('/insert', DocumentController.InsertDocument); // เพิ่ม Document
 router.post('/add/detail/:id',DocumentController.addDetailToDocument); //เพิ่ม detail ใน Document
 
 //Update

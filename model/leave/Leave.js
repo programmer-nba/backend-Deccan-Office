@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const LeaveSchema = new Schema({
+    
     Leave_id : {type: String, required: false}, // รันอัตโนมัติ
     Employees_id: { type: String, required: false },
 

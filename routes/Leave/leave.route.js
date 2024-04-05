@@ -22,6 +22,6 @@ router.delete('/delete/:id', /**authAdmin,**/ LeaveController.Delete);
 router.get('/sick/:Employees_id', /**auth,**/ LeaveController.calculateSick);// คำนวนจำนวนการลาป่วยตามผู้ใช้
 router.get('/businecss/:Employees_id', /**auth,**/ LeaveController.calculateBusinecss);// คำนวนจำนวนการลาป่ายตามผู้ใช้
 router.get('/maternity/:Employees_id', /**auth,**/ LeaveController.calculateMaternity);// คำนวนจำนวนการลาป่ายตามผู้ใช้ 56.52
-router.get('/ordination/:Employees_id', LeaveController.calculateOrdination);
+router.get('/ordination/:Employees_id', LeaveController.calculateOrdination);// คำนวณจำนวนวันลาบวช
 
 module.exports = router;

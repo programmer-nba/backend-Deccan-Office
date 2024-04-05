@@ -160,21 +160,12 @@ exports.InsertDocument = async (req, res, next) => {
 exports.UpdateDocument = async (req, res, next) => {
     try {
         const { id } = req.params; // รับ ID ของเอกสารที่ต้องการอัปเดต
-        const { Doc_Date, Headers, To, Employees, Head_department, Manager, CEO } = req.body; // รับข้อมูลที่ต้องการอัปเดต
 
-        // ทำการอัปเดตเอกสาร
+        // ทำการอัปเดตเอกสารโดยไม่ระบุชื่อตัวแปร
         const updatedDocument = await Document.findOneAndUpdate(
             { _id: id }, // เงื่อนไขในการค้นหาเอกสารที่ต้องการอัปเดต
             {
-                $set: { // กำหนดค่าที่ต้องการอัปเดต
-                    Doc_Date: Doc_Date,
-                    Headers: Headers,
-                    To: To,
-                    Employees: Employees,
-                    Head_department: Head_department,
-                    Manager : Manager,
-                    CEO: CEO
-                }
+                $set: req.body // ใช้ req.body โดยตรงเพื่ออัปเดตเอกสาร
             },
             { new: true } // ตั้งค่าเพื่อให้คืนค่าข้อมูลเอกสารที่ถูกอัปเดตแล้ว
         );
@@ -182,6 +173,7 @@ exports.UpdateDocument = async (req, res, next) => {
             return res.status(404).json({ message: 'Document not found' });
         }
         return res.json({
+            
             message: 'Document updated successfully!',
             data: updatedDocument
         });
