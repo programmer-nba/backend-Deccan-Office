@@ -136,7 +136,14 @@ exports.InsertDocument = async (req, res, next) => {
             'Employee.employee_date': dayTime
             // Requester: Requester
         });
-        if (req.body.OT && req.body.OT.Timein && req.body.OT.Timeout) { //เมื่อไม่มีการส่งค่าของ OT มาจะไม่ทำขั้นตอนนี้
+        if (req.body.Type === "OT") {
+            if (!req.body.OT || !req.body.OT.Timein || !req.body.OT.Timeout) {
+                return res.json({
+                    message: 'คุณจำเป็นต้องกรอก เวลา ขอทำ OT',
+                    status: false,
+                    data: null
+                });
+            }
             const timein = dayjs(req.body.OT.Timein);
             const timeout = dayjs(req.body.OT.Timeout);
             const totalHours = timeout.diff(timein, 'hour');
@@ -152,7 +159,7 @@ exports.InsertDocument = async (req, res, next) => {
                     totalseconds: totalOTInSeconds
                 }
             };
-        }
+        }        
         if (Array.isArray(Detail) && Detail.length > 0) { //เมื่อไม่มีการส่งค่าของ Detail มาจะไม่ทำขั้นตอนนี้
             Detail.forEach(item => {
                 document.Detail.push({
