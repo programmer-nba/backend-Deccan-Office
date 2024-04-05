@@ -118,6 +118,15 @@ exports.InsertDocument = async (req, res, next) => {
                 data: null
             });
         }
+        else if (req.body.Type === "Normal") {
+            if (req.body.OT) {
+                return res.json({
+                    message: 'ไม่สามารถเพิ่ม OT หาก Type เป็น Normal',
+                    status: false,
+                    data: null
+                });
+            }
+        }
         let docid = 1; // ค่าเริ่มต้นสำหรับ docid
         if (latestDoc) {
             docid = parseInt(latestDoc.Document_id.slice(2)) + 1; // เพิ่มค่า docid
@@ -136,6 +145,7 @@ exports.InsertDocument = async (req, res, next) => {
             'Employee.employee_date': dayTime
             // Requester: Requester
         });
+
         if (req.body.Type === "OT") {
             if (!req.body.OT || !req.body.OT.Timein || !req.body.OT.Timeout) {
                 return res.json({
@@ -144,6 +154,7 @@ exports.InsertDocument = async (req, res, next) => {
                     data: null
                 });
             }
+
             const timein = dayjs(req.body.OT.Timein);
             const timeout = dayjs(req.body.OT.Timeout);
             const totalHours = timeout.diff(timein, 'hour');
