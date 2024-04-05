@@ -79,6 +79,7 @@ exports.getByEmployeeIdAndYear = async (req, res, next) => {
 exports.InsertLeave = async (req, res, next) => {
     try {
         const latestleave = await Leave.findOne().sort({ Leave_id: -1 }).limit(1);
+        const Employee_id = req.decoded.id
 
         let leaveid = 1; // ค่าเริ่มต้นสำหรับ leaveid
         if (latestleave) {
@@ -86,7 +87,7 @@ exports.InsertLeave = async (req, res, next) => {
         }   
         const leaveidString = leaveid.toString().padStart(6, '0'); // แปลง leaveid เป็นสตริงพร้อมเติมเลข 0 ข้างหน้า
 
-        const { Employees_id, Leave_date, Leave_head, Leave_Type, Details, Date_Start_leave, Date_End_leave, Contact, Tel, } = req.body;
+        const {  Leave_date, Leave_head, Leave_Type, Details, Date_Start_leave, Date_End_leave, Contact, Tel, } = req.body;
 
         const startDate = dayjs(Date_Start_leave);
         const endDate = dayjs(Date_End_leave);
@@ -96,7 +97,7 @@ exports.InsertLeave = async (req, res, next) => {
         const leave = new Leave({
             Leave_id: leaveidString,
 
-            Employees_id : Employees_id,
+            Employees_id : Employee_id,
             Leave_date: Leave_date,
             Leave_head: Leave_head,
 

@@ -67,6 +67,26 @@ exports.getdocumentByRequester = async (req, res, next) => {
     }
 };//ใช้งานได้
 
+// Get Document By Me
+exports.getdocumentByMe = async (req, res, next) => {
+    try {
+        const user_id = req.decoded.id
+        const documents = await Document.find({ 'Employee.employee_id': user_id });
+        return res.json({
+            message: 'Get documents by Me successfully!',
+            status: true,
+            data: documents
+        });
+    } catch (err) {
+        console.log(err);
+        return res.json({
+            message: 'Can not get documents by Me : ' + err.message,
+            status: false,
+            data: null
+        });
+    }
+};//ใช้งานได้
+
 // Get Document By Status
 exports.getdocumentByStatus = async (req, res, next) => {
     try {
@@ -91,12 +111,20 @@ exports.InsertDocument = async (req, res, next) => {
     try {
         const latestDoc = await Document.findOne().sort({ Document_id: -1 }).limit(1);
         const employee_id = req.decoded.id
+        if (req.body.Type != "OT" && req.body.Type != "Normal") {
+            return res.json({
+                message: 'it not OT or Normal',
+                status: false,
+                data: null
+            });
+        }
         let docid = 1; // ค่าเริ่มต้นสำหรับ docid
         if (latestDoc) {
             docid = parseInt(latestDoc.Document_id.slice(2)) + 1; // เพิ่มค่า docid
         }
         const docidString = docid.toString().padStart(5, '0'); // แปลง docid เป็นสตริงพร้อมเติมเลข 0 ข้างหน้า
         const { Doc_Date, Headers, To, Timein, Timeout, Detail } = req.body;
+        
 
         const document = new Document({
             Document_id: docidString,
@@ -293,7 +321,7 @@ exports.DeleteDetail = async (req, res, next) => {
 exports.updateDocumentHeadDepartment = async (req, res, next) => {
     try {
         const { id } = req.params; // รับ ID ของเอกสารที่ต้องการอัปเดต
-        const { head_id } = req.body; // รับข้อมูล Head_department ที่ต้องการอัปเดต
+        const user_id = req.decoded.id // ดึง _id Head_department ที่ต้องการอัปเดต
     
         // ทำการตรวจสอบว่าเอกสารที่ต้องการอัปเดตอยู่หรือไม่
         const document = await Document.findById(id);
@@ -302,11 +330,11 @@ exports.updateDocumentHeadDepartment = async (req, res, next) => {
         }
     
         // ทำการอัปเดตข้อมูลของ Head_department ในเอกสาร
-        document.Head_department.head_id = head_id;
+        document.Head_department.head_id = user_id;
         document.Head_department.head_date = Date.now();
 
-        // เพิ่มการอัปเดตข้อมูล Status เป็น 2
-        document.Status = 2;
+        // เพิ่มการอัปเดตข้อมูล Status เป็น รอผู้จัดการอนุมัติ
+        document.Status = "รอผู้จัดการอนุมัติ";
     
         console.log("กำลังลงชื่อ Head_department");
         // บันทึกการเปลี่ยนแปลงลงในฐานข้อมูล
@@ -326,7 +354,7 @@ exports.updateDocumentHeadDepartment = async (req, res, next) => {
 exports.updateDocumentManager = async (req, res, next) => {
     try {
         const { id } = req.params; // รับ ID ของเอกสารที่ต้องการอัปเดต
-        const { manager_id, manager_date} = req.body; // รับข้อมูล CEO ที่ต้องการอัปเดต
+        const user_id = req.decoded.id // ดึง _id Manager ที่ต้องการอัปเดต
     
         // ทำการตรวจสอบว่าเอกสารที่ต้องการอัปเดตอยู่หรือไม่
         const document = await Document.findById(id);
@@ -335,11 +363,11 @@ exports.updateDocumentManager = async (req, res, next) => {
         }
     
         // ทำการอัปเดตข้อมูลของ CEO ในเอกสาร
-        document.Manager.manager_id = manager_id;
-        document.Manager.manager_date = manager_date;
+        document.Manager.manager_id = user_id;
+        document.Manager.manager_date = Date.now();
         
-        // เพิ่มการอัปเดตข้อมูล Status เป็น 3
-        document.Status = 3;
+        // เพิ่มการอัปเดตข้อมูล Status เป็น รอกรรมการอนุมัติ
+        document.Status = "รอกรรมการอนุมัติ";
 
         console.log("กำลังลงชื่อ Manager")
         // บันทึกการเปลี่ยนแปลงลงในฐานข้อมูล
@@ -355,11 +383,11 @@ exports.updateDocumentManager = async (req, res, next) => {
     }
 };//ใช้งานได้
 
-//Update CEO
+//Update CEO Allow
 exports.updateDocumentCEO = async (req, res, next) => {
     try {
         const { id } = req.params; // รับ ID ของเอกสารที่ต้องการอัปเดต
-        const { ceo_id, ceo_date} = req.body; // รับข้อมูล CEO ที่ต้องการอัปเดต
+        const user_id = req.decoded.id // รับข้อมูล CEO ที่ต้องการอัปเดต
 
         // ทำการตรวจสอบว่าเอกสารที่ต้องการอัปเดตอยู่หรือไม่
         const document = await Document.findById(id);
@@ -368,11 +396,11 @@ exports.updateDocumentCEO = async (req, res, next) => {
         }
 
         // ทำการอัปเดตข้อมูลของ CEO ในเอกสาร
-        document.CEO.ceo_id = ceo_id;
-        document.CEO.ceo_date = ceo_date;
+        document.CEO.ceo_id = user_id;
+        document.CEO.ceo_date = Date.now();
       
-        // เพิ่มการอัปเดตข้อมูล Status เป็น 4
-        document.Status = 4;
+        // เพิ่มการอัปเดตข้อมูล Status เป็น อนุมัติแล้ว
+        document.Status = "กรรมการอนุมัติแล้ว";
 
         console.log("กำลังลงชื่อ CEO");
         // บันทึกการเปลี่ยนแปลงลงในฐานข้อมูล
@@ -387,4 +415,36 @@ exports.updateDocumentCEO = async (req, res, next) => {
         return res.status(500).json({ message: 'Failed to update CEO' });
     }
 };//ใช้งานได้
-  
+
+//Update CEO  Not Allow
+exports.updateDocumentCEONotAllow = async (req, res, next) => {
+    try {
+        const { id } = req.params; // รับ ID ของเอกสารที่ต้องการอัปเดต
+        const user_id = req.decoded.id // รับข้อมูล CEO ที่ต้องการอัปเดต
+
+        // ทำการตรวจสอบว่าเอกสารที่ต้องการอัปเดตอยู่หรือไม่
+        const document = await Document.findById(id);
+        if (!document) {
+            return res.status(404).json({ message: 'Document not found' });
+        }
+
+        // ทำการอัปเดตข้อมูลของ CEO ในเอกสาร
+        document.CEO.ceo_id = user_id;
+        document.CEO.ceo_date = Date.now();
+      
+        // เพิ่มการอัปเดตข้อมูล Status เป็น อนุมัติแล้ว
+        document.Status = "ไม่อนุมัติ";
+
+        console.log("กำลังลงชื่อ CEO");
+        // บันทึกการเปลี่ยนแปลงลงในฐานข้อมูล
+        await document.save();
+    
+        return res.json({
+            message: 'CEO updated successfully!',
+            data: document
+        });
+    }   catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Failed to update CEO' });
+    }
+};//ใช้งานได้

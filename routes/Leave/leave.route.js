@@ -12,8 +12,7 @@ router.get('/byem/:Employees_id',LeaveController.getByEmID); //ดึงข้�
 router.get('/byyear/:date', LeaveController.getByYear); //ดึงข้อมูลทั้งหมดตามปี
 router.get('/byem/:Employees_id/year/:date', LeaveController.getByEmployeeIdAndYear) //ดึงข้อมูลตามปีของผู้ใช้คนนั้น
 
-
-router.post('/insert', /**auth,**/ LeaveController.InsertLeave); //เพิ่มข้อมูลใบลา
+router.post('/insert', auth, LeaveController.InsertLeave); //เพิ่มข้อมูลใบลา
 
 router.put('/update/:id', /**authAdmin,**/ LeaveController.Update);
 
