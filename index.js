@@ -14,8 +14,7 @@ const LeaveRoutes = require('./routes/Leave/leave.route');
 const PartnerRoutes = require('./routes/Partner/partner.route')
 const AdminRoutes = require('./routes/Admin/admin.route');
 const DocumentRoutes = require('./routes/Document/document.route');
-
-
+const Role = require('./routes/role/role');
 
 app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -30,6 +29,7 @@ app.use(cors());
 app.use('/ddsc-office', EmployeesRoutes);
 app.use('/ddsc-office', RecordsRoutes);
 app.use('/ddsc-office', TimeInOut);
+app.use('/ddsc-office', Role);
 app.use('/ddsc-office/leave', LeaveRoutes);
 app.use('/ddsc-office/admin',AdminRoutes);
 app.use('/ddsc-office/partners',PartnerRoutes);

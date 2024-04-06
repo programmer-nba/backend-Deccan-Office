@@ -2,6 +2,7 @@ const Document = require('../../model/document/Document')
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone');
+const { roleEmployee } = require('../../model/employee/role');
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -111,6 +112,8 @@ exports.InsertDocument = async (req, res, next) => {
     try {
         const latestDoc = await Document.findOne().sort({ Document_id: -1 }).limit(1);
         const employee_id = req.decoded.id
+        const role = req.decoded.role
+        const position = req.decoded.position
         if (req.body.Type != "OT" && req.body.Type != "Normal") {
             return res.json({
                 message: 'it not OT or Normal',
@@ -134,6 +137,12 @@ exports.InsertDocument = async (req, res, next) => {
         const docidString = docid.toString().padStart(5, '0'); // แปลง docid เป็นสตริงพร้อมเติมเลข 0 ข้างหน้า
         const { Doc_Date, Headers, Type, To, Timein, Timeout, Detail } = req.body;
         
+        let status = "รอหัวหน้าแผนกอนุมัติ"
+            if(role == 'head_department'){
+                status = 'รอผู้จัดการอนุมัติ'
+            }else if (role == 'manager'){
+                status = 'รอผู้บริหารอนุมัติ'
+            }
 
         const document = new Document({
             Document_id: docidString,
@@ -141,8 +150,15 @@ exports.InsertDocument = async (req, res, next) => {
             Headers: Headers,
             Type : Type,
             To: To,
-            'Employee.employee_id':employee_id,
-            'Employee.employee_date': dayTime
+            Detail: req.body.Detail,
+            Status_document: status,
+            Status_detail: [{
+                employee_id: employee_id,
+                role: role,
+                position: position,
+                date: dayjsTimestamp, // หรือวันที่คุณต้องการกำหนด
+                status: status
+            }]
             // Requester: Requester
         });
 
@@ -171,15 +187,15 @@ exports.InsertDocument = async (req, res, next) => {
                 }
             };
         }        
-        if (Array.isArray(Detail) && Detail.length > 0) { //เมื่อไม่มีการส่งค่าของ Detail มาจะไม่ทำขั้นตอนนี้
-            Detail.forEach(item => {
-                document.Detail.push({
-                    detail: item.detail,
-                    price: item.price,
-                    qty: item.qty
-                });
-            });
-        }
+        // if (Array.isArray(Detail) && Detail.length > 0) { //เมื่อไม่มีการส่งค่าของ Detail มาจะไม่ทำขั้นตอนนี้
+        //     Detail.forEach(item => {
+        //         document.Detail.push({
+        //             detail: item.detail,
+        //             price: item.price,
+        //             qty: item.qty
+        //         });
+        //     });
+        // }
         const saved_document = await document.save();
         if (!saved_document) {
             return res.json({
@@ -203,16 +219,72 @@ exports.InsertDocument = async (req, res, next) => {
     }
 };
 
+//Update Head Department
+exports.updateDocumentHeadDepartment = async (req, res, next) => {
+    try {
+        const { id } = req.params; // รับ ID ของเอกสารที่ต้องการอัปเดต
+        const user_id = req.decoded.id // ดึง _id Head_department ที่ต้องการอัปเดต
+    
+        // ทำการตรวจสอบว่าเอกสารที่ต้องการอัปเดตอยู่หรือไม่
+        const document = await Document.findById(id);
+        if (!document) {
+            return res.status(404).json({ message: 'Document not found' });
+        }
+    
+        // ทำการอัปเดตข้อมูลของ Head_department ในเอกสาร
+        document.Head_department.head_id = user_id;
+        document.Head_department.head_date = Date.now();
+
+        // เพิ่มการอัปเดตข้อมูล Status เป็น รอผู้จัดการอนุมัติ
+        document.Status = "รอผู้จัดการอนุมัติ";
+    
+        console.log("กำลังลงชื่อ Head_department");
+        // บันทึกการเปลี่ยนแปลงลงในฐานข้อมูล
+        await document.save();
+    
+        return res.json({
+            message: 'Head_department updated successfully!',
+            data: document
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'Failed to update Head_department' });
+    }
+};//ใช้งานได้
+
 //Update Document
 exports.UpdateDocument = async (req, res, next) => {
     try {
         const { id } = req.params; // รับ ID ของเอกสารที่ต้องการอัปเดต
-
+        const employee_id = req.decoded.id
+        const role = req.decoded.role
+        const position = req.decoded.position
         // ทำการอัปเดตเอกสารโดยไม่ระบุชื่อตัวแปร
+        const findDocument = await Document.findOne({_id:id})
+            let statusDocs = findDocument.Status_document
+                if(statusDocs == 'ไม่อนุมัติ'){
+                    return res
+                            .status(400)
+                            .send({status:false, message:"เอกสารนี้ไม่อนุมัติเป็นที่เรียบร้อยแล้ว"})
+                }else if (statusDocs == 'อนุมัติ'){
+                    return res
+                            .status(400)
+                            .send({status:false, message:"เอกสารนี้อนุมัติเป็นที่เรียบร้อยแล้ว"})
+                }
         const updatedDocument = await Document.findOneAndUpdate(
             { _id: id }, // เงื่อนไขในการค้นหาเอกสารที่ต้องการอัปเดต
             {
-                $set: req.body // ใช้ req.body โดยตรงเพื่ออัปเดตเอกสาร
+                    ...req.body,
+                    Status_document:"รอหัวหน้าแผนกอนุมัติ",
+                    $push:{
+                        Status_detail:{
+                            employee_id:employee_id,
+                            role:role,
+                            position:position,
+                            date: dayjsTimestamp,
+                            status:"รอหัวหน้าแผนกอนุมัติ",
+                        }
+                    }
             },
             { new: true } // ตั้งค่าเพื่อให้คืนค่าข้อมูลเอกสารที่ถูกอัปเดตแล้ว
         );
@@ -220,7 +292,6 @@ exports.UpdateDocument = async (req, res, next) => {
             return res.status(404).json({ message: 'Document not found' });
         }
         return res.json({
-            
             message: 'Document updated successfully!',
             data: updatedDocument
         });
@@ -335,39 +406,6 @@ exports.DeleteDetail = async (req, res, next) => {
         return res.status(500).json({ message: 'Failed to delete detail from document' });
     }
 };//ใช้งานได้
-
-//Update Head Department
-exports.updateDocumentHeadDepartment = async (req, res, next) => {
-    try {
-        const { id } = req.params; // รับ ID ของเอกสารที่ต้องการอัปเดต
-        const user_id = req.decoded.id // ดึง _id Head_department ที่ต้องการอัปเดต
-    
-        // ทำการตรวจสอบว่าเอกสารที่ต้องการอัปเดตอยู่หรือไม่
-        const document = await Document.findById(id);
-        if (!document) {
-            return res.status(404).json({ message: 'Document not found' });
-        }
-    
-        // ทำการอัปเดตข้อมูลของ Head_department ในเอกสาร
-        document.Head_department.head_id = user_id;
-        document.Head_department.head_date = Date.now();
-
-        // เพิ่มการอัปเดตข้อมูล Status เป็น รอผู้จัดการอนุมัติ
-        document.Status = "รอผู้จัดการอนุมัติ";
-    
-        console.log("กำลังลงชื่อ Head_department");
-        // บันทึกการเปลี่ยนแปลงลงในฐานข้อมูล
-        await document.save();
-    
-        return res.json({
-            message: 'Head_department updated successfully!',
-            data: document
-        });
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({ message: 'Failed to update Head_department' });
-    }
-};//ใช้งานได้
   
 //Update Manager
 exports.updateDocumentManager = async (req, res, next) => {
@@ -467,3 +505,129 @@ exports.updateDocumentCEONotAllow = async (req, res, next) => {
         return res.status(500).json({ message: 'Failed to update CEO' });
     }
 };//ใช้งานได้
+
+exports.updateDocumentStatus = async (req, res, next) =>{
+    try{
+        const employee_id = req.decoded.id
+        const role = req.decoded.role
+        const position = req.decoded.position
+        const document_id = req.params.id
+        const statusApprove = req.body.statusApprove
+        const remark = req.body.remark
+        if(statusApprove != 'อนุมัติ' && statusApprove != 'ไม่อนุมัติ' && statusApprove != 'แก้ไข'){
+            return res
+                    .status(400)
+                    .send({status:false, message:"กรุณาใส่สถานะให้ถูกต้อง"})
+        }
+        const findDocument = await Document.findById(document_id)
+        let findRole
+            if (findDocument) {
+                findRole = findDocument.Status_detail[0].role;
+                let statusDocs = findDocument.Status_document
+                if(statusDocs == 'รอตรวจสอบ'){
+                    return res
+                            .status(400)
+                            .send({status:false, message:"กรุณารอการแก้ไขจากผู้ร้องขอ"})
+                }else if(statusDocs == 'ไม่อนุมัติ'){
+                    return res
+                            .status(400)
+                            .send({status:false, message:"เอกสารนี้ไม่อนุมัติเป็นที่เรียบร้อยแล้ว"})
+                }else if (statusDocs == 'อนุมัติ'){
+                    return res
+                            .status(400)
+                            .send({status:false, message:"เอกสารนี้อนุมัติเป็นที่เรียบร้อยแล้ว"})
+                }
+                // ทำสิ่งที่ต้องการกับ findRole ต่อไป
+            } else {
+                return res
+                        .status(400)
+                        .send({status:false, message:"ไม่พบเอกสารที่ท่านต้องการ"})
+            }
+        // console.log(position, role, findRole)
+        const [roleUser, roleRequester, roleAll] = await Promise.all([
+            roleEmployee.findOne({ role: role }),
+            roleEmployee.findOne({ role: findRole }),
+            roleEmployee.find()
+        ]);
+
+        console.log(roleUser.number_role, roleRequester.number_role)
+            if(roleUser.number_role >= roleRequester.number_role){
+                return res
+                        .status(400)
+                        .send({status:false, message:"คุณไม่มีสิทธิ์ใช้งาน"})
+            }
+        
+         // เรียงลำดับ array Status_detail ตามฟิลด์ date ในลำดับเพิ่ม (ascending order)
+         const sortedStatusDetail = findDocument.Status_detail.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+         // ดึงเอกสารตัวแรกออกมา
+         const latestStatus = sortedStatusDetail[sortedStatusDetail.length - 1];
+
+         //ถ้าเจอ array ที่มี elemnet.role == latestStatus.role จะดึงออกมาแค่ เอกสารเดียว และไม่ดึงหลายเอกสารถ้าต้องการาดึงหลายเอกสารให้ใช้ filter
+         let p = roleAll.find(element => element.role == latestStatus.role); 
+
+         // console.log(p)
+         let roleCanApprove = p.number_role - 1
+             if(roleUser.number_role != roleCanApprove){
+                 return res
+                         .status(400)
+                         .send({status:false, message:"ยังไม่ถึงเวลาที่ท่านจะทำรายการนี้"})
+             }
+
+        let detail = {
+                employee_id:employee_id,
+                role:role,
+                position:position,
+                date: dayjsTimestamp,
+                status:status
+        }
+        let Status_document
+        let status
+        if(statusApprove == 'ไม่อนุมัติ'){
+            Status_document == 'ไม่อนุมัติ'
+            status = "ไม่อนุมัติ"
+        }else if(statusApprove == 'อนุมัติ'){
+            if(roleUser.number_role == 1){
+                    Status_document = 'อนุมัติ'
+                    status = 'อนุมัติ'
+            }else{
+                    let roleNext = roleCanApprove - 1
+                    for (const doc of roleAll) {
+                        // console.log(doc)
+                        if (doc.number_role == roleNext) {
+                            // console.log(doc)
+                            Status_document = `รอ${doc.thai_role}อนุมัติ`
+                            status = 'อนุมัติ'
+                            break;
+                        }
+                    }
+            }
+        }else if (statusApprove == 'แก้ไข'){
+            detail.remark = remark
+            Status_document = 'รอตรวจสอบ'
+            status = 'แก้ไข'
+        }
+
+        const updateDocument = await Document.findByIdAndUpdate(
+            document_id,
+            {
+                Status_document: Status_document,
+                $push:{
+                    Status_detail:detail
+                }
+            },
+            {new:true})
+            if(!findDocument){
+                return res
+                        .status(404)
+                        .send({status:false, message:"ไม่พบเอกสารที่คุณต้องการ"})
+            }
+        return res
+                .status(200)
+                .send({status:true, data:updateDocument})
+
+    }catch(err){
+        console.error('มีบางอย่างผิดพลาด');
+        return res.status(500).json({ message: err });
+    }
+}
