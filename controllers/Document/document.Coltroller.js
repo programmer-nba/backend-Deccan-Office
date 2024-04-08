@@ -8,7 +8,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 dayjsTimestamp = dayjs().tz('Asia/Bangkok');
-dayTime = dayjsTimestamp.format('YYYY-MM-DD');
+dayTime = dayjsTimestamp.format('YYYY-MM-DD HH:mm:ss');
 
 //Get Document
 exports.getdocument = async (req, res, next) => {
@@ -566,14 +566,16 @@ exports.updateDocumentStatus = async (req, res, next) =>{
          //ถ้าเจอ array ที่มี elemnet.role == latestStatus.role จะดึงออกมาแค่ เอกสารเดียว และไม่ดึงหลายเอกสารถ้าต้องการาดึงหลายเอกสารให้ใช้ filter
          let p = roleAll.find(element => element.role == latestStatus.role); 
 
-         // console.log(p)
+        //  console.log(p)
          let roleCanApprove = p.number_role - 1
              if(roleUser.number_role != roleCanApprove){
                  return res
                          .status(400)
                          .send({status:false, message:"ยังไม่ถึงเวลาที่ท่านจะทำรายการนี้"})
              }
-
+        // console.log(roleCanApprove)
+        let Status_document
+        let status
         let detail = {
                 employee_id:employee_id,
                 role:role,
@@ -581,11 +583,9 @@ exports.updateDocumentStatus = async (req, res, next) =>{
                 date: dayjsTimestamp,
                 status:status
         }
-        let Status_document
-        let status
         if(statusApprove == 'ไม่อนุมัติ'){
-            Status_document == 'ไม่อนุมัติ'
-            status = "ไม่อนุมัติ"
+            Status_document = 'ไม่อนุมัติ'
+            detail.status = "ไม่อนุมัติ"
         }else if(statusApprove == 'อนุมัติ'){
             if(roleUser.number_role == 1){
                     Status_document = 'อนุมัติ'
@@ -602,10 +602,11 @@ exports.updateDocumentStatus = async (req, res, next) =>{
                         }
                     }
             }
+            detail.status = status
         }else if (statusApprove == 'แก้ไข'){
             detail.remark = remark
             Status_document = 'รอตรวจสอบ'
-            status = 'แก้ไข'
+            detail.status = 'แก้ไข'
         }
 
         const updateDocument = await Document.findByIdAndUpdate(
