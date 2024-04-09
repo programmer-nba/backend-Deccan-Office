@@ -496,7 +496,7 @@ module.exports.approveproduct = async(req, res)=>{
         const fullname = req.decoded.first_name
         const id = req.params.id;
         
-        const response = await axios.put(`${url_partner}/requestproduct/unapprove/${id}`,
+        const response = await axios.put(`${url_partner}/requestproduct/approve/${id}`,
             {
               office_id: user_id,
               office_name: fullname
@@ -536,7 +536,7 @@ module.exports.unapproveproduct = async(req, res)=>{
         const fullname = req.decoded.first_name
         const id = req.params.id;
         
-        const response = await axios.put(`${url_partner}/requestproduct/unapprove/${id}`,
+        const response = await axios.put(`${url_partner}/requestproduct/disapprove/${id}`,
             {
               office_id: user_id,
               office_name: fullname
@@ -688,7 +688,7 @@ module.exports.UnApproveRequestShop = async(req, res)=>{
         const fullname = req.decoded.first_name
         const id = req.params.id;
         
-        const response = await axios.put(`${url_partner}/requestshop/unapprove/${id}`,
+        const response = await axios.put(`${url_partner}/requestshop/disapprove/${id}`,
             {
               office_id: user_id,
               office_name: fullname
