@@ -113,7 +113,7 @@ timeInMorning = async (req, res)=>{
         console.log(err);
         return res
                 .status(500)
-                .send({ status:false, message: "มีบางอย่างผิดพลาด" });
+                .send({ status:false, maessage: err.message });
     }
 }
 
@@ -162,7 +162,7 @@ getMe = async (req, res)=>{
       }
     } catch(err) {
         console.log(err);
-        return res.status(500).send({ message: "มีบางอย่างผิดพลาด" });
+        return res.status(500).send({ maessage: err.message});
     }
 }
 
@@ -210,7 +210,7 @@ getTimeDay = async (req, res)=>{
   }catch(err){
     return res
             .status(500)
-            .send({status: false, message:"มีบางอย่างผิดพลาด"})
+            .send({status: false, maessage: err.message})
   }
 }
 
@@ -230,12 +230,12 @@ updateTime = async (req, res)=>{
         }).catch((err)=>{
           res
             .status(500)
-            .send({status: false, message: "มีบางอย่างผิดพลาด"})
+            .send({status: false, maessage: err.message})
         })
   
   }catch(err){
       console.log(err);
-      return res.status(500).send({ message: "มีบางอย่างผิดพลาด" });
+      return res.status(500).send({ maessage: err.message });
     }
 }
 
@@ -254,7 +254,7 @@ deleteTime = async (req, res)=>{
           }
     }catch(err){
       console.log(err);
-      return res.status(500).send({ message: "มีบางอย่างผิดพลาด" });
+      return res.status(500).send({ maessage: err.message });
     }
 }
 

@@ -36,6 +36,8 @@ router.put('/addSignature/:id', PartnerController.addsignature);
 
 router.put('/OTP/:id', PartnerController.OTP);
 
-router.put('/contract/:id', PartnerController.contract);
+router.get('/request/product', PartnerController.requestProduct);
+
+router.put('/request/product/approve/:id', auth, PartnerController.approveproduct);
 
 module.exports = router;

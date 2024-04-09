@@ -469,13 +469,57 @@ module.exports.contract = async (req, res)=>{
 }
 
 
-// const responseToFix = await axios.put(`${Url}/partner/sendtypecontract/${id}`,{
-        //     headers: {
-        //         'Accept': 'application/json',
-        //     }
-        // })
-        // if(!responseToFix){
-        //     return res
-        //             .status(400)
-        //             .send({status:false, message:"ไม่สามารถเชื่อมต่อได้ของนนท์ได้"})
-        // }
+module.exports.requestProduct = async(req, res)=>{
+    try{
+        const url_partner = process.env.URL_PARTNER
+        const token = process.env.TOKEN_PARTNER
+        const response = await axios.get(`${url_partner}/requestproduct/waitapprove`,{
+            headers: {
+                'Accept': 'application/json',
+                'token': token
+            }
+        })
+        return res
+                .status(200)
+                .send({status:true, data:response.data})
+    }catch(err){
+        return res
+                .status(500)
+                .send({status:false, message:err})
+    }
+}
+
+module.exports.approveproduct = async (req, res) => {
+    try {
+        const url_partner = process.env.URL_PARTNER;
+        const token = process.env.TOKEN_PARTNER;
+        const user_id = req.decoded.id;
+        const fullname = req.decoded.first_name
+        const id = req.params.id;
+        
+        const response = await axios.put(`${url_partner}/requestproduct/approve/${id}`,
+            {
+              office_id: user_id,
+              office_name: fullname
+            },
+            {
+              headers: {
+                'token': token
+              }
+            }
+          ).catch(err=>{ return err.message});
+          
+        return res.json({
+            message: 'Approve Product successfully!',
+            status: true,
+            data: response.data
+        });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            message: 'Can not Approve Product' + err.message,
+            status: 500,
+            data: null
+        });
+    }
+};
