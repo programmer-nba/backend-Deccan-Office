@@ -489,37 +489,39 @@ module.exports.requestProduct = async(req, res)=>{
     }
 }
 
-module.exports.approveproduct = async (req, res) => {
-    try {
-        const url_partner = process.env.URL_PARTNER;
-        const token = process.env.TOKEN_PARTNER;
-        const user_id = req.decoded.id;
-        const fullname = req.decoded.first_name
-        const id = req.params.id;
-        
-        const response = await axios.put(`${url_partner}/requestproduct/approve/${id}`,
-            {
-              office_id: user_id,
-              office_name: fullname
-            },
-            {
-              headers: {
-                'token': token
-              }
-            }
-          ).catch(err=>{ return err.message});
+// module.exports.approveproduct = async (req, res) => {
+//     try {
+//         const url_partner = process.env.URL_PARTNER;
+//         const token = process.env.TOKEN_PARTNER;
+//         const user_id = req.decoded.id;
+//         const fullname = req.decoded.first_name
+//         const id = req.params.id;
+//         console.log("test")
+//         console.log(`${url_partner}/requestproduct/approve/${id}`)
+//         const response = await axios.put(`${url_partner}/requestproduct/approve/${id}`,
+//         {
+//             headers: {
+//               'token': token
+//             }
+//           },
+//             {
+//               office_id: user_id,
+//               office_name: fullname
+//             }
+            
+//           ).catch(err=>{ return err.message});
           
-        return res.json({
-            message: 'Approve Product successfully!',
-            status: true,
-            data: response.data
-        });
-    } catch (err) {
-        console.log(err);
-        return res.status(500).json({
-            message: 'Can not Approve Product' + err.message,
-            status: 500,
-            data: null
-        });
-    }
-};
+//         return res.json({
+//             message: 'Approve Product successfully!',
+//             status: true,
+//             data: response.data
+//         });
+//     } catch (err) {
+//         console.log(err);
+//         return res.status(500).json({
+//             message: 'Can not Approve Product' + err.message,
+//             status: 500,
+//             data: null
+//         });
+//     }
+// };

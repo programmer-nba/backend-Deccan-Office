@@ -38,6 +38,6 @@ router.put('/OTP/:id', PartnerController.OTP);
 
 router.get('/request/product', PartnerController.requestProduct);
 
-router.put('/request/product/approve/:id', auth, PartnerController.approveproduct);
+// router.put('/request/product/approve/:id', auth, PartnerController.approveproduct);
 
 module.exports = router;
