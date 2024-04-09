@@ -38,6 +38,18 @@ router.put('/OTP/:id', PartnerController.OTP);
 
 router.get('/request/product', PartnerController.requestProduct);
 
-// router.put('/request/product/approve/:id', auth, PartnerController.approveproduct);
+router.put('/requestproduct/approve/:id',auth , PartnerController.approveproduct);
+
+router.put('/requestproduct/unapprove/:id', auth, PartnerController.unapproveproduct);
+
+router.put('/requestproduct/editproduct/:id', auth, PartnerController.Editproduct);
+
+router.get('/requestshop/waitapprove', PartnerController.requestShop);
+
+router.get('/requestshop/getall/', PartnerController.GetAllShop);
+
+router.put('/requestshop/approve/:id', auth, PartnerController.ApproveRequestShop);
+
+router.put('/requestshop/unapprove/:id', auth, PartnerController.UnApproveRequestShop);
 
 module.exports = router;

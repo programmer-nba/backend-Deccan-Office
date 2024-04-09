@@ -468,7 +468,6 @@ module.exports.contract = async (req, res)=>{
     }
 }
 
-
 module.exports.requestProduct = async(req, res)=>{
     try{
         const url_partner = process.env.URL_PARTNER
@@ -489,39 +488,232 @@ module.exports.requestProduct = async(req, res)=>{
     }
 }
 
-// module.exports.approveproduct = async (req, res) => {
-//     try {
-//         const url_partner = process.env.URL_PARTNER;
-//         const token = process.env.TOKEN_PARTNER;
-//         const user_id = req.decoded.id;
-//         const fullname = req.decoded.first_name
-//         const id = req.params.id;
-//         console.log("test")
-//         console.log(`${url_partner}/requestproduct/approve/${id}`)
-//         const response = await axios.put(`${url_partner}/requestproduct/approve/${id}`,
-//         {
-//             headers: {
-//               'token': token
-//             }
-//           },
-//             {
-//               office_id: user_id,
-//               office_name: fullname
-//             }
+module.exports.approveproduct = async(req, res)=>{
+    try {
+        const url_partner = process.env.URL_PARTNER;
+        const token = process.env.TOKEN_PARTNER;
+        const user_id = req.decoded.id;
+        const fullname = req.decoded.first_name
+        const id = req.params.id;
+        
+        const response = await axios.put(`${url_partner}/requestproduct/unapprove/${id}`,
+            {
+              office_id: user_id,
+              office_name: fullname
+            } ,{
+                headers: {
+                  'token': token
+                }
+              }
             
-//           ).catch(err=>{ return err.message});
-          
-//         return res.json({
-//             message: 'Approve Product successfully!',
-//             status: true,
-//             data: response.data
-//         });
-//     } catch (err) {
-//         console.log(err);
-//         return res.status(500).json({
-//             message: 'Can not Approve Product' + err.message,
-//             status: 500,
-//             data: null
-//         });
-//     }
-// };
+          ).catch(err=>{ return err.message});
+          if(response.status == 200)
+          {
+            return res.json({
+                message: 'Approve Product successfully!',
+                status: true,
+                data: response.data
+            });
+          }else{
+            console.log(response)
+          }
+       
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            message: 'Can not Approve Product : ' + err.message,
+            status: 500,
+            data: null
+        });
+    }
+};
+
+module.exports.unapproveproduct = async(req, res)=>{
+    try {
+        const url_partner = process.env.URL_PARTNER;
+        const token = process.env.TOKEN_PARTNER;
+        const user_id = req.decoded.id;
+        const fullname = req.decoded.first_name
+        const id = req.params.id;
+        
+        const response = await axios.put(`${url_partner}/requestproduct/unapprove/${id}`,
+            {
+              office_id: user_id,
+              office_name: fullname
+            } ,{
+                headers: {
+                  'token': token
+                }
+              }
+            
+          ).catch(err=>{ return err.message});
+          if(response.status == 200)
+          {
+            return res.json({
+                message: 'Approve Product successfully!',
+                status: true,
+                data: response.data
+            });
+          }else{
+            console.log(response)
+          }
+       
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            message: 'Can not Approve Product' + err.message,
+            status: 500,
+            data: null
+        });
+    }
+};
+
+module.exports.Editproduct = async(req, res)=>{
+    try {
+        const url_partner = process.env.URL_PARTNER;
+        const token = process.env.TOKEN_PARTNER;
+        const id = req.params.id;
+        
+        const response = await axios.put(`${url_partner}/requestproduct/editproductbyoffice/${id}`,
+            req.body,
+            {
+                headers: {
+                  'token': token
+                }
+              }
+            
+          ).catch(err=>{ return err.message});
+          if(response.status == 200)
+          {
+            return res.json({
+                message: 'Request Edit Product successfully!',
+                status: true,
+                data: response.data
+            });
+          }else{
+            console.log(response)
+          }
+       
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            message: 'Can not Request Edit Product' + err.message,
+            status: 500,
+            data: null
+        });
+    }
+};
+
+module.exports.requestShop = async(req, res)=>{
+    try{
+        const url_partner = process.env.URL_PARTNER
+        const token = process.env.TOKEN_PARTNER
+        const response = await axios.get(`${url_partner}/requestshop/waitapprove`,{
+            headers: {
+                'token': token
+            }
+        })
+        return res
+                .status(200)
+                .send({status:true, data:response.data})
+    }catch(err){
+        return res
+                .status(500)
+                .send({status:false, message:err})
+    }
+}
+
+module.exports.GetAllShop = async(req, res)=>{
+    try{
+        const url_partner = process.env.URL_PARTNER
+        const token = process.env.TOKEN_PARTNER
+        const response = await axios.get(`${url_partner}/requestshop/getall`,{
+            headers: {
+                'token': token
+            }
+        })
+        return res
+                .status(200)
+                .send({status:true, data:response.data})
+    }catch(err){
+        return res
+                .status(500)
+                .send({status:false, message:err})
+    }
+}
+
+module.exports.ApproveRequestShop = async(req, res)=>{
+    try {
+        const url_partner = process.env.URL_PARTNER;
+        const token = process.env.TOKEN_PARTNER;
+        const user_id = req.decoded.id;
+        const fullname = req.decoded.first_name
+        const id = req.params.id;
+        
+        const response = await axios.put(`${url_partner}/requestshop/approve/${id}`,
+            {
+              office_id: user_id,
+              office_name: fullname
+            } ,{
+                headers: {
+                  'token': token
+                }
+              }
+          ).catch(err=>{ return err.message});
+          if(response.status == 200)
+          {
+            return res.json({
+                message: 'Approve Request Shop successfully!',
+                status: true,
+                data: response.data
+            });
+          }else{
+            console.log(response)
+          }
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            message: 'Can not Approve Request Shop : ' + err.message,
+            status: 500,
+            data: null
+        });
+    }
+};
+
+module.exports.UnApproveRequestShop = async(req, res)=>{
+    try {
+        const url_partner = process.env.URL_PARTNER;
+        const token = process.env.TOKEN_PARTNER;
+        const user_id = req.decoded.id;
+        const fullname = req.decoded.first_name
+        const id = req.params.id;
+        
+        const response = await axios.put(`${url_partner}/requestshop/unapprove/${id}`,
+            {
+              office_id: user_id,
+              office_name: fullname
+            } ,{
+                headers: {
+                  'token': token
+                }
+              }
+          ).catch(err=>{ return err.message});
+          if(response.status == 200)
+          {
+            return res.json({
+                message: 'Approve Request Shop successfully!',
+                status: true,
+                data: response.data
+            });
+          }else{
+            console.log(response)
+          }
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            message: 'Can not Approve Request Shop : ' + err.message,
+            status: 500,
+            data: null
+        });
+    }
+};
