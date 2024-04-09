@@ -308,4 +308,22 @@ approveTime = async(req, res)=>{
   }
 }
 
-module.exports = { timeInMorning, getMe, updateTime, deleteTime, getTimeDay, approveTime }
+getAll = async (req, res) => {
+  try {
+    const timeinouts = await timeInOut.find();
+    return res.json({
+        message: 'Get Time data successfully!',
+        status: true,
+        data: timeinouts
+    });
+} catch (err) {
+    console.log(err)
+    return res.json({
+        message: ('Can not get Time data', err.message),
+        status: false,
+        data: null
+    })
+}
+};
+
+module.exports = { timeInMorning, getMe, updateTime, deleteTime, getTimeDay, approveTime, getAll}

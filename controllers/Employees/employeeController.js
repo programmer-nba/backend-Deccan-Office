@@ -1,10 +1,25 @@
 const { Employees, Validate } = require("../../model/employee/employee");
 const jwt = require("jsonwebtoken");
 var bcrypt = require("bcrypt");
+const multer = require('multer');
+const upload = multer();
+
+const {
+  uploadFileCreate,
+  deleteFile,
+  } = require("../../funtion/uploadfilecreate");
+
+const storage = multer.diskStorage({
+      filename: function (req, file, cb) {
+          cb(null, Date.now() + "-" + file.originalname);
+          //console.log(file.originalname);
+      },
+});
 
 exports.Post = async (req, res) => {
   try {
     // console.log(req.body.userid)
+
     const duplicate = await Employees.findOne({ //ตรวจสอบบัตรประชาชนพนักงานว่ามีซ้ำกันหรือไม่
         $or: [
           { iden_number: req.body.iden_number },
@@ -116,65 +131,76 @@ exports.getMe = async (req, res) => {
   }
 }
 
-exports.Update = async (req, res)=>{
-  try{
+exports.Update = async (req, res) => {
+  try {
     const upID = req.params.id; //รับไอดีที่ต้องการอัพเดท
     console.log(req.body);
-    if(!req.body.password){ //กรณีที่ไม่ได้ยิง password
-      Employees.findByIdAndUpdate(
-            upID,
-            {
-              ...req.body,
-              "leave.business_leave": req.body.business_leave,
-              "leave.sick_leave": req.body.sick_leave,
-              "leave.annual_leave": req.body.annual_leave,
-              "leave.disbursement": req.body.disbursement,
-            }, 
-            {new:true}).then((data) =>{
-                if (!data) {
-                  res
-                    .status(400)
-                    .send({status:false, message: "ไม่สามารถแก้ไขผู้ใช้งานนี้ได้"})
-                }else {
-                  res
-                    .status(200)
-                    .send({status:true, message: "อัพเดทข้อมูลแล้ว",data: data})
-                }
-            })
-            .catch((err)=>{
-              res
-                .status(500)
-                .send({status: false, message: "มีบางอย่างผิดพลาด"})
-    })
-  } else { //กรณีที่ได้ยิง password
+    if (!req.body.password) { //กรณีที่ไม่ได้ยิง password
+      const upload = multer({ storage: storage }).array("image", 20);
+      upload(req, res, async function (err) {
+        if (err) {
+          return res.status(500).send(err);
+        }
+        let image = ''; // ตั้งตัวแปรรูป
+        if (req.files) {
+          const url = req.protocol + "://" + req.get("host");
+          const reqFiles = [];
+          for (let i = 0; i < req.files.length; i++) {
+            const src = await uploadFileCreate(req.files, res, { i, reqFiles });
+            reqFiles.push(src); // แก้ไขจาก result เป็น reqFiles
+          }
+          image = reqFiles[0];
+        }
+        Employees.findByIdAndUpdate(
+          upID,
+          {
+            ...req.body,
+            image: image,
+            "leave.business_leave": req.body.business_leave,
+            "leave.sick_leave": req.body.sick_leave,
+            "leave.annual_leave": req.body.annual_leave,
+            "leave.disbursement": req.body.disbursement,
+          },
+          { new: true }
+        ).then((data) => {
+          if (!data) {
+            res.status(400).send({ status: false, message: "ไม่สามารถแก้ไขผู้ใช้งานนี้ได้" });
+          } else {
+            res.status(200).send({ status: true, message: "อัพเดทข้อมูลแล้ว", data: data });
+          }
+        }).catch((err) => {
+          res.status(500).send({ status: false, message: "มีบางอย่างผิดพลาด" });
+        });
+      });
+    } else { //กรณีที่ได้ยิง password
       const salt = await bcrypt.genSalt(Number(process.env.SALT));
       const hashPassword = await bcrypt.hash(req.body.password, salt);
       const updateEmployee = await Employees.findByIdAndUpdate(
-              upID, 
-              {
-                ...req.body,
-                password: hashPassword,
-                "leave.business_leave": req.body.business_leave,
-                "leave.sick_leave": req.body.sick_leave,
-                "leave.annual_leave": req.body.annual_leave,
-                "leave.disbursement": req.body.disbursement,
-              }, 
-              {new:true}); //หา id ที่ต้องการจากนั้นทำการอัพเดท
-    if(updateEmployee){
-      return res
-        .status(200)
-        .send({status: true, data: updateEmployee})
-    } else {
-      return res
-        .status(400)
-        .send({ status: false, message: "อัพเดทข้อมูลไม่สำเร็จ" });
+        upID,
+        {
+          ...req.body,
+          password: hashPassword,
+          image: req.body.image,
+          "leave.business_leave": req.body.business_leave,
+          "leave.sick_leave": req.body.sick_leave,
+          "leave.annual_leave": req.body.annual_leave,
+          "leave.disbursement": req.body.disbursement,
+        },
+        { new: true }
+      );
+
+      if (updateEmployee) {
+        return res.status(200).send({ status: true, data: updateEmployee });
+      } else {
+        return res.status(400).send({ status: false, message: "อัพเดทข้อมูลไม่สำเร็จ" });
+      }
     }
-  }
-} catch(err){
+  } catch (err) {
     console.log(err);
     return res.status(500).send({ message: err });
   }
 }
+
 
 exports.Delete = async (req, res)=>{
   try {

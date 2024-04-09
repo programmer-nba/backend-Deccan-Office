@@ -4,6 +4,8 @@ var path = require('path');
 const app = express();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+var logger = require('morgan');
+
 //var router = require('./routes/route')
 
 //กำหนดตัวแปร และดึง Route <=

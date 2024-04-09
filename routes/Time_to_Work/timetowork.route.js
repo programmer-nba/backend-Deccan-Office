@@ -18,4 +18,6 @@ router.get('/time/getday',auth,TimeToWorkController.getTimeDay)
 
 router.post('/time/approve',auth,TimeToWorkController.approveTime)
 
+router.get('/time/admin/getall', TimeToWorkController.getAll)
+
 module.exports = router;
