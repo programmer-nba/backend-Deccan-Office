@@ -265,7 +265,7 @@ module.exports.fileCompany = async (req, res)=>{
 
 module.exports.approve = async (req, res)=>{
     try{
-        const Url = process.env.PARTNER
+        const Url = process.env.URL_PARTNER
         const id = req.params.id
         const response = await axios.put(`${Url}/partner/accept/${id}`,{
               headers: {
@@ -291,7 +291,7 @@ module.exports.approve = async (req, res)=>{
         console.log(err)
         return res
                 .status(500)
-                .send({status:false, message:"มีบางอย่างผิดพลาด"})
+                .send({status:false, message:err})
     }
 }
 
