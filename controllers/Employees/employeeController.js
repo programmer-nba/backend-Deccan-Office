@@ -201,7 +201,6 @@ exports.Update = async (req, res) => {
   }
 }
 
-
 exports.Delete = async (req, res)=>{
   try {
     const employees = await Employees.findByIdAndDelete(req.params.id);

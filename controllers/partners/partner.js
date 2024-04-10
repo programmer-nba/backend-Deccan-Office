@@ -766,10 +766,186 @@ module.exports.Edit_Request_product = async(req, res)=>{
     } catch (err) {
         console.log(err);
         return res.status(500).json({
-            message: 'ไม่สามารถ แก้ไขคำร้องขอสินค้า' + err.message,
+            message: 'ไม่สามารถ แก้ไขคำร้องขอสินค้า : ' + err.message,
             status: 500,
             data: null
         });
     }
 };
 
+//
+module.exports.Get_All_Shop_And_Product = async(req, res)=>{
+    try{
+        const url_partner = process.env.URL_PARTNER
+        const token = process.env.TOKEN_PARTNER
+        const response = await axios.get(`${url_partner}/shop/getshop/office`,{
+            headers: {
+                'token': token
+            }
+        })
+        return res
+                .status(200)
+                .send({status:true, data:response.data.data})
+    }catch(err){
+        return res
+                .status(500)
+                .send({status:false, message:err})
+    }
+};
+
+//ดึงข้อมูลร้านค้าและสินค้าโดย ID
+module.exports.Get_All_Shop_And_Product_By_Id = async(req, res)=>{
+    try{
+        const url_partner = process.env.URL_PARTNER
+        const token = process.env.TOKEN_PARTNER
+        const { id } = req.params;
+        const response = await axios.get(`${url_partner}/shop/getshop/office/byid/${id}`,{
+            headers: {
+                'token': token
+            }
+        })
+        return res
+                .status(200)
+                .send({status:true, data:response.data.data})
+    }catch(err){
+        return res
+                .status(500)
+                .send({status:false, message:err})
+    }
+};
+
+//แก้ไขข้อมูลร้านค้า
+module.exports.Edit_Shop = async(req, res)=>{
+    try {
+        const url_partner = process.env.URL_PARTNER;
+        const token = process.env.TOKEN_PARTNER;
+        const id = req.params.id;
+        
+        const response = await axios.put(`${url_partner}/shop/getshop/office/${id}`,
+            req.body,
+            {
+                headers: {
+                  'token': token
+                }
+              }
+            
+          ).catch(err=>{ return err.message});
+          if(response.status == 200)
+          {
+            return res.json({
+                message: 'แก้ไขร้านค้า สำเร็จ!',
+                status: true,
+                data: response.data
+            });
+          }else{
+            console.log(response)
+          }
+       
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            message: 'ไม่สามารถ แก้ไขร้านค้า : ' + err.message,
+            status: 500,
+            data: null
+        });
+    }
+};
+
+//ดึงข้อมูลสินค้าของร้านค้า
+module.exports.GetAll_Product_In_Shop = async(req, res)=>{
+    try{
+        const url_partner = process.env.URL_PARTNER
+        const token = process.env.TOKEN_PARTNER
+        const response = await axios.get(`${url_partner}/productshop/office`,{
+            headers: {
+                'token': token
+            }
+        })
+        return res
+                .status(200)
+                .send({status:true, data:response.data.data})
+    }catch(err){
+        return res
+                .status(500)
+                .send({status:false, message:err})
+    }
+};
+
+//ดึงข้อมูลสินค้าของร้านค้า by id
+module.exports.GetAll_Product_In_Shop_By_Id = async(req, res)=>{
+    try{
+        const url_partner = process.env.URL_PARTNER
+        const token = process.env.TOKEN_PARTNER
+        const { id } = req.params;
+        const response = await axios.get(`${url_partner}/productshop/office/byid/${id}`,{
+            headers: {
+                'token': token
+            }
+        })
+        return res
+                .status(200)
+                .send({status:true, data:response.data.data})
+    }catch(err){
+        return res
+                .status(500)
+                .send({status:false, message:err})
+    }
+};
+
+//ดึงข้อมูลสินค้าของร้านค้า by shop id
+module.exports.GetAll_Product_In_Shop_By_Shop_Id = async(req, res)=>{
+    try{
+        const url_partner = process.env.URL_PARTNER
+        const token = process.env.TOKEN_PARTNER
+        const { id } = req.params;
+        const response = await axios.get(`${url_partner}/productshop/office/byshopid/${id}`,{
+            headers: {
+                'token': token
+            }
+        })
+        return res
+                .status(200)
+                .send({status:true, data:response.data.data})
+    }catch(err){
+        return res
+                .status(500)
+                .send({status:false, message:err})
+    }
+};
+
+//แก้ไขข้อมูลสินค้าของร้านค้า
+module.exports.Edit_Product_In_Shop = async(req, res)=>{
+    try {
+        const url_partner = process.env.URL_PARTNER;
+        const token = process.env.TOKEN_PARTNER;
+        const id = req.params.id;
+        
+        const response = await axios.put(`${url_partner}/productshop/office/${id}`,
+            req.body,
+            {
+                headers: {
+                  'token': token
+                }
+              }
+            
+          ).catch(err=>{ return err.message});
+          if(response.status == 200)
+          {
+            return res.json({
+                message: 'แก้ไขข้อมูลสินค้าของร้านค้า สำเร็จ!',
+                status: true,
+                data: response.data
+            });
+          }else{
+            console.log(response)
+          }
+       
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            message: 'ไม่สามารถ แก้ไขข้อมูลสินค้าของร้านค้า : ' + err.message,
+            status: 500,
+            data: null
+        });
+    }
+};

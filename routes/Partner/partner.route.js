@@ -56,4 +56,18 @@ router.get('/product/getallproductbyoffice', PartnerController.GetAllProductShop
 
 router.put('/product/editproductbyoffice/:id', PartnerController.Edit_Request_product);
 
+router.get('/shop/getshop/office', PartnerController.Get_All_Shop_And_Product);
+
+router.get('/shop/getshop/office/byid/:id', PartnerController.Get_All_Shop_And_Product_By_Id);
+
+router.put('/shop/getshop/office/:id', PartnerController.Edit_Shop);
+
+router.get('/productshop/office/', PartnerController.GetAll_Product_In_Shop);
+
+router.get('/productshop/office/byid/:id', PartnerController.GetAll_Product_In_Shop_By_Id);
+
+router.get('/productshop/office/byshopid/:id', PartnerController.GetAll_Product_In_Shop_By_Shop_Id)
+
+router.put ('/productshop/office/:id', PartnerController.Edit_Product_In_Shop);
+
 module.exports = router;

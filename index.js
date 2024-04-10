@@ -17,6 +17,9 @@ const PartnerRoutes = require('./routes/Partner/partner.route')
 const AdminRoutes = require('./routes/Admin/admin.route');
 const DocumentRoutes = require('./routes/Document/document.route');
 const Role = require('./routes/role/role');
+const RequestProjectRoutes = require ('./routes/Project/Project.route');
+
+
 
 app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -36,6 +39,7 @@ app.use('/ddsc-office/leave', LeaveRoutes);
 app.use('/ddsc-office/admin',AdminRoutes);
 app.use('/ddsc-office/partners',PartnerRoutes);
 app.use('/ddsc-office/document',DocumentRoutes);
+app.use('/ddsc-office/project',RequestProjectRoutes);
 
 
 const port = process.env.PORT || 9996;
