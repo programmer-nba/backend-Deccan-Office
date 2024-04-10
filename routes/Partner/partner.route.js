@@ -52,4 +52,8 @@ router.put('/requestshop/approve/:id', auth, PartnerController.ApproveRequestSho
 
 router.put('/requestshop/unapprove/:id', auth, PartnerController.UnApproveRequestShop);
 
+router.get('/product/getallproductbyoffice', PartnerController.GetAllProductShop);
+
+router.put('/product/editproductbyoffice/:id', PartnerController.Edit_Request_product);
+
 module.exports = router;

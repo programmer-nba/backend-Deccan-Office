@@ -95,7 +95,7 @@ module.exports.login = async (req,res) =>{
     } catch(error){
         return res.status(500).send({status:false,error:error.message});
     }
-}
+};
 //getme
 module.exports.me  =async (req,res)=>{
     try{
@@ -116,7 +116,7 @@ module.exports.me  =async (req,res)=>{
     } catch(error){
         return res.status(500).send({status:false,error:error.message});
     }
-}
+};
 
 //ดึงข้อมูลทั้งหมด
 module.exports.getall = async (req,res) =>{
@@ -129,7 +129,7 @@ module.exports.getall = async (req,res) =>{
     }catch (error) {
         return res.status(500).send({status:false,error:error.message});
     }
-}
+};
 
 //ดึงข้อมูล by id
 module.exports.getbyid = async (req,res) =>{
@@ -142,7 +142,7 @@ module.exports.getbyid = async (req,res) =>{
     }catch (error) {
         return res.status(500).send({status:false,error:error.message});
     }
-}
+};
 
 //แก้ไขข้อมูล partner
 module.exports.edit = async (req,res) =>{
@@ -174,7 +174,7 @@ module.exports.edit = async (req,res) =>{
     }catch (error) {
         return res.status(500).send({status:false,error:error.message});
     }
-}
+};
 
 //ลบข้อมูล partner
 module.exports.delete = async (req,res) =>{
@@ -189,7 +189,7 @@ module.exports.delete = async (req,res) =>{
         return res.status(500).send({status:false,error:error.message});
     }
 
-}
+};
 
 module.exports.logo = async (req, res)=>{
     try{
@@ -213,7 +213,7 @@ module.exports.logo = async (req, res)=>{
                 .status(500)
                 .send({status:false, message:"มีบางอย่างผิดพลาด"})
     }
-}
+};
 
 module.exports.iden = async (req, res)=>{
     try{
@@ -237,7 +237,7 @@ module.exports.iden = async (req, res)=>{
                 .status(500)
                 .send({status:false, message:"มีบางอย่างผิดพลาด"})
     }
-}
+};
 
 module.exports.fileCompany = async (req, res)=>{
     try{
@@ -261,7 +261,7 @@ module.exports.fileCompany = async (req, res)=>{
                 .status(500)
                 .send({status:false, message:"มีบางอย่างผิดพลาด"})
     }
-}
+};
 
 module.exports.approve = async (req, res)=>{
     try{
@@ -293,7 +293,7 @@ module.exports.approve = async (req, res)=>{
                 .status(500)
                 .send({status:false, message:err})
     }
-}
+};
 
 module.exports.waitStatus = async (req, res)=>{
     try{
@@ -336,7 +336,7 @@ module.exports.waitStatus = async (req, res)=>{
                 .status(500)
                 .send({status:false, message:"มีบางอย่างผิดพลาด"})
     }
-}
+};
 
 module.exports.updateStatus = async (req, res)=>{
     try{
@@ -361,7 +361,7 @@ module.exports.updateStatus = async (req, res)=>{
                 .status(500)
                 .send({status:false, message:"มีบางอย่างผิดพลาด"})
     }
-}
+};
 
 //ลายเซ็น
 module.exports.addsignature = async (req, res) => {
@@ -381,7 +381,7 @@ module.exports.addsignature = async (req, res) => {
                 .status(500)
                 .send({ status: false, error: error.message });
     }
-}
+};
 
 //ยืนยัน OTP
 module.exports.OTP = async (req, res)=>{
@@ -406,7 +406,7 @@ module.exports.OTP = async (req, res)=>{
                 .status(500)
                 .send({status:false, message:"มีบางอย่างผิดพลาด"})
     }
-}
+};
 
 //ส่งประเภทสัญญา
 module.exports.contract = async (req, res)=>{
@@ -466,7 +466,7 @@ module.exports.contract = async (req, res)=>{
                 .status(500)
                 .send({status:false, message:err})
     }
-}
+};
 
 module.exports.requestProduct = async(req, res)=>{
     try{
@@ -486,7 +486,7 @@ module.exports.requestProduct = async(req, res)=>{
                 .status(500)
                 .send({status:false, message:err})
     }
-}
+};
 
 module.exports.approveproduct = async(req, res)=>{
     try {
@@ -621,7 +621,7 @@ module.exports.requestShop = async(req, res)=>{
                 .status(500)
                 .send({status:false, message:err})
     }
-}
+};
 
 module.exports.GetAllShop = async(req, res)=>{
     try{
@@ -640,7 +640,7 @@ module.exports.GetAllShop = async(req, res)=>{
                 .status(500)
                 .send({status:false, message:err})
     }
-}
+};
 
 module.exports.ApproveRequestShop = async(req, res)=>{
     try {
@@ -717,3 +717,59 @@ module.exports.UnApproveRequestShop = async(req, res)=>{
         });
     }
 };
+
+module.exports.GetAllProductShop = async(req, res)=>{
+    try{
+        const url_partner = process.env.URL_PARTNER
+        const token = process.env.TOKEN_PARTNER
+        const response = await axios.get(`${url_partner}/product/getallproductbyoffice`,{
+            headers: {
+                'token': token
+            }
+        })
+        return res
+                .status(200)
+                .send({status:true, data:response.data.data})
+    }catch(err){
+        return res
+                .status(500)
+                .send({status:false, message:err})
+    }
+};
+
+module.exports.Edit_Request_product = async(req, res)=>{
+    try {
+        const url_partner = process.env.URL_PARTNER;
+        const token = process.env.TOKEN_PARTNER;
+        const id = req.params.id;
+        
+        const response = await axios.put(`${url_partner}/product/editproductbyoffice/${id}`,
+            req.body,
+            {
+                headers: {
+                  'token': token
+                }
+              }
+            
+          ).catch(err=>{ return err.message});
+          if(response.status == 200)
+          {
+            return res.json({
+                message: 'แก้ไขคำร้องขอสินค้า สำเร็จ!',
+                status: true,
+                data: response.data
+            });
+          }else{
+            console.log(response)
+          }
+       
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            message: 'ไม่สามารถ แก้ไขคำร้องขอสินค้า' + err.message,
+            status: 500,
+            data: null
+        });
+    }
+};
+
