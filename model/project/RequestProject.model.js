@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const RequestProjectSchema = new mongoose.Schema({
+    
     Project_id : { type : String, required : false },
     Title : { type : String, required : false },
     Type : { type : String, required : false },
@@ -26,34 +27,5 @@ const RequestProjectSchema = new mongoose.Schema({
     }]
 
 }, { versionKey: false });
-
-RequestProjectSchema.pre('save', async function (next) {
-    try {
-        const project = this;
-        const findNumber = await RequestProject.find();
-
-        let length = findNumber.length + 1;
-
-        let data;
-        if (project.Type == 'Programmer') {
-            data = 'DEV';
-        } else if (project.Type == 'Graphic') {
-            data = 'GRP';
-        } else if (project.Type == 'A') {
-            data = 'B';
-        } else {
-            return next(new Error('Invalid project Type'));
-        }
-
-        const ProjectNumberString = data + String(length).padStart(7, '0');
-        project.Project_id = ProjectNumberString;
-
-        next();
-    } catch (err) {
-        console.error(err);
-        next(err);
-    }
-});
-
 
 module.exports = mongoose.model('RequestProject', RequestProjectSchema);

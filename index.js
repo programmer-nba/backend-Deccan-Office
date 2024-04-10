@@ -18,6 +18,7 @@ const AdminRoutes = require('./routes/Admin/admin.route');
 const DocumentRoutes = require('./routes/Document/document.route');
 const Role = require('./routes/role/role');
 const RequestProjectRoutes = require ('./routes/Project/Project.route');
+const ProjectTypeRoutes = require ('./routes/Project/ProjectType.route');
 
 
 
@@ -40,6 +41,7 @@ app.use('/ddsc-office/admin',AdminRoutes);
 app.use('/ddsc-office/partners',PartnerRoutes);
 app.use('/ddsc-office/document',DocumentRoutes);
 app.use('/ddsc-office/project',RequestProjectRoutes);
+app.use('/ddsc-office/project/type',ProjectTypeRoutes);
 
 
 const port = process.env.PORT || 9996;

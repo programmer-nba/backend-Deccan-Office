@@ -22,16 +22,15 @@ exports.getRequestProject = async (req, res, next) => {
 //Insert RequestProject
 exports.InsertRequestProject = async (req, res, next) => {
     try {
-        const { Title, Type, Sub_type, Due_date, Refs, Remark, Customer, Status } = req.body;
+        const { TypeCode, Title, Type, Sub_type, Due_date, Refs, Remark, Customer, Status } = req.body;
         const latestProject = await RequestProject.findOne().sort({ Project_id: -1 }).limit(1);
 
         let ProjectNumber = 1; // ค่าเริ่มต้นสำหรับ ProjectNumber
-        if (latestProject) {
-            const latestProjectNumber = parseInt(latestProject.Project_id.split("D")[1]); // แยกตัวเลข Project_id ออกมาและแปลงเป็นตัวเลขจำนวนเต็ม
-            ProjectNumber = latestProjectNumber + 1; // เพิ่มค่า ProjectNumber
+        if (latestProject && latestProject.Project_id) {
+            ProjectNumber = parseInt(latestProject.Project_id.slice(7)) + 1; // เพิ่มค่า Project_id
         }
 
-        const ProjectNumberString = Data + ProjectNumber.toString().padStart(7, '0'); // แปลง ProjectNumber เป็นสตริงพร้อมเติมเลข 0 ข้างหน้า
+        const ProjectNumberString = TypeCode + ProjectNumber.toString().padStart(6, '0'); // แปลง ProjectNumber เป็นสตริงพร้อมเติมเลข 0 ข้างหน้า
         const project = new RequestProject({
             Project_id: ProjectNumberString,
             Title : Title,
@@ -69,3 +68,4 @@ exports.InsertRequestProject = async (req, res, next) => {
         });
     }
 }
+
