@@ -480,7 +480,7 @@ module.exports.requestProduct = async(req, res)=>{
         })
         return res
                 .status(200)
-                .send({status:true, data:response.data})
+                .send({data:response.data})
     }catch(err){
         return res
                 .status(500)
