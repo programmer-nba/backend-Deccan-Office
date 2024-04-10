@@ -11,9 +11,9 @@ router.get('/get',authAdmin,EmployeesController.getAll);
 
 router.get('/getid/:id',authAdmin,EmployeesController.getByID);
 
-router.get('/getme',auth,EmployeesController.getMe)
+router.get('/getme',auth,EmployeesController.getMe);
 
-router.get('/get/member',auth,EmployeesController.getMember)
+router.get('/get/member',auth,EmployeesController.getMember);
 
 router.post('/post',authAdmin,EmployeesController.Post);
 
@@ -22,5 +22,7 @@ router.put('/update/:id',authAdmin,EmployeesController.Update);
 router.delete('/del/:id',authAdmin,EmployeesController.Delete);
 
 router.post('/login',LoginController.loginController);
+
+router.put('/employee/upload/image/:id', auth, EmployeesController.UpdateImage);
 
 module.exports = router;

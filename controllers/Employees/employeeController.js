@@ -257,3 +257,47 @@ exports.getMember = async (req, res)=>{
               .send({status:false, message:err})
   }
 }
+
+exports.UpdateImage = async (req, res) => {
+  try {
+    const upID = req.params.id; //รับไอดีที่ต้องการอัพเดท
+    console.log(req.body);
+  
+    const upload = multer({ storage: storage }).array("image", 20);
+    upload(req, res, async function (err) {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      let image = ''; // ตั้งตัวแปรรูป
+      if (req.files) {
+        const url = req.protocol + "://" + req.get("host");
+        const reqFiles = [];
+        for (let i = 0; i < req.files.length; i++) {
+          const src = await uploadFileCreate(req.files, res, { i, reqFiles });
+          reqFiles.push(src); // แก้ไขจาก result เป็น reqFiles
+        }
+        image = reqFiles[0];
+      }
+      Employees.findByIdAndUpdate(
+        upID,
+        {
+          image: image,
+        },
+        { new: true }
+      ).then((data) => {
+        if (!data) {
+          res.status(400).send({ status: false, message: "ไม่สามารถแก้ไขผู้ใช้งานนี้ได้" });
+        } else {
+          res.status(200).send({ status: true, message: "อัพเดทข้อมูลแล้ว", data: data });
+        }
+      }).catch((err) => {
+        res.status(500).send({ status: false, message: "มีบางอย่างผิดพลาด" });
+      });
+    });
+  
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send({ message: err });
+  }
+  
+}
