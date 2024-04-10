@@ -72,7 +72,7 @@ exports.getdocumentByRequester = async (req, res, next) => {
 exports.getdocumentByMe = async (req, res, next) => {
     try {
         const user_id = req.decoded.id
-        const documents = await Document.find({ 'Employee.employee_id': user_id });
+        const documents = await Document.find({ 'Status_detail.0.employee_id': user_id });
         return res.json({
             message: 'Get documents by Me successfully!',
             status: true,
