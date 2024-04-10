@@ -480,7 +480,7 @@ module.exports.requestProduct = async(req, res)=>{
         })
         return res
                 .status(200)
-                .send({data:response.data})
+                .send({status: true, data:response.data.data})
     }catch(err){
         return res
                 .status(500)
@@ -615,7 +615,7 @@ module.exports.requestShop = async(req, res)=>{
         })
         return res
                 .status(200)
-                .send({status:true, data:response.data})
+                .send({status:true, data:response.data.data})
     }catch(err){
         return res
                 .status(500)
@@ -634,7 +634,7 @@ module.exports.GetAllShop = async(req, res)=>{
         })
         return res
                 .status(200)
-                .send({status:true, data:response.data})
+                .send({status:true, data:response.data.data})
     }catch(err){
         return res
                 .status(500)
