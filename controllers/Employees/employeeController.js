@@ -18,54 +18,52 @@ const storage = multer.diskStorage({
 
 exports.Post = async (req, res) => {
   try {
-    // console.log(req.body.userid)
-
-    const duplicate = await Employees.findOne({ //ตรวจสอบบัตรประชาชนพนักงานว่ามีซ้ำกันหรือไม่
-        $or: [
-          { iden_number: req.body.iden_number },
-          { userid: req.body.userid }
-        ]
+    const duplicate = await Employees.findOne({
+      $or: [
+        { iden_number: req.body.iden_number },
+        { userid: req.body.userid }
+      ]
     });
     if (duplicate) {
       if (duplicate.iden_number === req.body.iden_number) {
-        // ถ้าพบว่า iden_number ซ้ำ
         return res
-                .status(409)
-                .json({status:false, message: 'มีผู้ใช้บัตรประชาชนนี้ในระบบแล้ว'});
+          .status(409)
+          .json({ status: false, message: 'มีผู้ใช้บัตรประชาชนนี้ในระบบแล้ว' });
       } else if (duplicate.userid === req.body.userid) {
-        // ถ้าพบว่า userid ซ้ำ
         return res
-                .status(200)
-                .json({status:false, message: 'มีผู้ใช้ยูสเซอร์ไอดีนี้ในระบบแล้ว'});
+          .status(200)
+          .json({ status: false, message: 'มีผู้ใช้ยูสเซอร์ไอดีนี้ในระบบแล้ว' });
       }
     }
-    let chose
-    if(!req.body.password){
-      chose = req.body.iden_number
-    }else{
-      chose = req.body.password
+
+    let passwordToUse = req.body.password;
+    if (!req.body.password) {
+      passwordToUse = req.body.iden_number;
+    } else {
+      // Hash the password
+      passwordToUse = await bcrypt.hash(req.body.password, 10);
     }
-    const employee = await Employees.create(
-      {
-          ...req.body,
-          password:chose,
-          role:req.body.role,
-          position:req.body.position
-      }); //เพิ่มพนักงานเข้าระบบ
+    const employee = await Employees.create({
+      ...req.body,
+      password: passwordToUse,
+      role: req.body.role,
+      position: req.body.position
+    });
+
     if (employee) {
       return res
-              .status(201)
-              .send({ 
-                status: true, 
-                data: employee,
-                message : "เพิ่มพนักงานในระบบสำเร็จแล้ว !!"
-               });
+        .status(201)
+        .send({
+          status: true,
+          data: employee,
+          message: 'เพิ่มพนักงานในระบบสำเร็จแล้ว !!'
+        });
     }
   } catch (err) {
-      console.log(err);
-      return res
-              .status(500)
-              .send({ message: "มีบางอย่างผิดพลาด" });
+    console.log(err);
+    return res
+      .status(500)
+      .send({ message: 'มีบางอย่างผิดพลาด' });
   }
 };
 

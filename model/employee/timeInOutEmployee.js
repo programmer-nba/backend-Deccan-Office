@@ -23,7 +23,11 @@ const timeSchema = new Schema({
     mount:{ type: String, default: () => dayjsTimestamp.format('MM') },
     year:{ type: String, default: () => dayjsTimestamp.format('YYYY') },
     time: { type: String, default: "00:00:00" },
-    time_line: { type: String, require: false },
+    time_line: { type: String, require: false, },
+    time_in : { type : String, require : false, default : ""},
+    time_out : { type : String, require : false, default : ""},
+    total_ot : {type : String, require : false, default : ""}
+
 },{timestamps:true});
 
 timeSchema.pre('save', function (next) { 

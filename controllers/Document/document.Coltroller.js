@@ -1,14 +1,19 @@
 const Document = require('../../model/document/Document')
+// const {timeInOut} = require ('../../model/employee/timeInOutEmployee')
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone');
 const { roleEmployee } = require('../../model/employee/role');
+const { required } = require('joi');
+const { timeInOut } = require('../../model/employee/timeInOutEmployee');
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 dayjsTimestamp = dayjs().tz('Asia/Bangkok');
 dayTime = dayjsTimestamp.format('YYYY-MM-DD HH:mm:ss');
+
+
 
 //Get Document
 exports.getdocument = async (req, res, next) => {
@@ -506,6 +511,7 @@ exports.updateDocumentCEONotAllow = async (req, res, next) => {
     }
 };//ใช้งานได้
 
+
 exports.updateDocumentStatus = async (req, res, next) =>{
     try{
         const employee_id = req.decoded.id
@@ -514,6 +520,7 @@ exports.updateDocumentStatus = async (req, res, next) =>{
         const document_id = req.params.id
         const statusApprove = req.body.statusApprove
         const remark = req.body.remark
+        
         if(statusApprove != 'อนุมัติ' && statusApprove != 'ไม่อนุมัติ' && statusApprove != 'แก้ไข'){
             return res
                     .status(400)
@@ -554,9 +561,9 @@ exports.updateDocumentStatus = async (req, res, next) =>{
             if(roleUser.number_role >= roleRequester.number_role){
                 return res
                         .status(400)
-                        .send({status:false, message:"คุณไม่มีสิทธิ์ใช้งาน"})
+                        .send({status:false, message:"คุณไม่มีสิทธิ์ใช้งาน ยศคุณเท่ากันหรือต่ำกว่า"})
             }
-        
+
          // เรียงลำดับ array Status_detail ตามฟิลด์ date ในลำดับเพิ่ม (ascending order)
          const sortedStatusDetail = findDocument.Status_detail.sort((a, b) => new Date(a.date) - new Date(b.date));
 
@@ -608,7 +615,6 @@ exports.updateDocumentStatus = async (req, res, next) =>{
             Status_document = 'รอตรวจสอบ'
             detail.status = 'แก้ไข'
         }
-
         const updateDocument = await Document.findByIdAndUpdate(
             document_id,
             {
@@ -618,17 +624,48 @@ exports.updateDocumentStatus = async (req, res, next) =>{
                 }
             },
             {new:true})
+
             if(!findDocument){
                 return res
                         .status(404)
                         .send({status:false, message:"ไม่พบเอกสารที่คุณต้องการ"})
+            }
+            // Insert data into timeSchema if the role of the approver is owner
+            if (roleUser.role === 'owner'||roleUser.role === 'admin') {
+                const { totalHours, totalMinutes, totalSeconds } = calculateTotalTime(findDocument.OT.Total_OT.totalseconds);
+                const timeData = {
+                    employee_id : sortedStatusDetail[0].employee_id,
+                    day: dayjs(findDocument.OT.Timein).tz('Asia/Bangkok').format('DD'),
+                    mount: dayjs(findDocument.OT.Timein).tz('Asia/Bangkok').format('MM'),
+                    year: dayjs(findDocument.OT.Timein).tz('Asia/Bangkok').format('YYYY'),
+                    time: `${totalHours.toString().padStart(2, '0')}:${totalMinutes.toString().padStart(2, '0')}:${totalSeconds.toString().padStart(2, '0')}`,
+                    time_line : "OT",
+                    time_in: dayjs(findDocument.OT.Timein).tz('Asia/Bangkok').format('HH:mm:ss'),
+                    time_out: dayjs(findDocument.OT.Timeout).tz('Asia/Bangkok').format('HH:mm:ss'),
+                };
+                console.log(timeData)
+                console.log('Owner อนุมัติ จะทำการเพิ่มข้อมูล OT ลงฐานข้อมูลลงเวลาพนักงาน')
+                const newTimeData = await timeInOut.create(timeData)
+                    if(!newTimeData){
+                        return res
+                                .status(400)
+                                .send({status:false, message:"ไม่สามารถสร้างประวัติ OT ได้"})
+                    }
             }
         return res
                 .status(200)
                 .send({status:true, data:updateDocument})
 
     }catch(err){
-        console.error('มีบางอย่างผิดพลาด');
-        return res.status(500).json({ message: err });
+        console.error(err);
+        return res.status(500).json({ message: err.message});
     }
+}
+
+function calculateTotalTime(totalSeconds) {
+    const totalHours = Math.floor(totalSeconds / 3600);
+    const totalMinutes = Math.floor((totalSeconds % 3600) / 60);
+    const remainingSeconds = totalSeconds % 60;
+
+    return { totalHours, totalMinutes, totalSeconds: remainingSeconds };
 }

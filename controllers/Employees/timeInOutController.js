@@ -185,19 +185,31 @@ getTimeDay = async (req, res)=>{
             morningIn: null,
             morningOut: null,
             afterIn: null,
-            afterOut: null
+            afterOut: null,
+            time_in: null,
+            time_out: null,
+            total_ot : null
         }
           findId.forEach(item => {
             // ทำสิ่งที่ต้องการกับแต่ละรายการ (item)
             if (item.time_line === 'เข้างานช่วงเช้า') {
                 data.morningIn = item.time;
+
             } else if (item.time_line === 'พักเที่ยง') {
                 data.morningOut = item.time;
+
             } else if (item.time_line === 'เข้างานช่วงบ่าย') {
                 data.afterIn = item.time;
+
             } else if (item.time_line === 'ลงเวลาออกงาน') {
                 data.afterOut = item.time;
+
+            } else if (item.time_line === 'OT') {
+                data.time_in = item.time_in;
+                data.time_out = item.time_out;
+                data.total_ot = item.time;
             }
+            
           });
         return res
                 .status(200)

@@ -1,3 +1,4 @@
+const { required } = require('joi');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -16,7 +17,7 @@ const DocumentSchema = new Schema({
             totalseconds : { type : Number, required : false} //รวมเป็นวินาที
         } // รวมชั่วโมงการทำ OT
     },
-
+    remark : { type : String, required : false, default : "" },
     Detail :{type:String, required:false, default:""},
 
     // Detail : [{
@@ -33,7 +34,7 @@ const DocumentSchema = new Schema({
         position:{type : String, required : false, default : ""},
         date: {type : Date, required : false, default : null},
         status:{type : String, required : false, default : ""},
-        remark:{type : String, required : false}
+        remark:{type : String, required : false, default : ""}
     }],
 
 
