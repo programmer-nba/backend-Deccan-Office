@@ -180,6 +180,7 @@ getTimeDay = async (req, res)=>{
       year:year})
       // console.log(findId)
     if(findId){
+      
         const data = {
             day: `${findId[0].year}/${findId[0].mount}/${findId[0].day}`,
             morningIn: null,
@@ -190,24 +191,36 @@ getTimeDay = async (req, res)=>{
             time_out: null,
             total_ot : null
         }
-          findId.forEach(item => {
+        console.log(findId)
+          findId.forEach((item) => {
+            console.log('aaasdasd')
             // ทำสิ่งที่ต้องการกับแต่ละรายการ (item)
             if (item.time_line === 'เข้างานช่วงเช้า') {
-                data.morningIn = item.time;
+                data.morningIn = item.time
+                console.log('AAAAAA')
 
             } else if (item.time_line === 'พักเที่ยง') {
-                data.morningOut = item.time;
+                data.morningOut = item.time
+                console.log('BBBBBB')
 
             } else if (item.time_line === 'เข้างานช่วงบ่าย') {
-                data.afterIn = item.time;
+                data.afterIn = item.time
+                console.log('CCCCCC')
 
             } else if (item.time_line === 'ลงเวลาออกงาน') {
-                data.afterOut = item.time;
+                data.afterOut = item.time
+                console.log('DDDDDD')
 
-            } else if (item.time_line === 'OT') {
-                data.time_in = item.time_in;
-                data.time_out = item.time_out;
-                data.total_ot = item.time;
+            } else if (item.time_line == 'OT') {
+              console.log('EEEEEEE')
+              const totalOtInSeconds = item.total_ot
+              const hours = Math.floor(totalOtInSeconds / 3600)
+              const minutes = Math.floor((totalOtInSeconds % 3600) / 60)
+              const seconds = totalOtInSeconds % 60
+            
+              data.time_in = item.time_in
+              data.time_out = item.time_out
+              data.total_ot = `${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
             }
             
           });

@@ -632,13 +632,13 @@ exports.updateDocumentStatus = async (req, res, next) =>{
             }
             // Insert data into timeSchema if the role of the approver is owner
             if (roleUser.role === 'owner'||roleUser.role === 'admin') {
-                const { totalHours, totalMinutes, totalSeconds } = calculateTotalTime(findDocument.OT.Total_OT.totalseconds);
+                const { totalHours, totalMinutes, totalSeconds, totalOTInSeconds} = calculateTotalTime(findDocument.OT.Total_OT.totalseconds);
                 const timeData = {
                     employee_id : sortedStatusDetail[0].employee_id,
                     day: dayjs(findDocument.OT.Timein).tz('Asia/Bangkok').format('DD'),
                     mount: dayjs(findDocument.OT.Timein).tz('Asia/Bangkok').format('MM'),
                     year: dayjs(findDocument.OT.Timein).tz('Asia/Bangkok').format('YYYY'),
-                    time: `${totalHours.toString().padStart(2, '0')}:${totalMinutes.toString().padStart(2, '0')}:${totalSeconds.toString().padStart(2, '0')}`,
+                    total_ot: totalOTInSeconds,
                     time_line : "OT",
                     time_in: dayjs(findDocument.OT.Timein).tz('Asia/Bangkok').format('HH:mm:ss'),
                     time_out: dayjs(findDocument.OT.Timeout).tz('Asia/Bangkok').format('HH:mm:ss'),
@@ -666,6 +666,7 @@ function calculateTotalTime(totalSeconds) {
     const totalHours = Math.floor(totalSeconds / 3600);
     const totalMinutes = Math.floor((totalSeconds % 3600) / 60);
     const remainingSeconds = totalSeconds % 60;
+    const totalOTInSeconds = totalHours * 3600 + totalMinutes * 60 + remainingSeconds;
 
-    return { totalHours, totalMinutes, totalSeconds: remainingSeconds };
+    return { totalHours, totalMinutes, totalSeconds, totalOTInSeconds };
 }

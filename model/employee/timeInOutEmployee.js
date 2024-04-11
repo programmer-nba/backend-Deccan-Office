@@ -26,7 +26,7 @@ const timeSchema = new Schema({
     time_line: { type: String, require: false, },
     time_in : { type : String, require : false, default : ""},
     time_out : { type : String, require : false, default : ""},
-    total_ot : {type : String, require : false, default : ""}
+    total_ot : {type : Number, require : false, default : null}
 
 },{timestamps:true});
 
