@@ -351,20 +351,47 @@ getTimeDayAll = async (req, res) => {
       dayjs(Date.now()).format('YYYY')
     ]);
 
-    const timeinouts = await timeInOut.find({ day: day, mount: mount, year: year });
+    const findId = await timeInOut.find(
+      { day: day, mount: mount, year: year }
+    );
 
-    return res.json({
-        message: 'Get Time data successfully!',
-        status: true,
-        data: timeinouts
-    });
+    if (findId.length > 0) {
+      const data = {};
+      findId.forEach((item) => {
+        if (!data[item.employee_id]) {
+          data[item.employee_id] = {
+            employee_id: item.employee_id,
+            day: `${year}/${mount}/${day}`,
+            morningIn: "",
+            morningOut: "",
+            afterIn: "",
+            afterOut: "",
+          };
+        }
+
+        if (item.time_line === 'เข้างานช่วงเช้า') {
+          data[item.employee_id].morningIn = item.time;
+        } else if (item.time_line === 'พักเที่ยง') {
+          data[item.employee_id].morningOut = item.time;
+        } else if (item.time_line === 'เข้างานช่วงบ่าย') {
+          data[item.employee_id].afterIn = item.time;
+        } else if (item.time_line === 'ลงเวลาออกงาน') {
+          data[item.employee_id].afterOut = item.time;
+        }
+      });
+
+      return res
+        .status(200)
+        .send({ status: true, data: Object.values(data) });
+    } else {
+      return res
+        .status(400)
+        .send({ status: true, message: "วันนี้ท่านยังไม่ได้ลงเวลางาน" });
+    }
   } catch (err) {
-      console.log(err)
-      return res.json({
-          message: ('Can not get Time data', err.message),
-          status: false,
-          data: null
-      })
+    return res
+      .status(500)
+      .send({ status: false, message: err.message });
   }
 };
 
