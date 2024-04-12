@@ -366,12 +366,7 @@ getTimeDayAll = async (req, res) => {
             morningOut: "",
             afterIn: "",
             afterOut: "",
-            ot: {
-              date: "",
-              time_in: "",
-              time_out: "",
-              total_ot: ""
-            }
+            ot: {}
           };
         }
 
