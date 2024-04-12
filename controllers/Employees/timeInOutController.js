@@ -366,6 +366,7 @@ getTimeDayAll = async (req, res) => {
             morningOut: "",
             afterIn: "",
             afterOut: "",
+            ot: []
           };
         }
 
@@ -377,7 +378,19 @@ getTimeDayAll = async (req, res) => {
           data[item.employee_id].afterIn = item.time;
         } else if (item.time_line === 'ลงเวลาออกงาน') {
           data[item.employee_id].afterOut = item.time;
-        }
+        } else if (item.time_line === 'OT') {
+          const totalOtInSeconds = item.total_ot;
+          const hours = Math.floor(totalOtInSeconds / 3600);
+          const minutes = Math.floor((totalOtInSeconds % 3600) / 60);
+          const seconds = totalOtInSeconds % 60;
+      
+          data[item.employee_id].ot.push({
+              date: `${item.day}/${item.mount}/${item.year}`,
+              time_in: item.time_in,
+              time_out: item.time_out,
+              total_ot: `${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`
+          });
+      }      
       });
 
       return res
