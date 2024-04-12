@@ -514,9 +514,11 @@ exports.updateDocumentCEONotAllow = async (req, res, next) => {
 
 exports.updateDocumentStatus = async (req, res, next) =>{
     try{
+        console.log('req.decoded :', req.decoded);
         const employee_id = req.decoded.id
         const role = req.decoded.role
         const position = req.decoded.position
+        
         const document_id = req.params.id
         const statusApprove = req.body.statusApprove
         const remark = req.body.remark
