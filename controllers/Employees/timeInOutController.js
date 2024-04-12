@@ -5,6 +5,7 @@ const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone');
 const { date } = require("joi");
 
+
 // เพิ่มปลั๊กอินสำหรับ UTC และ timezone ใน dayjs
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -115,7 +116,7 @@ timeInMorning = async (req, res)=>{
                 .status(500)
                 .send({ status:false, maessage: err.message });
     }
-}
+};
 
 getMe = async (req, res)=>{
     try{
@@ -164,80 +165,72 @@ getMe = async (req, res)=>{
         console.log(err);
         return res.status(500).send({ maessage: err.message});
     }
-}
+};
 
-getTimeDay = async (req, res)=>{
-  try{
+getTimeDay = async (req, res) => {
+  try {
     const id = req.decoded.id
-    const day = dayjs(Date.now()).format('DD')
-    const mount = dayjs(Date.now()).format('MM')
-    const year = dayjs(Date.now()).format('YYYY')
+    const [day, mount, year] = await Promise.all([
+      dayjs(Date.now()).format('DD'),
+      dayjs(Date.now()).format('MM'),
+      dayjs(Date.now()).format('YYYY')
+    ]);
 
     const findId = await timeInOut.find(
-      {employee_id:id,
-      day:day,
-      mount:mount,
-      year:year})
-      // console.log(findId)
-    if(findId){
-      
-        const data = {
-            day: `${findId[0].year}/${findId[0].mount}/${findId[0].day}`,
-            morningIn: null,
-            morningOut: null,
-            afterIn: null,
-            afterOut: null,
-            time_in: null,
-            time_out: null,
-            total_ot : null
+      { employee_id: id, day: day, mount: mount, year: year }
+    );
+
+    if (findId.length > 0) {
+      const data = {
+        day: `${year}/${mount}/${day}`,
+        morningIn: null,
+        morningOut: null,
+        afterIn: null,
+        afterOut: null,
+        time_in: null,
+        time_out: null,
+        total_ot: null
+      };
+
+      findId.forEach((item) => {
+        if (item.time_line === 'เข้างานช่วงเช้า') {
+          data.morningIn = item.time;
+
+        } else if (item.time_line === 'พักเที่ยง') {
+          data.morningOut = item.time;
+
+        } else if (item.time_line === 'เข้างานช่วงบ่าย') {
+          data.afterIn = item.time;
+
+        } else if (item.time_line === 'ลงเวลาออกงาน') {
+          data.afterOut = item.time;
+
+        } else if (item.time_line === 'OT') {
+          const totalOtInSeconds = item.total_ot;
+          const hours = Math.floor(totalOtInSeconds / 3600);
+          const minutes = Math.floor((totalOtInSeconds % 3600) / 60);
+          const seconds = totalOtInSeconds % 60;
+
+          data.time_in = item.time_in;
+          data.time_out = item.time_out;
+          data.total_ot = `${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
         }
-        console.log(findId)
-          findId.forEach((item) => {
-            console.log('aaasdasd')
-            // ทำสิ่งที่ต้องการกับแต่ละรายการ (item)
-            if (item.time_line === 'เข้างานช่วงเช้า') {
-                data.morningIn = item.time
-                console.log('AAAAAA')
+      });
 
-            } else if (item.time_line === 'พักเที่ยง') {
-                data.morningOut = item.time
-                console.log('BBBBBB')
-
-            } else if (item.time_line === 'เข้างานช่วงบ่าย') {
-                data.afterIn = item.time
-                console.log('CCCCCC')
-
-            } else if (item.time_line === 'ลงเวลาออกงาน') {
-                data.afterOut = item.time
-                console.log('DDDDDD')
-
-            } else if (item.time_line == 'OT') {
-              console.log('EEEEEEE')
-              const totalOtInSeconds = item.total_ot
-              const hours = Math.floor(totalOtInSeconds / 3600)
-              const minutes = Math.floor((totalOtInSeconds % 3600) / 60)
-              const seconds = totalOtInSeconds % 60
-            
-              data.time_in = item.time_in
-              data.time_out = item.time_out
-              data.total_ot = `${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
-            }
-            
-          });
-        return res
-                .status(200)
-                .send({status:true, data: data})
-    }else{
       return res
-              .status(400)
-              .send({status:true, message:"วันนี้ท่านยังไม่ได้ลงเวลางาน"})
+        .status(200)
+        .send({ status: true, data: data });
+    } else {
+      return res
+        .status(400)
+        .send({ status: true, message: "วันนี้ท่านยังไม่ได้ลงเวลางาน" });
     }
-  }catch(err){
+  } catch (err) {
     return res
-            .status(500)
-            .send({status: false, maessage: err.message})
+      .status(500)
+      .send({ status: false, message: err.message });
   }
-}
+};
 
 updateTime = async (req, res)=>{
     try{
@@ -262,7 +255,7 @@ updateTime = async (req, res)=>{
       console.log(err);
       return res.status(500).send({ maessage: err.message });
     }
-}
+};
 
 deleteTime = async (req, res)=>{
     try{
@@ -281,7 +274,7 @@ deleteTime = async (req, res)=>{
       console.log(err);
       return res.status(500).send({ maessage: err.message });
     }
-}
+};
 
 approveTime = async(req, res)=>{
   try{
@@ -331,7 +324,7 @@ approveTime = async(req, res)=>{
             .status(500)
             .send({status:false, message:err})
   }
-}
+};
 
 getAll = async (req, res) => {
   try {
@@ -341,14 +334,97 @@ getAll = async (req, res) => {
         status: true,
         data: timeinouts
     });
-} catch (err) {
-    console.log(err)
-    return res.json({
-        message: ('Can not get Time data', err.message),
-        status: false,
-        data: null
-    })
-}
+  } catch (err) {
+      console.log(err)
+      return res.json({
+          message: ('Can not get Time data', err.message),
+          status: false,
+          data: null
+      })
+  }
 };
 
-module.exports = { timeInMorning, getMe, updateTime, deleteTime, getTimeDay, approveTime, getAll}
+getTimeDayAll = async (req, res) => {
+  try {
+    const [day, mount, year] = await Promise.all([
+      dayjs(Date.now()).format('DD'),
+      dayjs(Date.now()).format('MM'),
+      dayjs(Date.now()).format('YYYY')
+    ]);
+
+    const timeinouts = await timeInOut.find({ day: day, mount: mount, year: year });
+
+    return res.json({
+        message: 'Get Time data successfully!',
+        status: true,
+        data: timeinouts
+    });
+  } catch (err) {
+      console.log(err)
+      return res.json({
+          message: ('Can not get Time data', err.message),
+          status: false,
+          data: null
+      })
+  }
+};
+
+// Get Time By Employee
+getTimeByEmployee = async (req, res, next) => {
+  try {
+      const time = await timeInOut.find({ 'employee_id': req.params.employee_id });
+      return res.json({
+          message: 'Get Time by employee_id successfully!',
+          status: true,
+          data: time
+      });
+  } catch (err) {
+      console.log(err);
+      return res.json({
+          message: 'Can not get Time by employee_id: ' + err.message,
+          status: false,
+          data: null
+      });
+  }
+};
+
+// Get All OT
+getAllOT = async (req, res) => {
+  try {
+    const timeinouts = await timeInOut.find({ time_line: 'OT' });
+    return res.json({
+        message: 'Get OT data successfully!',
+        status: true,
+        data: timeinouts
+    });
+  } catch (err) {
+      console.log(err)
+      return res.json({
+          message: ('Can not get OT data', err.message),
+          status: false,
+          data: null
+      })
+  }
+};
+
+//Get OT By Employee
+getOTByEmployeeId = async (req, res) => {
+  try {
+    const { employee_id } = req.params;
+    const ots = await timeInOut.find({ employee_id: employee_id, time_line: 'OT' });
+    return res.json({
+      message: 'Get OT data successfully!',
+      status: true,
+      data: ots
+    });
+  } catch (err) {
+    console.log(err);
+    return res.json({
+      message: ('Can not get OT data', err.message),
+      status: false,
+      data: null
+    });
+  }
+};
+
+module.exports = { timeInMorning, getMe, updateTime, deleteTime, getTimeDay, approveTime, getAll, getTimeDayAll, getTimeByEmployee, getAllOT, getOTByEmployeeId}

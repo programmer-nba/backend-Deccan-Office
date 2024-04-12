@@ -18,6 +18,7 @@ function updateRealTime() {
 setInterval(updateRealTime, 500);
 
 const timeSchema = new Schema({
+    
     employee_id:{type:String, require: true},
     day:{ type: String, default: () => dayjsTimestamp.format('DD') },
     mount:{ type: String, default: () => dayjsTimestamp.format('MM') },
