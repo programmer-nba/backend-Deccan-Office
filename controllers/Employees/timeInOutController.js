@@ -191,7 +191,6 @@ getTimeDay = async (req, res) => {
         time_out: null,
         total_ot: null
       };
-
       findId.forEach((item) => {
         if (item.time_line === 'เข้างานช่วงเช้า') {
           data.morningIn = item.time;
@@ -372,19 +371,54 @@ getTimeDayAll = async (req, res) => {
 // Get Time By Employee
 getTimeByEmployee = async (req, res, next) => {
   try {
-      const time = await timeInOut.find({ 'employee_id': req.params.employee_id });
-      return res.json({
-          message: 'Get Time by employee_id successfully!',
-          status: true,
-          data: time
-      });
+    const employee_id = req.params.employee_id;
+    const findId = await timeInOut.find({ employee_id: employee_id });
+
+    const dataByDay = {};
+    findId.forEach((item) => {
+      const key = `${item.year}/${item.mount}/${item.day}`;
+      if (!dataByDay[key]) {
+        dataByDay[key] = {
+          day: key,
+          morningIn: null,
+          morningOut: null,
+          afterIn: null,
+          afterOut: null,
+          time_in: null,
+          time_out: null,
+          total_ot: null
+        };
+      }
+
+      if (item.time_line === 'เข้างานช่วงเช้า') {
+        dataByDay[key].morningIn = item.time;
+      } else if (item.time_line === 'พักเที่ยง') {
+        dataByDay[key].morningOut = item.time;
+      } else if (item.time_line === 'เข้างานช่วงบ่าย') {
+        dataByDay[key].afterIn = item.time;
+      } else if (item.time_line === 'ลงเวลาออกงาน') {
+        dataByDay[key].afterOut = item.time;
+      } else if (item.time_line === 'OT') {
+        const totalOtInSeconds = item.total_ot;
+        const hours = Math.floor(totalOtInSeconds / 3600);
+        const minutes = Math.floor((totalOtInSeconds % 3600) / 60);
+        const seconds = totalOtInSeconds % 60;
+
+        dataByDay[key].time_in = item.time_in;
+        dataByDay[key].time_out = item.time_out;
+        dataByDay[key].total_ot = `${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
+      }
+    });
+
+    const data = Object.values(dataByDay);
+
+    return res
+      .status(200)
+      .send({ status: true, data: data });
   } catch (err) {
-      console.log(err);
-      return res.json({
-          message: 'Can not get Time by employee_id: ' + err.message,
-          status: false,
-          data: null
-      });
+    return res
+      .status(500)
+      .send({ status: false, message: err.message });
   }
 };
 
@@ -392,30 +426,29 @@ getTimeByEmployee = async (req, res, next) => {
 getAllOT = async (req, res) => {
   try {
     const timeinouts = await timeInOut.find({ time_line: 'OT' });
-    return res.json({
-        message: 'Get OT data successfully!',
-        status: true,
-        data: timeinouts
-    });
-  } catch (err) {
-      console.log(err)
-      return res.json({
-          message: ('Can not get OT data', err.message),
-          status: false,
-          data: null
-      })
-  }
-};
 
-//Get OT By Employee
-getOTByEmployeeId = async (req, res) => {
-  try {
-    const { employee_id } = req.params;
-    const ots = await timeInOut.find({ employee_id: employee_id, time_line: 'OT' });
+    const newData = timeinouts.map(item => {
+      const newDate = `${item.day}/${item.mount}/${item.year}`;
+      const totalOtInSeconds = item.total_ot;
+      const hours = Math.floor(totalOtInSeconds / 3600);
+      const minutes = Math.floor((totalOtInSeconds % 3600) / 60);
+      const seconds = totalOtInSeconds % 60;
+      return { _id : item.id, 
+        employee_id : item.employee_id, 
+        date : newDate,
+        time_line : item.time_line,
+        time_in : item.time_in, 
+        time_out : item.time_out, 
+        total_ot : hours + ' ชั่วโมง ' + minutes + ' นาที ' + seconds + ' วินาที',
+        createdAt : item.createdAt,
+        updatedAt : item.updatedAt
+      };
+    });
+
     return res.json({
       message: 'Get OT data successfully!',
       status: true,
-      data: ots
+      data: newData
     });
   } catch (err) {
     console.log(err);
@@ -425,6 +458,45 @@ getOTByEmployeeId = async (req, res) => {
       data: null
     });
   }
+};
+
+//Get OT By Employee
+getOTByEmployeeId = async (req, res) => {
+    const { employee_id } = req.params;
+    try {
+      const timeinouts = await timeInOut.find({ employee_id: employee_id, time_line: 'OT' });
+  
+      const newData = timeinouts.map(item => {
+        const newDate = `${item.day}/${item.mount}/${item.year}`;
+        const totalOtInSeconds = item.total_ot;
+        const hours = Math.floor(totalOtInSeconds / 3600);
+        const minutes = Math.floor((totalOtInSeconds % 3600) / 60);
+        const seconds = totalOtInSeconds % 60;
+        return { _id : item.id, 
+          employee_id : item.employee_id, 
+          date : newDate,
+          time_line : item.time_line,
+          time_in : item.time_in, 
+          time_out : item.time_out, 
+          total_ot : hours + ' ชั่วโมง ' + minutes + ' นาที ' + seconds + ' วินาที',
+          createdAt : item.createdAt,
+          updatedAt : item.updatedAt
+        };
+      });
+  
+      return res.json({
+        message: 'Get OT data successfully!',
+        status: true,
+        data: newData
+      });
+    } catch (err) {
+      console.log(err);
+      return res.json({
+        message: ('Can not get OT data', err.message),
+        status: false,
+        data: null
+      });
+    }
 };
 
 module.exports = { timeInMorning, getMe, updateTime, deleteTime, getTimeDay, approveTime, getAll, getTimeDayAll, getTimeByEmployee, getAllOT, getOTByEmployeeId}

@@ -20,12 +20,12 @@ router.post('/time/approve',auth,TimeToWorkController.approveTime)
 
 router.get('/time/admin/getall', TimeToWorkController.getAll)
 
-router.get('/time/getday/all', authAdmin, TimeToWorkController.getTimeDayAll)// ดึงเวลาทั้งหมดของวันนี้
+router.get('/time/getday/all', auth, TimeToWorkController.getTimeDayAll)// ดึงเวลาทั้งหมดของวันนี้
 
-router.get('/time/getall/employee/:employee_id', TimeToWorkController.getTimeByEmployee)// ดึงเวลาทั้งหมดตาม ID พนักงาน
+router.get('/time/getall/employee/:employee_id', auth, TimeToWorkController.getTimeByEmployee)// ดึงเวลาทั้งหมดตาม ID พนักงาน
 
 router.get('/time/getall/ot', authAdmin, TimeToWorkController.getAllOT)// ดึงข้อมูล OT ทั้งหมด
 
-router.get('/time/getall/ot/byem/:employee_id', authAdmin, TimeToWorkController.getOTByEmployeeId)// ดึงข้อมูล OT ทั้งหมดตามรหัสพนักงาน
+router.get('/time/getall/ot/byem/:employee_id', auth, TimeToWorkController.getOTByEmployeeId)// ดึงข้อมูล OT ทั้งหมดตามรหัสพนักงาน
 
 module.exports = router;
