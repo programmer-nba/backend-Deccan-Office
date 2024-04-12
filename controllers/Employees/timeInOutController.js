@@ -366,7 +366,12 @@ getTimeDayAll = async (req, res) => {
             morningOut: "",
             afterIn: "",
             afterOut: "",
-            ot: []
+            ot: {
+              date: "",
+              time_in: "",
+              time_out: "",
+              total_ot: ""
+            }
           };
         }
 
@@ -384,12 +389,12 @@ getTimeDayAll = async (req, res) => {
           const minutes = Math.floor((totalOtInSeconds % 3600) / 60);
           const seconds = totalOtInSeconds % 60;
       
-          data[item.employee_id].ot.push({
+          data[item.employee_id].ot = {
               date: `${item.day}/${item.mount}/${item.year}`,
               time_in: item.time_in,
               time_out: item.time_out,
               total_ot: `${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`
-          });
+          };
       }      
       });
 
