@@ -96,7 +96,7 @@ exports.getdocumentByMe = async (req, res, next) => {
 // Get Document By Status
 exports.getdocumentByStatus = async (req, res, next) => {
     try {
-        const documents = await Document.find({ Status: req.params.Status });
+        const documents = await Document.find({ Status_document: req.params.Status_document });
         return res.json({
             message: 'Get documents by Status successfully!',
             status: true,
@@ -115,19 +115,19 @@ exports.getdocumentByStatus = async (req, res, next) => {
 //Insert Document   
 exports.InsertDocument = async (req, res, next) => {
     try {
-        const latestDoc = await Document.findOne().sort({ Document_id: -1 }).limit(1);
+        const latestDoc = await Document.findOne().sort({ document_id: -1 }).limit(1);
         const employee_id = req.decoded.id
         const role = req.decoded.role
         const position = req.decoded.position
-        if (req.body.Type != "OT" && req.body.Type != "Normal") {
+        if (req.body.type != "OT" && req.body.type != "Normal") {
             return res.json({
                 message: 'it not OT or Normal',
                 status: false,
                 data: null
             });
         }
-        else if (req.body.Type === "Normal") {
-            if (req.body.OT) {
+        else if (req.body.type === "Normal") {
+            if (req.body.ot) {
                 return res.json({
                     message: 'ไม่สามารถเพิ่ม OT หาก Type เป็น Normal',
                     status: false,
@@ -137,10 +137,10 @@ exports.InsertDocument = async (req, res, next) => {
         }
         let docid = 1; // ค่าเริ่มต้นสำหรับ docid
         if (latestDoc) {
-            docid = parseInt(latestDoc.Document_id.slice(2)) + 1; // เพิ่มค่า docid
+            docid = parseInt(latestDoc.document_id.slice(2)) + 1; // เพิ่มค่า docid
         }
         const docidString = docid.toString().padStart(5, '0'); // แปลง docid เป็นสตริงพร้อมเติมเลข 0 ข้างหน้า
-        const { Doc_Date, Headers, Type, To, Timein, Timeout, Detail } = req.body;
+        const { doc_date, headers, type, to, timein, timeout, detail } = req.body;
         
         let status = "รอหัวหน้าแผนกอนุมัติ"
             if(role == 'head_department'){
@@ -150,14 +150,14 @@ exports.InsertDocument = async (req, res, next) => {
             }
 
         const document = new Document({
-            Document_id: docidString,
-            Doc_Date: Doc_Date,
-            Headers: Headers,
-            Type : Type,
-            To: To,
-            Detail: req.body.Detail,
-            Status_document: status,
-            Status_detail: [{
+            document_id: docidString,
+            doc_date: doc_date,
+            headers: headers,
+            type : type,
+            to: to,
+            detail: req.body.detail,
+            status_document: status,
+            status_detail: [{
                 employee_id: employee_id,
                 role: role,
                 position: position,
@@ -167,8 +167,8 @@ exports.InsertDocument = async (req, res, next) => {
             // Requester: Requester
         });
 
-        if (req.body.Type === "OT") {
-            if (!req.body.OT || !req.body.OT.Timein || !req.body.OT.Timeout) {
+        if (req.body.type === "OT") {
+            if (!req.body.ot || !req.body.ot.timein || !req.body.ot.timeout) {
                 return res.json({
                     message: 'คุณจำเป็นต้องกรอก เวลา ขอทำ OT',
                     status: false,
@@ -176,17 +176,17 @@ exports.InsertDocument = async (req, res, next) => {
                 });
             }
 
-            const timein = dayjs(req.body.OT.Timein);
-            const timeout = dayjs(req.body.OT.Timeout);
+            const timein = dayjs(req.body.ot.timein);
+            const timeout = dayjs(req.body.ot.timeout);
             const totalHours = timeout.diff(timein, 'hour');
             const totalMinutes = timeout.diff(timein, 'minute') % 60;
             const totalSeconds = timeout.diff(timein, 'second') % 60;
             const totalOTInSeconds = totalHours * 3600 + totalMinutes * 60 + totalSeconds;
         
-            document.OT = {
-                Timein: timein,
-                Timeout: timeout,
-                Total_OT: {
+            document.ot = {
+                timein: timein,
+                timeout: timeout,
+                total_ot: {
                     totaltime: (totalHours + " ชั่วโมง " + totalMinutes + " นาที " + totalSeconds + " วินาที"),
                     totalseconds: totalOTInSeconds
                 }
@@ -223,39 +223,6 @@ exports.InsertDocument = async (req, res, next) => {
         });
     }
 };
-
-//Update Head Department
-exports.updateDocumentHeadDepartment = async (req, res, next) => {
-    try {
-        const { id } = req.params; // รับ ID ของเอกสารที่ต้องการอัปเดต
-        const user_id = req.decoded.id // ดึง _id Head_department ที่ต้องการอัปเดต
-    
-        // ทำการตรวจสอบว่าเอกสารที่ต้องการอัปเดตอยู่หรือไม่
-        const document = await Document.findById(id);
-        if (!document) {
-            return res.status(404).json({ message: 'Document not found' });
-        }
-    
-        // ทำการอัปเดตข้อมูลของ Head_department ในเอกสาร
-        document.Head_department.head_id = user_id;
-        document.Head_department.head_date = Date.now();
-
-        // เพิ่มการอัปเดตข้อมูล Status เป็น รอผู้จัดการอนุมัติ
-        document.Status = "รอผู้จัดการอนุมัติ";
-    
-        console.log("กำลังลงชื่อ Head_department");
-        // บันทึกการเปลี่ยนแปลงลงในฐานข้อมูล
-        await document.save();
-    
-        return res.json({
-            message: 'Head_department updated successfully!',
-            data: document
-        });
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({ message: 'Failed to update Head_department' });
-    }
-};//ใช้งานได้
 
 //Update Document
 exports.UpdateDocument = async (req, res, next) => {
@@ -411,106 +378,6 @@ exports.DeleteDetail = async (req, res, next) => {
         return res.status(500).json({ message: 'Failed to delete detail from document' });
     }
 };//ใช้งานได้
-  
-//Update Manager
-exports.updateDocumentManager = async (req, res, next) => {
-    try {
-        const { id } = req.params; // รับ ID ของเอกสารที่ต้องการอัปเดต
-        const user_id = req.decoded.id // ดึง _id Manager ที่ต้องการอัปเดต
-    
-        // ทำการตรวจสอบว่าเอกสารที่ต้องการอัปเดตอยู่หรือไม่
-        const document = await Document.findById(id);
-        if (!document) {
-            return res.status(404).json({ message: 'Document not found' });
-        }
-    
-        // ทำการอัปเดตข้อมูลของ CEO ในเอกสาร
-        document.Manager.manager_id = user_id;
-        document.Manager.manager_date = Date.now();
-        
-        // เพิ่มการอัปเดตข้อมูล Status เป็น รอกรรมการอนุมัติ
-        document.Status = "รอกรรมการอนุมัติ";
-
-        console.log("กำลังลงชื่อ Manager")
-        // บันทึกการเปลี่ยนแปลงลงในฐานข้อมูล
-        await document.save();
-    
-        return res.json({
-            message: 'Manager updated successfully!',
-            data: document
-        });
-    }   catch (err) {
-        console.error(err);
-        return res.status(500).json({ message: 'Failed to update Manager' });
-    }
-};//ใช้งานได้
-
-//Update CEO Allow
-exports.updateDocumentCEO = async (req, res, next) => {
-    try {
-        const { id } = req.params; // รับ ID ของเอกสารที่ต้องการอัปเดต
-        const user_id = req.decoded.id // รับข้อมูล CEO ที่ต้องการอัปเดต
-
-        // ทำการตรวจสอบว่าเอกสารที่ต้องการอัปเดตอยู่หรือไม่
-        const document = await Document.findById(id);
-        if (!document) {
-            return res.status(404).json({ message: 'Document not found' });
-        }
-
-        // ทำการอัปเดตข้อมูลของ CEO ในเอกสาร
-        document.CEO.ceo_id = user_id;
-        document.CEO.ceo_date = Date.now();
-      
-        // เพิ่มการอัปเดตข้อมูล Status เป็น อนุมัติแล้ว
-        document.Status = "กรรมการอนุมัติแล้ว";
-
-        console.log("กำลังลงชื่อ CEO");
-        // บันทึกการเปลี่ยนแปลงลงในฐานข้อมูล
-        await document.save();
-    
-        return res.json({
-            message: 'CEO updated successfully!',
-            data: document
-        });
-    }   catch (err) {
-        console.error(err);
-        return res.status(500).json({ message: 'Failed to update CEO' });
-    }
-};//ใช้งานได้
-
-//Update CEO  Not Allow
-exports.updateDocumentCEONotAllow = async (req, res, next) => {
-    try {
-        const { id } = req.params; // รับ ID ของเอกสารที่ต้องการอัปเดต
-        const user_id = req.decoded.id // รับข้อมูล CEO ที่ต้องการอัปเดต
-
-        // ทำการตรวจสอบว่าเอกสารที่ต้องการอัปเดตอยู่หรือไม่
-        const document = await Document.findById(id);
-        if (!document) {
-            return res.status(404).json({ message: 'Document not found' });
-        }
-
-        // ทำการอัปเดตข้อมูลของ CEO ในเอกสาร
-        document.CEO.ceo_id = user_id;
-        document.CEO.ceo_date = Date.now();
-      
-        // เพิ่มการอัปเดตข้อมูล Status เป็น อนุมัติแล้ว
-        document.Status = "ไม่อนุมัติ";
-
-        console.log("กำลังลงชื่อ CEO");
-        // บันทึกการเปลี่ยนแปลงลงในฐานข้อมูล
-        await document.save();
-    
-        return res.json({
-            message: 'CEO updated successfully!',
-            data: document
-        });
-    }   catch (err) {
-        console.error(err);
-        return res.status(500).json({ message: 'Failed to update CEO' });
-    }
-};//ใช้งานได้
-
 
 exports.updateDocumentStatus = async (req, res, next) =>{
     try{
@@ -567,7 +434,7 @@ exports.updateDocumentStatus = async (req, res, next) =>{
             }
 
          // เรียงลำดับ array Status_detail ตามฟิลด์ date ในลำดับเพิ่ม (ascending order)
-         const sortedStatusDetail = findDocument.Status_detail.sort((a, b) => new Date(a.date) - new Date(b.date));
+         const sortedStatusDetail = findDocument.status_detail.sort((a, b) => new Date(a.date) - new Date(b.date));
 
          // ดึงเอกสารตัวแรกออกมา
          const latestStatus = sortedStatusDetail[sortedStatusDetail.length - 1];
@@ -583,7 +450,7 @@ exports.updateDocumentStatus = async (req, res, next) =>{
                          .send({status:false, message:"ยังไม่ถึงเวลาที่ท่านจะทำรายการนี้"})
              }
         // console.log(roleCanApprove)
-        let Status_document
+        let status_document
         let status
         let detail = {
                 employee_id:employee_id,
@@ -593,11 +460,12 @@ exports.updateDocumentStatus = async (req, res, next) =>{
                 status:status
         }
         if(statusApprove == 'ไม่อนุมัติ'){
-            Status_document = 'ไม่อนุมัติ'
+            status_document = 'ไม่อนุมัติ'
             detail.status = "ไม่อนุมัติ"
+            detail.remark = remark
         }else if(statusApprove == 'อนุมัติ'){
             if(roleUser.number_role == 1){
-                    Status_document = 'อนุมัติ'
+                    status_document = 'อนุมัติ'
                     status = 'อนุมัติ'
             }else{
                     let roleNext = roleCanApprove - 1
@@ -605,7 +473,7 @@ exports.updateDocumentStatus = async (req, res, next) =>{
                         // console.log(doc)
                         if (doc.number_role == roleNext) {
                             // console.log(doc)
-                            Status_document = `รอ${doc.thai_role}อนุมัติ`
+                            status_document = `รอ${doc.thai_role}อนุมัติ`
                             status = 'อนุมัติ'
                             break;
                         }
@@ -614,15 +482,15 @@ exports.updateDocumentStatus = async (req, res, next) =>{
             detail.status = status
         }else if (statusApprove == 'แก้ไข'){
             detail.remark = remark
-            Status_document = 'รอตรวจสอบ'
+            status_document = 'รอตรวจสอบ'
             detail.status = 'แก้ไข'
         }
         const updateDocument = await Document.findByIdAndUpdate(
             document_id,
             {
-                Status_document: Status_document,
+                status_document: status_document,
                 $push:{
-                    Status_detail:detail
+                    status_detail:detail
                 }
             },
             {new:true})
@@ -634,16 +502,16 @@ exports.updateDocumentStatus = async (req, res, next) =>{
             }
             // Insert data into timeSchema if the role of the approver is owner
             if (roleUser.role === 'owner'||roleUser.role === 'admin') {
-                const { totalHours, totalMinutes, totalSeconds, totalOTInSeconds} = calculateTotalTime(findDocument.OT.Total_OT.totalseconds);
+                const { totalHours, totalMinutes, totalSeconds, totalOTInSeconds} = calculateTotalTime(findDocument.ot.total_ot.totalseconds);
                 const timeData = {
                     employee_id : sortedStatusDetail[0].employee_id,
-                    day: dayjs(findDocument.OT.Timein).tz('Asia/Bangkok').format('DD'),
-                    mount: dayjs(findDocument.OT.Timein).tz('Asia/Bangkok').format('MM'),
-                    year: dayjs(findDocument.OT.Timein).tz('Asia/Bangkok').format('YYYY'),
+                    day: dayjs(findDocument.ot.timein).tz('Asia/Bangkok').format('DD'),
+                    mount: dayjs(findDocument.ot.timein).tz('Asia/Bangkok').format('MM'),
+                    year: dayjs(findDocument.ot.timein).tz('Asia/Bangkok').format('YYYY'),
                     total_ot: totalOTInSeconds,
                     time_line : "OT",
-                    time_in: dayjs(findDocument.OT.Timein).tz('Asia/Bangkok').format('HH:mm:ss'),
-                    time_out: dayjs(findDocument.OT.Timeout).tz('Asia/Bangkok').format('HH:mm:ss'),
+                    time_in: dayjs(findDocument.ot.timein).tz('Asia/Bangkok').format('HH:mm:ss'),
+                    time_out: dayjs(findDocument.ot.timeout).tz('Asia/Bangkok').format('HH:mm:ss'),
                 };
                 console.log(timeData)
                 console.log('Owner อนุมัติ จะทำการเพิ่มข้อมูล OT ลงฐานข้อมูลลงเวลาพนักงาน')

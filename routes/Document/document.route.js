@@ -9,7 +9,7 @@ const authAdmin = require("../../lib/authAdmin");
 //Get
 router.get('/getall', DocumentController.getdocument);
 router.get('/byid/:id', DocumentController.getdocumentById);
-router.get('/bystatus/:Status', DocumentController.getdocumentByStatus);
+router.get('/bystatus/:Status_document', DocumentController.getdocumentByStatus);
 router.get('/byreq/:employee_id', DocumentController.getdocumentByRequester);
 router.get('/byMe', auth, DocumentController.getdocumentByMe);
 
@@ -19,16 +19,12 @@ router.post('/add/detail/:id',DocumentController.addDetailToDocument); //เพ�
 
 //Update
 router.put('/update/:id',auth ,DocumentController.UpdateDocument);// แก้ไข Document
-router.put('/update/:id/detail/:detailId',DocumentController.updateDocumentDetail);// แก้ไขเฉพาะ Detail ของ Decument
-router.put('/update/:id/head_department', authAdmin, DocumentController.updateDocumentHeadDepartment);//แก้ไขเฉพาะ Head_Department
-router.put('/update/:id/manager', authAdmin, DocumentController.updateDocumentManager);//แก้ไขเฉพาะ manager
-router.put('/update/:id/ceo', authAdmin, DocumentController.updateDocumentCEO);// CEO อนุมัติ
-router.put('/update/:id/ceo/no', authAdmin, DocumentController.updateDocumentCEONotAllow);
+
 router.put('/update/status/:id', authAdmin, DocumentController.updateDocumentStatus)
 
 //delete
 router.delete('/delete/:id',DocumentController.DeleteDocument); //ลบ Document
-router.put('/delete/:id/detail/:detailId',DocumentController.DeleteDetail);//ลบเฉพาะ Detail
+
 
 
 
