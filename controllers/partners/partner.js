@@ -293,7 +293,7 @@ module.exports.approve = async (req, res)=>{
         console.log(err)
         return res
                 .status(500)
-                .send({status:false, message:err})
+                .send({status:false, message:err}) 
     }
 };
 
