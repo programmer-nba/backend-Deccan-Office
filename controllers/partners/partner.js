@@ -294,7 +294,7 @@ module.exports.approve = async (req, res)=>{
         return res
                 .status(500)
                 .send({status:false, message:err}) 
-    }
+    } 
 };
 
 module.exports.waitStatus = async (req, res)=>{
