@@ -123,7 +123,6 @@ module.exports.getall = async (req, res) => {
     try {
         const Url = process.env.URL_PARTNER;
         const token = req.headers.token;
-        console.log(token)
         const response = await axios.get(`${Url}/partner/officegetall`, {
             headers: {
                 'Accept': 'application/json',
@@ -278,8 +277,6 @@ module.exports.approve = async (req, res)=>{
         const Url = process.env.URL_PARTNER
         const id = req.params.id
         const token = req.headers.token;
-        console.log(Url)
-        console.log(token)
         const response = await axios.put(`${Url}/partner/officeaccept/${id}`,{},{
               headers: {
                   'Accept': 'application/json',
