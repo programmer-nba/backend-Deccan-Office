@@ -360,24 +360,28 @@ getTimeDayAll = async (req, res) => {
       findId.forEach((item) => {
         if (!data[item.employee_id]) {
           data[item.employee_id] = {
-            employee_id: item.employee_id,
-            day: `${year}/${mount}/${day}`,
-            morningIn: "",
-            morningOut: "",
-            afterIn: "",
-            afterOut: "",
-            ot: {}
+            employee_id : item.employee_id,
+            day : `${year}/${mount}/${day}`,
+            morningIn : "",
+            morningOut : "",
+            afterIn : "",
+            afterOut : "",
+            ot : {}
           };
         }
 
         if (item.time_line === 'เข้างานช่วงเช้า') {
           data[item.employee_id].morningIn = item.time;
+
         } else if (item.time_line === 'พักเที่ยง') {
           data[item.employee_id].morningOut = item.time;
+
         } else if (item.time_line === 'เข้างานช่วงบ่าย') {
           data[item.employee_id].afterIn = item.time;
+
         } else if (item.time_line === 'ลงเวลาออกงาน') {
           data[item.employee_id].afterOut = item.time;
+
         } else if (item.time_line === 'OT') {
           const totalOtInSeconds = item.total_ot;
           const hours = Math.floor(totalOtInSeconds / 3600);
@@ -385,10 +389,10 @@ getTimeDayAll = async (req, res) => {
           const seconds = totalOtInSeconds % 60;
       
           data[item.employee_id].ot = {
-              date: `${item.day}/${item.mount}/${item.year}`,
-              time_in: item.time_in,
-              time_out: item.time_out,
-              total_ot: `${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`
+              date : `${item.day}/${item.mount}/${item.year}`,
+              time_in : item.time_in,
+              time_out : item.time_out,
+              total_ot : `${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`
           };
       }      
       });
@@ -399,7 +403,7 @@ getTimeDayAll = async (req, res) => {
     } else {
       return res
         .status(400)
-        .send({ status: true, message: "วันนี้ท่านยังไม่ได้ลงเวลางาน" });
+        .send({ status: true, message: "วันนี้ ยังไม่มีพนักงานลงเวลางาน" });
     }
   } catch (err) {
     return res
@@ -539,4 +543,146 @@ getOTByEmployeeId = async (req, res) => {
     }
 };
 
-module.exports = { timeInMorning, getMe, updateTime, deleteTime, getTimeDay, approveTime, getAll, getTimeDayAll, getTimeByEmployee, getAllOT, getOTByEmployeeId}
+getTimeAll = async (req, res) => {
+  try {
+    const [day, mount, year] = await Promise.all([
+      dayjs(Date.now()).format('DD'),
+      dayjs(Date.now()).format('MM'),
+      dayjs(Date.now()).format('YYYY')
+    ]);
+
+    const findId = await timeInOut.find({ day: { $exists: true } });
+
+    if (findId.length > 0) {
+      const data = {};
+      findId.forEach((item) => {
+        if (!data[item.employee_id]) {
+          data[item.employee_id] = {
+            employee_id : item.employee_id,
+            day : `${day}/${mount}/${year}`,
+            morningIn : "",
+            morningOut : "",
+            afterIn : "",
+            afterOut : "",
+            date : "",
+            time_in : "",
+            time_out : "",
+            total_ot : ""
+          };
+        }
+
+        if (item.time_line === 'เข้างานช่วงเช้า') {
+          data[item.employee_id].morningIn = item.time;
+
+        } else if (item.time_line === 'พักเที่ยง') {
+          data[item.employee_id].morningOut = item.time;
+
+        } else if (item.time_line === 'เข้างานช่วงบ่าย') {
+          data[item.employee_id].afterIn = item.time;
+
+        } else if (item.time_line === 'ลงเวลาออกงาน') {
+          data[item.employee_id].afterOut = item.time;
+
+        } else if (item.time_line === 'OT' || item.date == day) {
+          if (typeof item.total_ot === 'number') {
+            const totalOtInSeconds = item.total_ot;
+            const hours = Math.floor(totalOtInSeconds / 3600);
+            const minutes = Math.floor((totalOtInSeconds % 3600) / 60);
+            const seconds = totalOtInSeconds % 60;
+        
+            data[item.employee_id].date = `${item.day}/${item.mount}/${item.year}`;
+            data[item.employee_id].time_in = item.time_in;
+            data[item.employee_id].time_out = item.time_out;
+            data[item.employee_id].total_ot = `${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
+          } else {
+            // Handle invalid total_ot value
+            console.error(`Invalid total_ot value for employee ${item.employee_id}: ${item.total_ot}`);
+          }
+        }
+      });
+
+      return res
+        .status(200)
+        .send({ status: true, data: Object.values(data) });
+    } else {
+      return res
+        .status(400)
+        .send({ status: true, message: "วันนี้ท่านยังไม่ได้ลงเวลางาน" });
+    }
+  } catch (err) {
+    return res
+      .status(500)
+      .send({ status: false, message: err.message });
+  }
+};
+
+getTimemonthAll = async (req, res) => {
+  try {
+    const [ mount, year] = await Promise.all([
+      dayjs(Date.now()).format('MM'),
+      dayjs(Date.now()).format('YYYY')
+    ]);
+
+    const findId = await timeInOut.find(
+      { mount: mount, year: year }
+    );
+
+    if (findId.length > 0) {
+      const data = {};
+      findId.forEach((item) => {
+        if (!data[item.employee_id]) {
+          data[item.employee_id] = {
+            employee_id : item.employee_id,
+            day : `${year}/${mount}/${item.day}`,
+            morningIn : "",
+            morningOut : "",
+            afterIn : "",
+            afterOut : "",
+            ot : {}
+          };
+        }
+
+        if (item.time_line === 'เข้างานช่วงเช้า') {
+          data[item.employee_id].morningIn = item.time;
+
+        } else if (item.time_line === 'พักเที่ยง') {
+          data[item.employee_id].morningOut = item.time;
+
+        } else if (item.time_line === 'เข้างานช่วงบ่าย') {
+          data[item.employee_id].afterIn = item.time;
+
+        } else if (item.time_line === 'ลงเวลาออกงาน') {
+          data[item.employee_id].afterOut = item.time;
+
+        } else if (item.time_line === 'OT') {
+          const totalOtInSeconds = item.total_ot;
+          const hours = Math.floor(totalOtInSeconds / 3600);
+          const minutes = Math.floor((totalOtInSeconds % 3600) / 60);
+          const seconds = totalOtInSeconds % 60;
+      
+          data[item.employee_id].ot = {
+              date : `${item.day}/${item.mount}/${item.year}`,
+              time_in : item.time_in,
+              time_out : item.time_out,
+              total_ot : `${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`
+          };
+      }      
+      });
+
+      return res
+        .status(200)
+        .send({ status: true, data: Object.values(data) });
+    } else {
+      return res
+        .status(400)
+        .send({ status: true, message: "เดือนนี้ ยังไม่มีพนักงานลงเวลางาน" });
+    }
+  } catch (err) {
+    return res
+      .status(500)
+      .send({ status: false, message: err.message });
+  }
+};
+
+
+module.exports = { timeInMorning, getMe, updateTime, deleteTime, getTimeDay, approveTime, getAll, getTimeDayAll, getTimeByEmployee, getAllOT, getOTByEmployeeId, getTimeAll}

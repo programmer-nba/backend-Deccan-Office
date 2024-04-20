@@ -119,15 +119,24 @@ module.exports.me  =async (req,res)=>{
 };
 
 //ดึงข้อมูลทั้งหมด
-module.exports.getall = async (req,res) =>{
-    try{    
-        const partnerdata = await Partner.find()
-        if(!partnerdata){
-            return res.status(404).send({status:false,message:"ไม่มีข้อมูล"})
+module.exports.getall = async (req, res) => {
+    try {
+        const Url = process.env.URL_PARTNER;
+        const token = req.headers.token;
+        const response = await axios.get(`${Url}/partner/officegetall`, {
+            headers: {
+                'Accept': 'application/json',
+                'token': token
+            }
+        });
+        if (!response.data) {
+            return res
+                .status(400)
+                .send({ status: false, message: "ไม่สามารถเชื่อมต่อได้" });
         }
-        return res.status(200).send({status:true,data:partnerdata})
-    }catch (error) {
-        return res.status(500).send({status:false,error:error.message});
+        return res.status(200).send({ status: true, data: response.data });
+    } catch (error) {
+        return res.status(500).send({ status: false, error: error.message });
     }
 };
 
@@ -267,32 +276,25 @@ module.exports.approve = async (req, res)=>{
     try{
         const Url = process.env.URL_PARTNER
         const id = req.params.id
-        const response = await axios.put(`${Url}/partner/accept/${id}`,{
+        const token = req.headers.token;
+        const response = await axios.put(`${Url}/partner/officeaccept/${id}`,{},{
               headers: {
                   'Accept': 'application/json',
+                  'token': token
               }
           })
         if(!response){
             return res
                     .status(400)
                     .send({status:false, message:"ไม่สามารถเชื่อมต่อได้"})
-        }else{
-            const fixData = await Partner.findByIdAndUpdate(id,{status_appover:"อนุมัติแล้ว"},{new:true})
-            if(!fixData){
-                return res
-                        .status(400)
-                        .send({status:false, message:"ไม่สามารถแก้ไขข้อมูลได้"})
-            }
-            return res
-                    .status(200)
-                    .send({status:true, message:"เชื่อมต่อสำเร็จ", data:response.data, fix:fixData})
         }
+        return res.status(200).send({ status: true, data: response.data });
     }catch(err){
         console.log(err)
         return res
                 .status(500)
-                .send({status:false, message:err})
-    }
+                .send({status:false, message:err}) 
+    } 
 };
 
 module.exports.waitStatus = async (req, res)=>{

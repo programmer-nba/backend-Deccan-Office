@@ -6,17 +6,17 @@ const TimeToWorkController = require('../../controllers/Employees/timeInOutContr
 const auth = require("../../lib/auth");
 const authAdmin = require("../../lib/authAdmin");
 
-router.post('/time/morning/in',auth,TimeToWorkController.timeInMorning);
+router.post('/time/morning/in', auth, TimeToWorkController.timeInMorning);
 
-router.get('/time/getme',auth,TimeToWorkController.getMe)
+router.get('/time/getme', auth, TimeToWorkController.getMe)
 
-router.put('/uptime/:id',authAdmin,TimeToWorkController.updateTime)
+router.put('/uptime/:id', authAdmin, TimeToWorkController.updateTime)
 
-router.delete('/deltime/:id',authAdmin,TimeToWorkController.deleteTime)
+router.delete('/deltime/:id', authAdmin, TimeToWorkController.deleteTime)
 
-router.get('/time/getday',auth,TimeToWorkController.getTimeDay)
+router.get('/time/getday', auth, TimeToWorkController.getTimeDay)
 
-router.post('/time/approve',auth,TimeToWorkController.approveTime)
+router.post('/time/approve', auth, TimeToWorkController.approveTime)
 
 router.get('/time/admin/getall', TimeToWorkController.getAll)
 
@@ -27,5 +27,7 @@ router.get('/time/getall/employee/:employee_id', auth, TimeToWorkController.getT
 router.get('/time/getall/ot', authAdmin, TimeToWorkController.getAllOT)// ดึงข้อมูล OT ทั้งหมด
 
 router.get('/time/getall/ot/byem/:employee_id', auth, TimeToWorkController.getOTByEmployeeId)// ดึงข้อมูล OT ทั้งหมดตามรหัสพนักงาน
+
+router.get('/time/getall', authAdmin, TimeToWorkController.getTimeAll)// ดึงข้อมูลทั้งหมด
 
 module.exports = router;

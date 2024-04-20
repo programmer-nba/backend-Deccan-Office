@@ -3,34 +3,34 @@ const Schema = mongoose.Schema;
 
 const LeaveSchema = new Schema({
     
-    Leave_id : {type: String, required: false}, // รันอัตโนมัติ
-    Employees_id: { type: String, required: false },
+    leave_id : {type: String, required: false}, // รันอัตโนมัติ
+    employees_id: { type: String, required: false },
 
-    Leave_date : {type: Date, required: false, default: Date.now},
-    Leave_head : {type: String, required: false},   
+    leave_date : {type: Date, required: false, default: Date.now},
+    leave_head : {type: String, required: false},   
 
-    Leave_Type : {type : String, required: false,}, // ประเภทลา
-    Details : {type: String, required: false},
+    leave_Type : {type : String, required: false,}, // ประเภทลา
+    details : {type: String, required: false},
 
-    Date_Start_leave : {type: Date, required: false, default : Date.now}, //วันที่เริ่มลา
-    Date_End_leave : {type: Date, required: false, default : Date.now}, //ลาถึงวันที่
+    date_start_leave : {type: Date, required: false, default : Date.now}, //วันที่เริ่มลา
+    date_end_leave : {type: Date, required: false, default : Date.now}, //ลาถึงวันที่
 
-    Set_Day : {type: Number, required: false ,default : 0}, //จำนวนวันที่ลา 
+    set_day : {type: Number, required: false ,default : 0}, //จำนวนวันที่ลา 
 
-    Contact : {type: String, required: false},
-    Tel : {type: String, required: false},
+    contact : {type: String, required: false},
+    tel : {type: String, required: false},
 
-    Status : {
-        Status_name : { type : String, require: false ,default : "Waiting"},  //Allow , Waiting , Not_Allow
+    status : {
+        status_name : { type : String, require: false ,default : "Waiting"},  //Allow , Waiting , Not_Allow
 
-        Commander : {type: String, require : false, default : ""}, //หัวหน้า
-        Commander_Date : {type : String, required: false, default : ""},
+        commander : {type: String, require : false, default : ""}, //หัวหน้า
+        commander_Date : {type : String, required: false, default : ""},
 
-        Inspector : {type: String, required: false, default : ""}, //ผู้ตรวจสอบ
-        Inspector_Date : {type : String, required: false, default : ""},
+        inspector : {type: String, required: false, default : ""}, //ผู้ตรวจสอบ
+        inspector_Date : {type : String, required: false, default : ""},
 
-        Approver : {type: String, required: false, default : ""}, //ผู้อนุมัติ
-        Approver_Date : {type: String, require: false, default : ""}
+        approver : {type: String, required: false, default : ""}, //ผู้อนุมัติ
+        approver_date : {type: String, require: false, default : ""}
     },
 
 }, { versionKey: false });
