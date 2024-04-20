@@ -119,23 +119,25 @@ module.exports.me  =async (req,res)=>{
 };
 
 //ดึงข้อมูลทั้งหมด
-module.exports.getall = async (req,res) =>{
-    const token = process.env.TOKEN_PARTNER;
-    try{    
-        const response = await axios.get(`${Url}/partner/officegetall`,{
+module.exports.getall = async (req, res) => {
+    try {
+        const Url = process.env.URL_PARTNER;
+        const token = req.headers.token;
+        console.log(token)
+        const response = await axios.get(`${Url}/partner/officegetall`, {
             headers: {
                 'Accept': 'application/json',
                 'token': token
             }
-        })
-      if(!response){
-          return res
-                  .status(400)
-                  .send({status:false, message:"ไม่สามารถเชื่อมต่อได้"})
-      }
-        return res.status(200).send({status:true,data:response})
-    }catch (error) {
-        return res.status(500).send({status:false,error:error.message});
+        });
+        if (!response.data) {
+            return res
+                .status(400)
+                .send({ status: false, message: "ไม่สามารถเชื่อมต่อได้" });
+        }
+        return res.status(200).send({ status: true, data: response.data });
+    } catch (error) {
+        return res.status(500).send({ status: false, error: error.message });
     }
 };
 
@@ -272,11 +274,13 @@ module.exports.fileCompany = async (req, res)=>{
 };
 
 module.exports.approve = async (req, res)=>{
-    const token = process.env.TOKEN_PARTNER;
     try{
         const Url = process.env.URL_PARTNER
         const id = req.params.id
-        const response = await axios.put(`${Url}/partner/officeaccept/${id}`,{
+        const token = req.headers.token;
+        console.log(Url)
+        console.log(token)
+        const response = await axios.put(`${Url}/partner/officeaccept/${id}`,{},{
               headers: {
                   'Accept': 'application/json',
                   'token': token
@@ -287,6 +291,7 @@ module.exports.approve = async (req, res)=>{
                     .status(400)
                     .send({status:false, message:"ไม่สามารถเชื่อมต่อได้"})
         }
+        return res.status(200).send({ status: true, data: response.data });
     }catch(err){
         console.log(err)
         return res

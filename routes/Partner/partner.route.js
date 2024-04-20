@@ -12,7 +12,7 @@ router.post('/login/',PartnerController.login);
 
 router.get('/me',PartnerController.me);
 
-router.get('/', authAdmin,PartnerController.getall);
+router.get('/officegetall', authAdmin,PartnerController.getall);
 
 router.get('/byid/:id', auth, PartnerController.getbyid);
 
