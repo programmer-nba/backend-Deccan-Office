@@ -120,12 +120,20 @@ module.exports.me  =async (req,res)=>{
 
 //ดึงข้อมูลทั้งหมด
 module.exports.getall = async (req,res) =>{
+    const token = process.env.TOKEN_PARTNER;
     try{    
-        const partnerdata = await Partner.find()
-        if(!partnerdata){
-            return res.status(404).send({status:false,message:"ไม่มีข้อมูล"})
-        }
-        return res.status(200).send({status:true,data:partnerdata})
+        const response = await axios.get(`${Url}/partner/officegetall`,{
+            headers: {
+                'Accept': 'application/json',
+                'token': token
+            }
+        })
+      if(!response){
+          return res
+                  .status(400)
+                  .send({status:false, message:"ไม่สามารถเชื่อมต่อได้"})
+      }
+        return res.status(200).send({status:true,data:response})
     }catch (error) {
         return res.status(500).send({status:false,error:error.message});
     }
@@ -264,28 +272,20 @@ module.exports.fileCompany = async (req, res)=>{
 };
 
 module.exports.approve = async (req, res)=>{
+    const token = process.env.TOKEN_PARTNER;
     try{
         const Url = process.env.URL_PARTNER
         const id = req.params.id
-        const response = await axios.put(`${Url}/partner/accept/${id}`,{
+        const response = await axios.put(`${Url}/partner/officeaccept/${id}`,{
               headers: {
                   'Accept': 'application/json',
+                  'token': token
               }
           })
         if(!response){
             return res
                     .status(400)
                     .send({status:false, message:"ไม่สามารถเชื่อมต่อได้"})
-        }else{
-            const fixData = await Partner.findByIdAndUpdate(id,{status_appover:"อนุมัติแล้ว"},{new:true})
-            if(!fixData){
-                return res
-                        .status(400)
-                        .send({status:false, message:"ไม่สามารถแก้ไขข้อมูลได้"})
-            }
-            return res
-                    .status(200)
-                    .send({status:true, message:"เชื่อมต่อสำเร็จ", data:response.data, fix:fixData})
         }
     }catch(err){
         console.log(err)
