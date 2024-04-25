@@ -77,7 +77,7 @@ exports.getdocumentByRequester = async (req, res, next) => {
 exports.getdocumentByMe = async (req, res, next) => {
     try {
         const user_id = req.decoded.id
-        const documents = await Document.find({ 'Status_detail.0.employee_id': user_id });
+        const documents = await Document.find({ 'status_detail.0.employee_id': user_id });
         return res.json({
             message: 'Get documents by Me successfully!',
             status: true,
@@ -233,7 +233,7 @@ exports.UpdateDocument = async (req, res, next) => {
         const position = req.decoded.position
         // ทำการอัปเดตเอกสารโดยไม่ระบุชื่อตัวแปร
         const findDocument = await Document.findOne({_id:id})
-            let statusDocs = findDocument.Status_document
+            let statusDocs = findDocument.status_document
                 if(statusDocs == 'ไม่อนุมัติ'){
                     return res
                             .status(400)
@@ -247,9 +247,9 @@ exports.UpdateDocument = async (req, res, next) => {
             { _id: id }, // เงื่อนไขในการค้นหาเอกสารที่ต้องการอัปเดต
             {
                     ...req.body,
-                    Status_document:"รอหัวหน้าแผนกอนุมัติ",
+                    status_document:"รอหัวหน้าแผนกอนุมัติ",
                     $push:{
-                        Status_detail:{
+                        Ssatus_detail:{
                             employee_id:employee_id,
                             role:role,
                             position:position,
@@ -398,8 +398,8 @@ exports.updateDocumentStatus = async (req, res, next) =>{
         const findDocument = await Document.findById(document_id)
         let findRole
             if (findDocument) {
-                findRole = findDocument.Status_detail[0].role;
-                let statusDocs = findDocument.Status_document
+                findRole = findDocument.status_detail[0].role;
+                let statusDocs = findDocument.status_document
                 if(statusDocs == 'รอตรวจสอบ'){
                     return res
                             .status(400)
@@ -501,7 +501,7 @@ exports.updateDocumentStatus = async (req, res, next) =>{
                         .send({status:false, message:"ไม่พบเอกสารที่คุณต้องการ"})
             }
             // Insert data into timeSchema if the role of the approver is owner
-            if (roleUser.role === 'owner'||roleUser.role === 'admin') {
+            if ((roleUser.role === 'owner'||roleUser.role === 'admin') && findDocument.type === 'OT') {
                 const { totalHours, totalMinutes, totalSeconds, totalOTInSeconds} = calculateTotalTime(findDocument.ot.total_ot.totalseconds);
                 const timeData = {
                     employee_id : sortedStatusDetail[0].employee_id,
