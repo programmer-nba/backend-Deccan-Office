@@ -134,7 +134,7 @@ module.exports.getall = async (req, res) => {
                 .status(400)
                 .send({ status: false, message: "ไม่สามารถเชื่อมต่อได้" });
         }
-        return res.status(200).send({ status: true, data: response.data });
+        return res.status(200).send({ status: true, data: response.data.data });
     } catch (error) {
         return res.status(500).send({ status: false, error: error.message });
     }
@@ -288,7 +288,7 @@ module.exports.approve = async (req, res)=>{
                     .status(400)
                     .send({status:false, message:"ไม่สามารถเชื่อมต่อได้"})
         }
-        return res.status(200).send({ status: true, data: response.data });
+        return res.status(200).send({ status: true, data: response.data.data });
     }catch(err){
         console.log(err)
         return res
