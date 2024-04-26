@@ -7,13 +7,13 @@ const upload = multer();
 const {
   uploadFileCreate,
   deleteFile,
-  } = require("../../funtion/uploadfilecreate");
+} = require("../../funtion/uploadfilecreate");
 
 const storage = multer.diskStorage({
-      filename: function (req, file, cb) {
-          cb(null, Date.now() + "-" + file.originalname);
-          //console.log(file.originalname);
-      },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
+    //console.log(file.originalname);
+  },
 });
 
 exports.Post = async (req, res) => {
@@ -38,7 +38,8 @@ exports.Post = async (req, res) => {
     
     let passwordToUse = req.body.password;
     if (!req.body.password) {
-      passwordToUse = req.body.iden_number;
+      passwordToUse = await bcrypt.hash(req.body.iden_number, 10);
+      // passwordToUse = req.body.iden_number;
     } else {
       // Hash the password
       passwordToUse = await bcrypt.hash(req.body.password, 10);
@@ -73,57 +74,57 @@ exports.getAll = async (req, res) => {
     const getAllEmployee = await Employees.find(); //ดึงข้อมูลพนักงานทุกคนออกมา
     if (getAllEmployee) {
       return res
-              .status(200)
-              .send({ status: true, data: getAllEmployee });
-    } else {
-      return res
-              .status(400)
-              .send({ status: false, message: "ดึงข้อมูลไม่สำเร็จ" });
-    }
-  } catch (err) {
-    console.log(err);
-    return res
-            .status(500)
-            .send({ message: "มีบางอย่างผิดพลาด" });
-  }
-};
-
-exports.getByID = async (req, res) => {
-  try{
-    //const iden = req.body.iden_number //ดึงเฉพาะข้อมูลบัตรประชาชน
-    const  getId = req.params.id;
-    const getBy = await Employees.findById({_id:getId},{ _id: 0,__v: 0}) // 1 คือให้แสดงข้อมูล 0 คือไม่ให้แสดงข้อมูล
-    if (getBy){
-      return res
         .status(200)
-        .send({status: true, data: getBy})
+        .send({ status: true, data: getAllEmployee });
     } else {
       return res
         .status(400)
         .send({ status: false, message: "ดึงข้อมูลไม่สำเร็จ" });
     }
-  } catch(err){
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .send({ message: "มีบางอย่างผิดพลาด" });
+  }
+};
+
+exports.getByID = async (req, res) => {
+  try {
+    //const iden = req.body.iden_number //ดึงเฉพาะข้อมูลบัตรประชาชน
+    const getId = req.params.id;
+    const getBy = await Employees.findById({ _id: getId }, { _id: 0, __v: 0 }) // 1 คือให้แสดงข้อมูล 0 คือไม่ให้แสดงข้อมูล
+    if (getBy) {
+      return res
+        .status(200)
+        .send({ status: true, data: getBy })
+    } else {
+      return res
+        .status(400)
+        .send({ status: false, message: "ดึงข้อมูลไม่สำเร็จ" });
+    }
+  } catch (err) {
     console.log(err);
     return res.status(500).send({ message: "มีบางอย่างผิดพลาด" });
   }
 }
 
 exports.getMe = async (req, res) => {
-  try{
+  try {
     //const iden = req.body.iden_number //ดึงเฉพาะข้อมูลบัตรประชาชน
-    const  getId = req.decoded.id
-    console.log(getId)  
+    const getId = req.decoded.id
+    console.log(getId)
     const findId = await Employees.findById(getId) // 1 คือให้แสดงข้อมูล 0 คือไม่ให้แสดงข้อมูล
-    if (findId){
+    if (findId) {
       return res
         .status(200)
-        .send({status: true, data: findId})
+        .send({ status: true, data: findId })
     } else {
       return res
         .status(400)
         .send({ status: false, message: "ดึงข้อมูลไม่สำเร็จ" });
     }
-  } catch(err){
+  } catch (err) {
     console.log(err);
     return res.status(500).send({ message: "มีบางอย่างผิดพลาดใน getMe" });
   }
@@ -199,60 +200,60 @@ exports.Update = async (req, res) => {
   }
 }
 
-exports.Delete = async (req, res)=>{
+exports.Delete = async (req, res) => {
   try {
     const employees = await Employees.findByIdAndDelete(req.params.id);
     res.json({
-        message: 'Delete employees successfully!',
-        status: true,
-        data: employees
+      message: 'Delete employees successfully!',
+      status: true,
+      data: employees
     });
-} catch (err) {
+  } catch (err) {
     next(err);
-}
+  }
 }
 
-exports.Delete = async (req, res)=>{
+exports.Delete = async (req, res) => {
   try {
     const employees = await Employees.findByIdAndDelete(req.params.id);
     res.json({
-        message: 'Delete employees successfully!',
-        status: true,
-        data: employees
+      message: 'Delete employees successfully!',
+      status: true,
+      data: employees
     });
-} catch (err) {
+  } catch (err) {
     next(err);
-}
+  }
 }
 
-exports.getMember = async (req, res)=>{
-  try{
-      const position = req.decoded.position
-      const role = req.decoded.role
-        if(role != 'head_department'){
-            return res
-                    .status(404)
-                    .send({status:false, message:"ไม่สามารถใช้งานได้"})
-        }
-      const findMember = await Employees.find(
-          {
-            role:'employee',
-            position:position
-          }
-      )
-        if (!findMember || findMember.length === 0) {
-          return res.status(400).send({
-              status: false,
-              message: "ไม่สามารถค้นหาสมาชิกได้"
-            });
-        }
+exports.getMember = async (req, res) => {
+  try {
+    const position = req.decoded.position
+    const role = req.decoded.role
+    if (role != 'head_department') {
       return res
-              .status(200)
-              .send({status:true, message:"สำเร็จ", data:findMember})
-  }catch(err){
-      return res
-              .status(500)
-              .send({status:false, message:err})
+        .status(404)
+        .send({ status: false, message: "ไม่สามารถใช้งานได้" })
+    }
+    const findMember = await Employees.find(
+      {
+        role: 'employee',
+        position: position
+      }
+    )
+    if (!findMember || findMember.length === 0) {
+      return res.status(400).send({
+        status: false,
+        message: "ไม่สามารถค้นหาสมาชิกได้"
+      });
+    }
+    return res
+      .status(200)
+      .send({ status: true, message: "สำเร็จ", data: findMember })
+  } catch (err) {
+    return res
+      .status(500)
+      .send({ status: false, message: err })
   }
 }
 
@@ -260,7 +261,7 @@ exports.UpdateImage = async (req, res) => {
   try {
     const upID = req.params.id; //รับไอดีที่ต้องการอัพเดท
     console.log(req.body);
-  
+
     const upload = multer({ storage: storage }).array("image", 20);
     upload(req, res, async function (err) {
       if (err) {
@@ -292,10 +293,10 @@ exports.UpdateImage = async (req, res) => {
         res.status(500).send({ status: false, message: "มีบางอย่างผิดพลาด" });
       });
     });
-  
+
   } catch (err) {
     console.log(err);
     return res.status(500).send({ message: err });
   }
-  
+
 }
