@@ -14,7 +14,7 @@ const EmployeeSchema = new Schema({
   password: { type: String, default: "", require: false },
   role: { type: String, require: false },
   position: { type: String, require: false},
-  tel: { type: Number, default: "", require: false },
+  tel: { type: String, default: "", require: false },
   address: { type: String, default: "", require: false },
   subdistrict: { type: String, default: "", require: false },
   district: { type: String, default: "", required: false },

@@ -314,8 +314,6 @@ exports.deleteUserinfo = async (req, res, next) => {
 // Get logged-in user details
 exports.getme = async (req, res) => {
     try {
-        const idd = req.body.idd
-        console.log("id :",idd)
         const id = req.headers['token'];
         const secretKey = "loginload";
         const decoded = jwt.verify(id, secretKey);

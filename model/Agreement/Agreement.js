@@ -6,7 +6,8 @@ const AgreementSchema = new mongoose.Schema({
 
     argument_type : {type : String, required : false}, //ประเภทสัญญาข้อตกลง
     argument_detail : {type : String, required : false}, //รายละเอียดสัญญาข้อตกลง
-    argument_username : {type : String, required : false}, //ชื่อ-นามสกุลผู้ใช้
+    argument_first_name : {type : String, required : false}, //ชื่อ
+    argument_last_name : {type : String, required : false}, //นามสกุล
     argument_idcard : {type : String, required : false}, //เลขบัตรประจำตัวประชาชน
     argument_position : {type : String, required : false}, //ตำแหน่งที่ได้รับ
     argument_salary : {type : Number, required : false}, //เงินเดือน

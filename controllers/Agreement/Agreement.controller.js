@@ -1,5 +1,7 @@
 const Agreement = require ('../../model/Agreement/Agreement')
-const axios = require('axios')
+const { Employees } = require("../../model/employee/employee");
+const Userinfo =require ('../../model/Userinfo/Userinfo')
+var bcrypt = require("bcrypt");
 
 //Get Agreement
 exports.getallAgreement = async (req, res, next) => {
@@ -118,13 +120,20 @@ exports.DeleteAgreement = async (req, res, next) =>{
 exports.Userconfirm = async (req, res, next) => {
     try {
         const agreement = await Agreement.findByIdAndUpdate(req.params.id, req.body);
-        console.log(req.decoded)
+
         const user = req.decoded
         const status = req.body.argument_status;
-        const userid = user.data.data._id;
-        
+
+        const userdata = await Userinfo.findById(user.id);
+        if (!userdata) {
+            return res.status(404).json({
+                message: 'User not found',
+                status: false,
+                data: null
+            });
+        }
         const timelineEntry = {
-            timeline_userid: userid,
+            timeline_userid: userdata._id,
             timeline: Date.now(),
             action: status
         };
@@ -134,7 +143,29 @@ exports.Userconfirm = async (req, res, next) => {
         await agreement.save();
 
         if (req.body.argument_status === "ยอมรับ"){
+            const newEmployeeData = {
+                userid: userdata.citizen_id,
+                first_name : agreement.argument_frist_name,
+                last_name : agreement.argument_last_name,
+                iden_number : userdata.iden_number,
+                password : userdata.citizen_id ? await bcrypt.hash(userdata.citizen_id, 10) : await bcrypt.hash(userdata.citizen_id, 10),
+                role : "employee",
+                position : agreement.argument_position,
+                tel : userdata.tel,
+                address : userdata.address,
+                birthday : userdata.birth,
+                salary : agreement.agreement_salary
+            };
             
+            const newEmployee = await Employees.create(newEmployeeData);
+
+            if (newEmployee) {
+                return res.status(201).json({
+                    status: true,
+                    message: 'เพิ่มข้อมูลพนักงานในระบบสำเร็จแล้ว',
+                    data: newEmployee
+                });
+            }
         }
         return res.json({
             message: 'Update agreement successfully!',

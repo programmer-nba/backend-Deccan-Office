@@ -37,7 +37,7 @@ const user = async (req, res, next) => {
         if (decoded.role === "User") {
             console.log('You are User');
             console.log(decoded)
-            req.users = decoded.data;
+            req.decoded = decoded
             next();
         } else {
             return res.status(400).send({ status: false, message: "คุณไม่มีสิทธิ่ในการใช้งาน" });
