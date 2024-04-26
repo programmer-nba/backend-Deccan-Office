@@ -12,15 +12,10 @@ router.get('/getall', authAdmin, AgreementController.getallAgreement);
 //Insert Agreement
 router.post('/insert', authAdmin, AgreementController.InsertAgreement);
 
-//Update Agreement
-router.put('/update/:id', authAdmin, AgreementController.updateAgreement);
-//User confirm
-router.put('/user/confirm/:id', AgreementController.Userconfirm)
-
+router.put('/update/:id', authAdmin, AgreementController.updateAgreement); //Update Agreement
+router.put('/user/confirm/:id', AgreementController.Userconfirm); //User confirm
 
 //Delete Agreement
 router.delete('/delete/:id', authAdmin, AgreementController.DeleteAgreement);
-
-
 
 module.exports = router;

@@ -10,7 +10,7 @@ const AgreementSchema = new mongoose.Schema({
     argument_idcard : {type : String, required : false}, //เลขบัตรประจำตัวประชาชน
     argument_position : {type : String, required : false}, //ตำแหน่งที่ได้รับ
     argument_salary : {type : Number, required : false}, //เงินเดือน
-    argument_status : {type : String, required : false, default : "รอการยอมรับ"}, //สถาณะ  รอการยอมรับ , ไม่ยอมรับ , ยอมรับ
+    argument_status : {type : String, required : false, default : "รอการตอบรับ"}, //สถาณะ  รอการยอมรับ , ไม่ยอมรับ , ยอมรับ
     argument_timeout : {type : Date, required : false}, //วันหมดอายุสัญญา
     argument_timeline : [{
         timeline_userid : {type : String, required : false}, // _id ของคนเพิ่ม

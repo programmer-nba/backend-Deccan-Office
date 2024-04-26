@@ -35,7 +35,7 @@ exports.Post = async (req, res) => {
           .json({ status: false, message: 'มีผู้ใช้ยูสเซอร์ไอดีนี้ในระบบแล้ว' });
       }
     }
-
+    
     let passwordToUse = req.body.password;
     if (!req.body.password) {
       passwordToUse = req.body.iden_number;
@@ -63,7 +63,7 @@ exports.Post = async (req, res) => {
     console.log(err);
     return res
       .status(500)
-      .send({ message: 'มีบางอย่างผิดพลาด' });
+      .send({ message: err.message });
   }
 };
 

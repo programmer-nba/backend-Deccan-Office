@@ -21,6 +21,8 @@ const RequestProjectRoutes = require ('./routes/Project/Project.route');
 const ProjectTypeRoutes = require ('./routes/Project/ProjectType.route');
 const AgreementRoutes = require('./routes/Agreement/agreement.route');
 const DraftDocumentRoutes = require('./routes/Document/draftdocument.route');
+const UserRoutes = require ('./routes/User/user.route');
+const UserinfoRoutes = require ('./routes/Userinfo/userinfo.route');
 
 
 
@@ -46,6 +48,9 @@ app.use('/ddsc-office/project',RequestProjectRoutes);
 app.use('/ddsc-office/project/type',ProjectTypeRoutes);
 app.use('/ddsc-office/agreement', AgreementRoutes);
 app.use('/ddsc-office/document/draft', DraftDocumentRoutes);
+app.use('/ddsc-office/user', UserRoutes)
+app.use('/ddsc-office/user_info', UserinfoRoutes)
+
 
 
 const port = process.env.PORT || 9996;
