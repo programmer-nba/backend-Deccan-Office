@@ -20,10 +20,10 @@ module.exports.register = async (req, res) => {
             _id: req.body._id,
             username: req.body.username, 
             password: req.body.password,
-            antecedent:req.body.antecedent,
+            antecedent: req.body.antecedent,
             partner_name: req.body.partner_name,
             partner_phone: req.body.partner_phone,
-            partner_email:req.body.partner_email,
+            partner_email: req.body.partner_email,
             partner_iden_number: req.body.partner_iden_number,
             partner_address: req.body.partner_address,
             partner_district: req.body.partner_district,
@@ -276,7 +276,7 @@ module.exports.approve = async (req, res)=>{
     try{
         const Url = process.env.URL_PARTNER
         const id = req.params.id
-        const token = req.headers.token;
+        const token = process.env.TOKEN_PARTNER
         const response = await axios.put(`${Url}/partner/officeaccept/${id}`,{},{
               headers: {
                   'Accept': 'application/json',

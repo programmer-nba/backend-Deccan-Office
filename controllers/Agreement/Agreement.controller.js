@@ -1,4 +1,5 @@
 const Agreement = require ('../../model/Agreement/Agreement')
+const axios = require('axios')
 
 //Get Agreement
 exports.getallAgreement = async (req, res, next) => {
@@ -113,12 +114,26 @@ exports.DeleteAgreement = async (req, res, next) =>{
     }
 };
 
-//Update Agreement User
-exports.updateAgreementUser = async (req, res, next) => {
+//Update Userconfirm
+exports.Userconfirm = async (req, res, next) => {
     try {
+        const Url = process.env.URL_STAFF
+        const token = req.headers.token;
+        const user = await axios.get(`${Url}/user_info/getme`, {
+              headers: {
+                  'Accept': 'application/json',
+                  'token': token
+              }
+          })
+        if(!user){
+            return res
+                    .status(400)
+                    .send({status:false, message:"ไม่สามารถเชื่อมต่อได้"})
+        }
+        console.log(user)
         const agreement = await Agreement.findByIdAndUpdate(req.params.id, req.body);
         const status = req.body
-        const userid = req.decoded.id
+        const userid = req.user.id
         
         const timelineEntry = {
             timeline_userid: userid,
@@ -130,6 +145,8 @@ exports.updateAgreementUser = async (req, res, next) => {
         argument_status = status
 
         await agreement.save();
+
+        
         
         return res.json({
             message: 'Update agreement successfully!',

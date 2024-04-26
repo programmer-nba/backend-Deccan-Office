@@ -48,3 +48,48 @@ exports.InsertDraftDocument = async (req, res, next) => {
 };
 
 //Update Draft Document
+exports.UpdateDraftDocument = async (req, res, next) => {
+    try {
+        const draftdocument = await DraftDocument.findByIdAndUpdate(req.params.id, req.body);
+        if (!draftdocument) {
+            return res.json({
+                message: 'Draft document not found',
+                status: false,
+                data: null
+            });
+        }
+        return res.json({
+            message: 'Update draft document successfully!',
+            status: true,
+            data: req.body
+        });
+    }
+    catch (err) {
+        console.log(err);
+        return res.json({
+            message: err.message,
+            status: false,
+            data: null
+        });
+    }
+}
+
+
+//Delete Draft Document
+exports.DeleteDraftDocument = async (req, res, next) => {
+    try {
+        const draftdocument = await DraftDocument.findByIdAndDelete(req.params.id);
+        res.json({
+            message: 'Delete employees successfully!',
+            status: true,
+            data: draftdocument
+        });
+    } catch (err) {
+        console.log(err)
+        return res.json({
+            message: err.message,
+            status: false,
+            data: null
+        })
+    }
+};

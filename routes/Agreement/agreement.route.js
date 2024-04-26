@@ -14,6 +14,9 @@ router.post('/insert', authAdmin, AgreementController.InsertAgreement);
 
 //Update Agreement
 router.put('/update/:id', authAdmin, AgreementController.updateAgreement);
+//User confirm
+router.put('/user/confirm/:id', AgreementController.Userconfirm)
+
 
 //Delete Agreement
 router.delete('/delete/:id', authAdmin, AgreementController.DeleteAgreement);
