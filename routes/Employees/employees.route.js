@@ -17,7 +17,7 @@ router.get('/get/member',auth,EmployeesController.getMember);
 
 router.post('/post',authAdmin,EmployeesController.Post);
 
-router.put('/update/:id',authAdmin,EmployeesController.Update);
+router.put('/update/:id',auth,EmployeesController.Update);
 
 router.delete('/del/:id',authAdmin,EmployeesController.Delete);
 
