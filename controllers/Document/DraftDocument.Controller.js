@@ -19,28 +19,49 @@ exports.getallDraftDocument = async (req, res, next) => {
     }
 }
 
+//ดึงข้อมูลตามผู้ใช้คนนั้น
+exports.getdraftByMe = async (req, res, next) => {
+    try {
+        const user_id = req.decoded.id
+        const draft = await DraftDocument.find({ 'user': user_id });
+        return res.json({
+            message: 'Get draft documents by Me successfully!',
+            status: true,
+            data: draft
+        });
+    } catch (err) {
+        console.log(err);
+        return res.json({
+            message: 'Can not get draft documents by Me : ' + err.message,
+            status: false,
+            data: null
+        });
+    }
+};
+
 //Insert Draft Document
 exports.InsertDraftDocument = async (req, res, next) => {
+    const id = req.decoded.id;
     try {
-        const savedDraft = await DraftDocument.create(req.body);
+        const savedDraft = await DraftDocument.create({ ...req.body, user: id });
 
         if (!savedDraft) {
-            return res.json({
+            return res.status(400).json({
                 message: 'Failed to save Draft Document',
                 status: false,
                 data: null,
             });
         }
 
-        return res.json({
+        return res.status(200).json({
             message: 'Insert Draft Document successfully!',
             status: true,
             data: savedDraft,
         });
     } catch (err) {
-        console.log(err);
-        return res.json({
-            message: err.message,
+        console.error(err);
+        return res.status(500).json({
+            message: 'Internal server error',
             status: false,
             data: null,
         });
@@ -73,7 +94,6 @@ exports.UpdateDraftDocument = async (req, res, next) => {
         });
     }
 }
-
 
 //Delete Draft Document
 exports.DeleteDraftDocument = async (req, res, next) => {

@@ -1,4 +1,5 @@
 const { request } = require('express');
+const { required } = require('joi');
 const mongoose = require('mongoose');
 
 const DraftDocumentSchema = new mongoose.Schema({
@@ -11,7 +12,8 @@ const DraftDocumentSchema = new mongoose.Schema({
         draft_timeout : {type : Date, required : false},
     },
     draft_remark : { type : String, required : false, default : "" },
-    draft_detail :{type : String, required : false, default : ""}
+    draft_detail :{type : String, required : false, default : ""},
+    user : {type : String, required : false}
     
 }, { versionKey: false });
 

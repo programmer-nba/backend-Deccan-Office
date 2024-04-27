@@ -27,8 +27,9 @@ exports.InsertAgreement = async (req, res, next) => {
     console.log(req.decoded)
     const userid = req.decoded.id
     try {
-        const { argument_type, argument_detail, argument_username, argument_idcard, argument_position, argument_salary, argument_timeout} = req.body
+        const { user_id, argument_type, argument_detail, argument_username, argument_idcard, argument_position, argument_salary, argument_timeout} = req.body
         const argument = new Agreement({
+            user_id : user_id,
             argument_type : argument_type,
             argument_detail : argument_detail,
             argument_username : argument_username,
@@ -119,12 +120,24 @@ exports.DeleteAgreement = async (req, res, next) =>{
 //Update Userconfirm
 exports.Userconfirm = async (req, res, next) => {
     try {
-        const agreement = await Agreement.findByIdAndUpdate(req.params.id, req.body);
+        const statusdata = await Agreement.findById(req.params.id);// ตรวจสอบสัญญาว่าถูกยอมไปหรือปฏิเสธ ไปหรือยัง
+        let  statusagreement = statusdata.argument_status;
+        if (statusagreement === "ไม่ยอมรับ") {
+            return res.status(400).json({
+                message: 'สัญญานี้ถูก ปฏิเสธ ไปแล้ว',
+                status: false,
+                data: null
+            });
+        } else if (statusagreement === "ยอมรับ") {
+            return res.status(400).json({
+                message: 'สัญญานี้ถูก ยอมรับ ไปแล้ว',
+                status: false,
+                data: null
+            });
+        }
 
         const user = req.decoded
-        const status = req.body.argument_status;
-
-        const userdata = await Userinfo.findById(user.id);
+        const userdata = await Userinfo.findById(user.id); //ตรวจสอบว่ามีผู้ใช้คนนี้ไหม
         if (!userdata) {
             return res.status(404).json({
                 message: 'User not found',
@@ -132,6 +145,10 @@ exports.Userconfirm = async (req, res, next) => {
                 data: null
             });
         }
+
+        const agreement = await Agreement.findByIdAndUpdate(req.params.id, req.body); //แก้ไขสถาณะ
+
+        const status = req.body.argument_status;
         const timelineEntry = {
             timeline_userid: userdata._id,
             timeline: Date.now(),
@@ -140,14 +157,33 @@ exports.Userconfirm = async (req, res, next) => {
 
         agreement.argument_status = status
         agreement.argument_timeline.push(timelineEntry);
-        await agreement.save();
 
         if (req.body.argument_status === "ยอมรับ"){
+
+            //สรวจสอบว่ามีผู้ใช้ในระบบไหม
+            const duplicate = await Employees.findOne({
+                $or: [
+                  { iden_number: userdata.citizen_id },
+                  { userid: userdata.citizen_id }
+                ]
+            });
+            if (duplicate) {
+                if (duplicate.iden_number === userdata.citizen_id) {
+                  return res
+                    .status(409)
+                    .json({ status: false, message: 'มีผู้ใช้นี้ในระบบแล้ว' });
+                } else if (duplicate.userid === userdata.citizen_id) {
+                  return res
+                    .status(200)
+                    .json({ status: false, message: 'มีผู้ใช้นี้ในระบบแล้ว' });
+                }
+            }
+
             const newEmployeeData = {
                 userid: userdata.citizen_id,
                 first_name : agreement.argument_frist_name,
                 last_name : agreement.argument_last_name,
-                iden_number : userdata.iden_number,
+                iden_number : userdata.citizen_id,
                 password : userdata.citizen_id ? await bcrypt.hash(userdata.citizen_id, 10) : await bcrypt.hash(userdata.citizen_id, 10),
                 role : "employee",
                 position : agreement.argument_position,
@@ -156,7 +192,8 @@ exports.Userconfirm = async (req, res, next) => {
                 birthday : userdata.birth,
                 salary : agreement.agreement_salary
             };
-            
+
+            await agreement.save();
             const newEmployee = await Employees.create(newEmployeeData);
 
             if (newEmployee) {
