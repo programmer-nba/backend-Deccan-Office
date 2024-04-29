@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 
 const AgreementSchema = new mongoose.Schema({
 
-    user_id : {type : String, required : false}, //ใส่  _id ของ user นั้น
+    user_id : {type : String, required : true}, //ใส่  _id ของ user นั้น
     argument_type : {type : String, required : false}, //ประเภทสัญญาข้อตกลง
     argument_detail : {type : String, required : false}, //รายละเอียดสัญญาข้อตกลง
     argument_first_name : {type : String, required : false}, //ชื่อ

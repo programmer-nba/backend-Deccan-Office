@@ -87,6 +87,33 @@ exports.getByEmployeeIdAndYear = async (req, res, next) => {
   }
 };
 
+//ดึงข้อมูลตาม Type ID
+exports.getByType = async (req, res, next) => {
+    try {
+        const leave = await Leave.findOne({ leave_type : req.params.leave_type });
+        if (!leave) {
+            return res.json({
+                message: 'not found leave',
+                status : false,
+                data : null
+            })
+        }
+        return res.json({
+            message: 'Get leave by type successfully!',
+            status : true,
+            data : leave
+        })
+    }
+    catch (err){
+        console.log(err)
+        return res.json({
+            message: 'Can not get leave by id : '+ err.message,
+            status: false,
+            data : null
+        })
+    }
+};
+
 //เพิ่มข้อมู,ใบลา
 exports.InsertLeave = async (req, res, next) => {
     try {
@@ -99,10 +126,10 @@ exports.InsertLeave = async (req, res, next) => {
         }   
         const leaveidString = leaveid.toString().padStart(6, '0'); // แปลง leaveid เป็นสตริงพร้อมเติมเลข 0 ข้างหน้า
 
-        const {  leave_date, leave_head, leave_Type, details, date_start_leave, date_end_leave, contact, tel, } = req.body;
+        const {  leave_date, leave_head, leave_type, details, date_start_leave, date_end_leave, contact, tel, } = req.body;
 
         const startDate = dayjs(date_start_leave);
-        const endDate = dayjs(Date_end_leave);
+        const endDate = dayjs(date_end_leave);
         
         const daysDiff = endDate.diff(startDate, 'day');
 
@@ -113,7 +140,7 @@ exports.InsertLeave = async (req, res, next) => {
             leave_date: leave_date,
             leave_head: leave_head,
 
-            leave_Type: leave_Type,
+            leave_type: leave_type,
             details: details,
 
             date_start_leave: date_start_leave,

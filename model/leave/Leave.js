@@ -7,9 +7,8 @@ const LeaveSchema = new Schema({
     employees_id: { type: String, required: false },
 
     leave_date : {type: Date, required: false, default: Date.now},
-    leave_head : {type: String, required: false},   
 
-    leave_Type : {type : String, required: false,}, // ประเภทลา
+    leave_type : {type : String, required: false,}, // ประเภทลา
     details : {type: String, required: false},
 
     date_start_leave : {type: Date, required: false, default : Date.now}, //วันที่เริ่มลา

@@ -86,13 +86,11 @@ exports.Insertimage = async (req, res, next) => {
         upload(req, res, async function (err) {
             const { citizen_id, 
                 user_password,
-                name, 
+                name,
+                lastname, 
                 gender, 
                 birth, 
                 tel, 
-                status,
-                exam , 
-                role, 
                 country, 
                 religion, 
                 height, 
@@ -127,8 +125,7 @@ exports.Insertimage = async (req, res, next) => {
             // สร้าง User ในส่วนของลงทะเบียน
             const newUser = new User({
                 citizen_id: citizen_id,
-                user_password : bcrypt.hashSync(user_password, 10), // แปลงรหัสผ่านเป็นแบบเข้ารหัส
-                role: role
+                user_password : bcrypt.hashSync( req.body.user_password, 10), // แปลงรหัสผ่านเป็นแบบเข้ารหัส
             });
      
             // บันทึก User ลงในฐานข้อมูล
@@ -145,20 +142,14 @@ exports.Insertimage = async (req, res, next) => {
             
             // สร้าง Userinfo
             const userinfo = new Userinfo({
-                _id:savedUser._id,
-                citizen_id: citizen_id,
+                _id : savedUser._id,
+                citizen_id : citizen_id,
                 user_password : user_password,
-                name: name,
-                gender: gender,
-                birth: birth,
-                tel: tel,
-                status: status,
-                exam : {
-                    score: Number,
-                    passed: Boolean,
-                    exam_date: Date
-                },
-                role: role,
+                name : name,
+                lastname : lastname,
+                gender : gender,
+                birth : birth,
+                tel : tel,
                 country: country,
                 religion: religion,
                 height: height,
@@ -229,7 +220,14 @@ exports.updateUserinfo = async (req, res, next) => {
         });
 
         const userinfoId = req.params.id; // รหัส ID ของข้อมูลส่วนตัวของผู้ใช้ที่ต้องการอัปเดต
+        console.log(userinfoId)
         let userinfoData = req.body; // ข้อมูลใหม่ที่จะใช้ในการอัปเดต
+        if (!userinfoId) {
+            return res.status(404).json({
+                message : "User not found",
+                status : false
+            })
+        }
 
         // ตรวจสอบว่ามีการอัปโหลดไฟล์รูปภาพหรือไม่
         if (req.file) {

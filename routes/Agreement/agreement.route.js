@@ -9,6 +9,8 @@ const authUser = require("../../auten")
 
 //Get Agreement
 router.get('/getall', authAdmin, AgreementController.getallAgreement);
+//Get By me
+router.get('/byme', authUser.user, AgreementController.getallAgreementByme);
 
 //Insert Agreement
 router.post('/insert', authAdmin, AgreementController.InsertAgreement);

@@ -22,18 +22,49 @@ exports.getallAgreement = async (req, res, next) => {
     }
 }
 
+//Get Agreement by me
+exports.getallAgreementByme = async (req, res, next) => {
+    try {
+        const user = req.decoded.id
+        const userdata = await Userinfo.findById(user); //ดึงข้อมูลส่วนตัว
+        if (!userdata) {
+            return res.status(404).json({
+                message: 'User not found',
+                status: false,
+                data: null
+            });
+        }
+        console.log(userdata)
+
+        const agreement = await Agreement.findOne({
+            user_id : userdata.id,
+        });
+
+        return res.json({
+            message: 'Get Agreement data successfully!',
+            status: true,
+            data: agreement
+        });
+    } catch (err) {
+        console.log(err)
+        return res.json({
+            message: ('Can not get types data', err.message),
+            status: false,
+            data: null
+        })
+    }
+}
+
 //Insert Agreement
 exports.InsertAgreement = async (req, res, next) => {
     console.log(req.decoded)
     const userid = req.decoded.id
     try {
-        const { user_id, argument_type, argument_detail, argument_username, argument_idcard, argument_position, argument_salary, argument_timeout} = req.body
+        const { user_id, argument_type, argument_detail, argument_position, argument_salary, argument_timeout} = req.body
         const argument = new Agreement({
             user_id : user_id,
             argument_type : argument_type,
             argument_detail : argument_detail,
-            argument_username : argument_username,
-            argument_idcard : argument_idcard,
             argument_position : argument_position,
             argument_salary : argument_salary, //Number
             argument_timeout : argument_timeout,
@@ -137,7 +168,7 @@ exports.Userconfirm = async (req, res, next) => {
         }
 
         const user = req.decoded
-        const userdata = await Userinfo.findById(user.id); //ตรวจสอบว่ามีผู้ใช้คนนี้ไหม
+        const userdata = await Userinfo.findById(user.id); //ดึงข้อมูลส่วนตัว
         if (!userdata) {
             return res.status(404).json({
                 message: 'User not found',
@@ -181,10 +212,10 @@ exports.Userconfirm = async (req, res, next) => {
 
             const newEmployeeData = {
                 userid: userdata.citizen_id,
-                first_name : agreement.argument_frist_name,
-                last_name : agreement.argument_last_name,
+                first_name : userdata.name,
+                last_name : userdata.lastname,
                 iden_number : userdata.citizen_id,
-                password : userdata.citizen_id ? await bcrypt.hash(userdata.citizen_id, 10) : await bcrypt.hash(userdata.citizen_id, 10),
+                password : await bcrypt.hash(userdata.citizen_id, 10),
                 role : "employee",
                 position : agreement.argument_position,
                 tel : userdata.tel,

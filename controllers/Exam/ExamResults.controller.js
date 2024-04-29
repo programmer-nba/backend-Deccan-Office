@@ -23,21 +23,28 @@ exports.getExamResults = async (req, res, next) => {
 exports.getExamResultsById = async (req, res, next) => {
     try {
         const extype = await ExamResults.findById(req.params.id);
+        if (!extype) {
+            return res.status(404).json({
+                message: 'ExamResults not found',
+                status: false,
+                data: null
+            });
+        }
         return res.json({
             message: 'Get ExamResults by id successfully!',
             status: true,
             data: extype
-        })
-    }
-    catch (err) {
-        console.log(err)
+        });
+    } catch (err) {
+        console.log(err);
         return res.json({
             message: 'Can not get ExamResults by id : ' + err.message,
             status: false,
             data: null
-        })
+        });
     }
-}
+};
+
 
 //Insert ExamResults
 exports.InsertExamResults = async (req, res, next) => {
@@ -49,6 +56,7 @@ exports.InsertExamResults = async (req, res, next) => {
             Score : Score,
             Result : Result
         })
+        
         const saved_examresults = await examresults.save()  
         if (!saved_examresults) {
             return res.json({
@@ -77,6 +85,13 @@ exports.InsertExamResults = async (req, res, next) => {
 exports.UpdateExamResults = async (req, res, next) => {
     try {
         const examresults = await ExamResults.findByIdAndUpdate(req.params.id, req.body);
+        if (!examresults) {
+            return res.json({
+                message: 'ExamResults not found',
+                status: true,
+                data: examresults
+            })
+        }
         return res.json({
             message: 'Update ExamResults successfully!',
             status: true,
@@ -101,6 +116,7 @@ exports.UpdateExamResultsByID = async (req, res, next) => {
             req.body,
             { new: true }
         );
+        
         return res.json({
             message: 'Update ExamResults by User_id successfully!',
             status: true,
@@ -120,11 +136,18 @@ exports.UpdateExamResultsByID = async (req, res, next) => {
 //Delete ExamResults
 exports.DeleteExamResults = async (req, res, next) => {
     try {
-        const exam = await ExamResults.findByIdAndDelete(req.params.id);
+        const examresults = await ExamResults.findByIdAndDelete(req.params.id);
+        if (!examresults) {
+            return res.json({
+                message: 'ExamResults not found',
+                status: true,
+                data: examresults
+            })
+        }
         res.json({
             message: 'Delete ExamResults successfully!',
             status: true,
-            data: exam
+            data: examresults
         });
     } catch (err) {
         console.log(err);
