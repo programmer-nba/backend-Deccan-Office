@@ -93,6 +93,32 @@ exports.getdocumentByMe = async (req, res, next) => {
     }
 };//ใช้งานได้
 
+//ดึงเอกสารที่เคยอนุมัติ
+exports.getDocumentApproveByMe = async (req, res, next) => {
+    try {
+        const user_id = req.decoded.id
+        const documents = await Document.find({
+            'status_detail': {
+                $elemMatch : {
+                    "employee_id" : user_id
+                }
+            } 
+        });
+        return res.json({
+            message: 'ดึงเอกสารที่เคยอนุมัติ สำเร็จ !!',
+            status: true,
+            data: documents
+        });
+    } catch (err) {
+        console.log(err);
+        return res.json({
+            message: 'Can not get documents by Me : ' + err.message,
+            status: false,
+            data: null
+        });
+    }
+};//ใช้งานได้
+
 // Get Document By Status
 exports.getdocumentByStatus = async (req, res, next) => {
     try {

@@ -12,6 +12,7 @@ router.get('/byid/:id', DocumentController.getdocumentById);
 router.get('/bystatus/:Status_document', DocumentController.getdocumentByStatus);
 router.get('/byreq/:employee_id', DocumentController.getdocumentByRequester);
 router.get('/byMe', auth, DocumentController.getdocumentByMe);
+router.get('/approve/byMe', auth, DocumentController.getDocumentApproveByMe);
 
 //Post
 router.post('/insert', auth,DocumentController.InsertDocument); // เพิ่ม Document

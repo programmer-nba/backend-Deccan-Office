@@ -35,21 +35,22 @@ const cors = require("cors");
 app.use(express.json());
 app.use(cors());
 
+const ddsc = '/ddsc-office'
 // เรียกใช้ Path ตรงนี้ <=
-app.use('/ddsc-office', EmployeesRoutes);
-app.use('/ddsc-office', RecordsRoutes);
-app.use('/ddsc-office', TimeInOut);
-app.use('/ddsc-office', Role);
-app.use('/ddsc-office/leave', LeaveRoutes);
-app.use('/ddsc-office/admin',AdminRoutes);
-app.use('/ddsc-office/partners',PartnerRoutes);
-app.use('/ddsc-office/document',DocumentRoutes);
-app.use('/ddsc-office/project',RequestProjectRoutes);
-app.use('/ddsc-office/project/type',ProjectTypeRoutes);
-app.use('/ddsc-office/agreement', AgreementRoutes);
-app.use('/ddsc-office/document/draft', DraftDocumentRoutes);
-app.use('/ddsc-office/user', UserRoutes)
-app.use('/ddsc-office/user_info', UserinfoRoutes)
+app.use( ddsc , EmployeesRoutes);
+app.use( ddsc , RecordsRoutes);
+app.use( ddsc , TimeInOut);
+app.use( ddsc , Role);
+app.use( ddsc + '/leave', LeaveRoutes);
+app.use( ddsc + '/admin',AdminRoutes);
+app.use( ddsc + '/partners',PartnerRoutes);
+app.use( ddsc + '/document',DocumentRoutes);
+app.use( ddsc + '/project',RequestProjectRoutes);
+app.use( ddsc + '/project/type',ProjectTypeRoutes);
+app.use( ddsc + '/agreement', AgreementRoutes);
+app.use( ddsc + '/document/draft', DraftDocumentRoutes);
+app.use( ddsc + '/user', UserRoutes)
+app.use( ddsc + '/user_info', UserinfoRoutes)
 
 
 
