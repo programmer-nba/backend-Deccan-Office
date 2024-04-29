@@ -7,13 +7,25 @@ exports.getAll = async (req, res) => {
     try {
       const getAllLeave = await Leave.find();
       if (getAllLeave.length > 0) {
-        return res.send({ status: true, data: getAllLeave });
+        return res.send({ 
+            message : "ดึงข้อมูลสำเร็จ",
+            status: true, 
+            data: getAllLeave 
+        });
       } else {
-        return res.status(400).send({ status: false, message: "ไม่พบข้อมูลใบลา" });
+        return res.status(400).send({ 
+            message: "ไม่พบข้อมูลใบลา",
+            status: false, 
+            data : null
+        });
       }
     } catch (err) {
       console.log(err);
-      return res.status(500).send({ message: "มีบางอย่างผิดพลาด" });
+      return res.status(500).send({ 
+        message: "มีบางอย่างผิดพลาด" ,
+        status : false,
+        data : null
+    });
     }
 };
 
@@ -387,6 +399,47 @@ exports.calculateOrdination = async (req, res) => {
         console.log(err);
         return res.json({
             message: 'เกิดข้อผิดพลาดในการคำนวณจำนวน Set_Day Ordination',
+            status: false
+        });
+    }
+}; 
+
+//คำนวนวันที่ลาบวชตาม id พนักงาน
+exports.calculateLeave = async (req, res) => {
+    try {
+        const { employees_id, leavetype_code } = req.params;
+        const stats = await Leave.aggregate([
+        {
+            $match: {
+                employees_id: employees_id,
+                leave_type: leavetype_code,
+                "Status.Status_name": "Allow"
+            }
+        },
+        {
+            $group: {
+                _id: "$employees_id",
+                totalSetDay: { $sum: "$set_day" }
+            }
+        }
+    ]);
+        if  (stats.length === 0 || stats[0].totalSetDay <= 0) {
+            return res.json({
+                message: 'ผู้ใช้นี้ไม่มีวันลา',
+                status: false,
+                data: employees_id + " ลาทั้งหมด 0 วัน"
+            });
+        }else{
+            return res.json({
+                message: 'คำนวณจำนวนจำนวนวันลาทั้งหมดสำเร็จ',
+                status: true,
+                data: stats
+            });
+        }
+    } catch (err) {
+        console.log(err);
+        return res.json({
+            message: 'เกิดข้อผิดพลาดในการคำนวณจำนวน ' ,
             status: false
         });
     }
