@@ -51,11 +51,14 @@ EmployeeSchema.pre('save',async function (next) {   //ทำ Middleware กา�
     
     let data
       if (user.position == 'owner') {
-          user.employee_number = 'OWNER';
-          next();
+        user.employee_number = 'OWNER';
+        next();
       }else if(user.position == 'admin'){
-          user.employee_number = 'ADMIN';
-          next();
+        user.employee_number = 'ADMIN';
+        next();
+      }else if(user.position == 'hr'){
+        user.employee_number = 'HR';
+        next();
       } else {
         if (user.position == 'programmer') {
           data = 'DEV';

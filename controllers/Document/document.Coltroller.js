@@ -117,7 +117,7 @@ exports.getDocumentApproveByMe = async (req, res, next) => {
             data: null
         });
     }
-};//ใช้งานได้
+};
 
 // Get Document By Status
 exports.getdocumentByStatus = async (req, res, next) => {
