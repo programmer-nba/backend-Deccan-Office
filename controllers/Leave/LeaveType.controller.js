@@ -23,6 +23,13 @@ exports.getLeaveType = async (req, res, next) => {
 exports.getLeaveTypeById = async (req, res, next) => {
     try {
         const leavetype = await LeaveType.findById(req.params.id);
+        if (!leavetype) {
+            return res.json({
+                message: 'Not Found Leave Type',
+                status: false,
+                data: null
+            })
+        }
         return res.json({
             message: 'Get leave type by id successfully!',
             status: true,
@@ -42,10 +49,10 @@ exports.getLeaveTypeById = async (req, res, next) => {
 //Insert Leave Type
 exports.InsertLeaveType = async (req, res, next) => {
     try {
-        const { leavetype_name_eng, leavetype_name_thai } = req.body
+        const { leavetype_name, leavetype_default } = req.body
         const leavetype = new LeaveType({
-            leavetype_name_eng: leavetype_name_eng,
-            leavetype_name_thai: leavetype_name_thai
+            leavetype_name: leavetype_name,
+            leavetype_default: leavetype_default
         })
         const saved_leavetype = await leavetype.save()
         if (!saved_leavetype) {
@@ -71,14 +78,21 @@ exports.InsertLeaveType = async (req, res, next) => {
     }
 };
 
-//Update ExamType
-exports.UpdateExamType = async (req, res, next) => {
+//Update Leave Type
+exports.UpdateLeaveType = async (req, res, next) => {
     try {
-        const examtype = await ExamType.findByIdAndUpdate(req.params.id, req.body);
+        const leavetype = await LeaveType.findByIdAndUpdate(req.params.id, req.body);
+        if (!leavetype) {
+            return res.json({
+                message: 'Not Found Leave Type',
+                status: false,
+                data: null
+            })
+        }
         return res.json({
-            message: 'Update examtype successfully!',
+            message: 'Update leave type successfully!',
             status: true,
-            data: examtype
+            data: leavetype
         })
     }
     catch (err) {
@@ -91,14 +105,21 @@ exports.UpdateExamType = async (req, res, next) => {
     }
 }
 
-//Delete ExamType
-exports.DeleteExamType = async (req, res, next) => {
+//Delete Leave Type
+exports.DeleteLeaveType = async (req, res, next) => {
     try {
-        const examtype = await ExamType.findByIdAndDelete(req.params.id);
+        const leavetype = await LeaveType.findByIdAndDelete(req.params.id);
+        if (!leavetype) {
+            return res.json({
+                message: 'Not Found Leave Type',
+                status: false,
+                data: null
+            })
+        }
         res.json({
             message: 'Delete employees successfully!',
             status: true,
-            data: examtype
+            data: leavetype
         });
     } catch (err) {
         console.log(err)

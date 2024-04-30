@@ -15,7 +15,7 @@ router.get('/byid/:id', UserinfoController.getUserById);
 router.post('/info' ,UserinfoController.Insertimage );
 
 //Update User
-router.put('/update/:id', auten.user, UserinfoController.updateUserinfo);
+router.put('/update/:id', UserinfoController.updateUserinfo);
 
 //Delete User
 router.delete('/delete-user/:id', UserinfoController.deleteUserinfo);

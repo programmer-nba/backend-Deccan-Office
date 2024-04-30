@@ -18,8 +18,8 @@ const DocumentSchema = new Schema({
         } // รวมชั่วโมงการทำ OT
     },
     remark : { type : String, required : false, default : "" },
-    detail :{type:String, required:false, default:""},
-
+    detail : {type : String, required: false, default:""},
+    file : {type : String, required : false },
     // Detail : [{
     //     detail : {type : String, required : false, default : ""},
     //     price : {type : Number, required : false, default : 0},
