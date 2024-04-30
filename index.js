@@ -27,7 +27,8 @@ const ExamRoute = require('./routes/Exam/exam.route');
 const ExamTypeRoutes = require('./routes/Exam/examtype.route');
 const PostRoutes = require('./routes/Post/post.route');
 const ExamResultsRoutes = require('./routes/Exam/examresults.route');
-const LeaveTypeRoutes = require ('./routes/Leave/LeaveType.route')
+const LeaveTypeRoutes = require ('./routes/Leave/LeaveType.route');
+const ContactRoutes = require ('./routes/Contact/contact.route');
 
 
 app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }));
@@ -59,7 +60,8 @@ app.use( ddsc + '/post', PostRoutes);
 app.use( ddsc + '/exam',ExamRoute);
 app.use( ddsc + '/exam-type', ExamTypeRoutes);
 app.use( ddsc + '/examresults',ExamResultsRoutes);
-app.use( ddsc + '/leavetype', LeaveTypeRoutes)
+app.use( ddsc + '/leavetype', LeaveTypeRoutes);
+app.use( ddsc + '/contact', ContactRoutes)
 
 
 
