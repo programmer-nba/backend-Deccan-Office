@@ -1,3 +1,4 @@
+const { request } = require('express');
 const { required } = require('joi');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
@@ -18,23 +19,21 @@ const DocumentSchema = new Schema({
         } // รวมชั่วโมงการทำ OT
     },
     remark : { type : String, required : false, default : "" },
-    detail : {type : String, required: false, default:""},
-    file : {type : String, required : false },
-    // Detail : [{
-    //     detail : {type : String, required : false, default : ""},
-    //     price : {type : Number, required : false, default : 0},
-    //     qty : {type : Number, required : false, default : 0}
-    // }],
+    detail : { type : String, required: false, default:""},
+    file : [{
+        file_doc :  {type : String, required : false }
+    }],
 
+    document_true : {type : Boolean, request : false},
     status_document : {type : String , required : false , default : "รอหัวหน้าแผนกอนุมัติ"},// 1 = รอหัวหน้า  /  2 = รอผู้จัดการ  /  3 = รอกรรมการ  /  4 = อนุมัติแล้ว / 5 = ไม่อนุมัติ / 6 = รอตรวจสอบ
     // หัวหน้าเห็นได้แค่ 1  ผู้จัดการเห็นได้แค่ 2  กรรมการเห็นทั้งหมด 
     status_detail : [{
-        employee_id:{type : String, required : false, default : ""},
-        role:{type : String, required : false, default : ""},
-        position:{type : String, required : false, default : ""},
-        date: {type : Date, required : false, default : null},
-        status:{type : String, required : false, default : ""},
-        remark:{type : String, required : false, default : ""}
+        employee_id : {type : String, required : false, default : ""},
+        role : {type : String, required : false, default : ""},
+        position : {type : String, required : false, default : ""},
+        date : {type : Date, required : false, default : null},
+        status : {type : String, required : false, default : ""},
+        remark : {type : String, required : false, default : ""}
     }],
 
 

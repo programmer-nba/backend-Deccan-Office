@@ -431,6 +431,26 @@ exports.calculateOrdination = async (req, res) => {
     }
 }; 
 
+// Get Leave By Me
+exports.getLeaveByMe = async (req, res, next) => {
+    try {
+        const user_id = req.decoded.id
+        const leave = await Leave.find({ 'employee_id': user_id });
+        return res.json({
+            message: 'Get leave by Me successfully!',
+            status: true,
+            data: leave
+        });
+    } catch (err) {
+        console.log(err);
+        return res.json({
+            message: 'Can not get documents by Me : ' + err.message,
+            status: false,
+            data: null
+        });
+    }
+};//ใช้งานได้
+
 //คำนวนวันที่ลาบวชตาม id พนักงาน
 exports.calculateLeave = async (req, res) => {
     try {

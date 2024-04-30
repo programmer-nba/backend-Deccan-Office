@@ -6,14 +6,26 @@ const timezone = require('dayjs/plugin/timezone');
 const { roleEmployee } = require('../../model/employee/role');
 const { required } = require('joi');
 const { timeInOut } = require('../../model/employee/timeInOutEmployee');
+const multer = require('multer');
+const upload = multer();
+
+const {
+    uploadFileCreate,
+    deleteFile,
+    } = require("../../funtion/uploadfilecreate");
+
+const storage = multer.diskStorage({
+        filename: function (req, file, cb) {
+          cb(null, Date.now() + "-" + file.originalname);
+          //console.log(file.originalname);
+        },
+});
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 dayjsTimestamp = dayjs().tz('Asia/Bangkok');
 dayTime = dayjsTimestamp.format('YYYY-MM-DD HH:mm:ss');
-
-
 
 //Get Document
 exports.getdocument = async (req, res, next) => {
@@ -141,105 +153,176 @@ exports.getdocumentByStatus = async (req, res, next) => {
 //Insert Document   
 exports.InsertDocument = async (req, res, next) => {
     try {
-        const latestDoc = await Document.findOne().sort({ document_id: -1 }).limit(1);
-        const employee_id = req.decoded.id
-        const role = req.decoded.role
-        const position = req.decoded.position
-        if (req.body.type != "OT" && req.body.type != "Normal") {
+        if(req.body.document_true != true && req.body.document_true != false){
             return res.json({
-                message: 'it not OT or Normal',
+                message: 'กรุณาใส่ true หรือ false ที่ document_true',
                 status: false,
                 data: null
             });
         }
-        else if (req.body.type === "Normal") {
-            if (req.body.ot) {
-                return res.json({
-                    message: 'ไม่สามารถเพิ่ม OT หาก Type เป็น Normal',
-                    status: false,
-                    data: null
-                });
-            }
-        }
-        let docid = 1; // ค่าเริ่มต้นสำหรับ docid
-        if (latestDoc) {
-            docid = parseInt(latestDoc.document_id.slice(2)) + 1; // เพิ่มค่า docid
-        }
-        const docidString = docid.toString().padStart(5, '0'); // แปลง docid เป็นสตริงพร้อมเติมเลข 0 ข้างหน้า
-        const { doc_date, headers, type, to, timein, timeout, detail } = req.body;
-        
-        let status = "รอหัวหน้าแผนกอนุมัติ"
-            if(role == 'head_department'){
-                status = 'รอผู้จัดการอนุมัติ'
-            }else if (role == 'manager'){
-                status = 'รอผู้บริหารอนุมัติ'
-            }
 
-        const document = new Document({
-            document_id: docidString,
-            doc_date: doc_date,
-            headers: headers,
-            type : type,
-            to: to,
-            detail: req.body.detail,
-            status_document: status,
-            status_detail: [{
-                employee_id: employee_id,
-                role: role,
-                position: position,
-                date: dayjsTimestamp, // หรือวันที่คุณต้องการกำหนด
-                status: status
-            }]
-            // Requester: Requester
-        });
+        let upload = multer({ storage: storage }).array("image", 20);
+        upload(req, res, async function (err){
+            if(req.body.document_true === false) {
+                const { headers, type, to, document_true} = req.body;
+                const employee_id = req.decoded.id
 
-        if (req.body.type === "OT") {
-            if (!req.body.ot || !req.body.ot.timein || !req.body.ot.timeout) {
-                return res.json({
-                    message: 'คุณจำเป็นต้องกรอก เวลา ขอทำ OT',
-                    status: false,
-                    data: null
-                });
-            }
-
-            const timein = dayjs(req.body.ot.timein);
-            const timeout = dayjs(req.body.ot.timeout);
-            const totalHours = timeout.diff(timein, 'hour');
-            const totalMinutes = timeout.diff(timein, 'minute') % 60;
-            const totalSeconds = timeout.diff(timein, 'second') % 60;
-            const totalOTInSeconds = totalHours * 3600 + totalMinutes * 60 + totalSeconds;
-        
-            document.ot = {
-                timein: timein,
-                timeout: timeout,
-                total_ot: {
-                    totaltime: (totalHours + " ชั่วโมง " + totalMinutes + " นาที " + totalSeconds + " วินาที"),
-                    totalseconds: totalOTInSeconds
+                const reqFiles = [];
+                const result = [];
+                if (err) {
+                    return res.status(500).send(err);
                 }
-            };
-        }        
-        // if (Array.isArray(Detail) && Detail.length > 0) { //เมื่อไม่มีการส่งค่าของ Detail มาจะไม่ทำขั้นตอนนี้
-        //     Detail.forEach(item => {
-        //         document.Detail.push({
-        //             detail: item.detail,
-        //             price: item.price,
-        //             qty: item.qty
-        //         });
-        //     });
-        // }
-        const saved_document = await document.save();
-        if (!saved_document) {
-            return res.json({
-                message: 'can not save document',
-                status: false,
-                data: null
+                let image = ''
+                if (req.files) {
+                    const url = req.protocol + "://" + req.get("host");
+                    for (var i = 0; i < req.files.length; i++) {
+                        const src = await uploadFileCreate(req.files, res, { i, reqFiles });
+                        result.push(src);
+                        //   reqFiles.push(url + "/public/" + req.files[i].filename);
+                    }
+                    image = reqFiles[0]
+                }
+
+                const document = new Document({
+                    headers : headers,
+                    type : type,
+                    to : to,
+                    detail : req.body.detail,
+                    document_true : document_true,
+                    file : [{
+                        file_doc : image
+                    }],
+                    status_detail: [{
+                        employee_id: employee_id,
+                    }]
+                });
+
+                const saved_document = await document.save();
+                if (!saved_document) {
+                    return res.json({
+                        message: 'ไม่สามารถเพิ่มฉบับร่างได้',
+                        status: false,
+                        data: null
+                    });
+                }
+                return res.json({
+                    message: 'เพิ่มฉบับร่างสำเร็จ',
+                    status: true,
+                    data: saved_document,
+                    file: [{file}]
+                });
+            }
+
+            const latestDoc = await Document.findOne({document_true : true}).sort({ document_id: -1 }).limit(1);
+            const employee_id = req.decoded.id
+            const role = req.decoded.role
+            const position = req.decoded.position
+            if (req.body.type != "OT" && req.body.type != "Normal") {
+                return res.json({
+                    message: 'it not OT or Normal',
+                    status: false,
+                    data: null
+                })
+            }
+            else if (req.body.type === "Normal") {
+                if (req.body.ot) {
+                    return res.json({
+                        message: 'ไม่สามารถเพิ่ม OT หาก Type เป็น Normal',
+                        status: false,
+                        data: null
+                    });
+                }
+            }
+            let docid = 1; // ค่าเริ่มต้นสำหรับ docid
+            if (latestDoc) {
+                docid = parseInt(latestDoc.document_id.slice(2)) + 1; // เพิ่มค่า docid
+            }
+            const docidString = docid.toString().padStart(5, '0');
+            const { doc_date, headers, type, to } = req.body;
+            const reqFiles = [];
+                const result = [];
+                if (err) {
+                    return res.status(500).send(err);
+                }
+                let image = ''
+                if (req.files) {
+                    const url = req.protocol + "://" + req.get("host");
+                    for (var i = 0; i < req.files.length; i++) {
+                        const src = await uploadFileCreate(req.files, res, { i, reqFiles });
+                        result.push(src);
+                        //   reqFiles.push(url + "/public/" + req.files[i].filename);
+                    }
+                    image = reqFiles[0]
+                }
+            
+            let status = "รอหัวหน้าแผนกอนุมัติ"
+                if(role == 'head_department'){
+                    status = 'รอผู้จัดการอนุมัติ'
+                }else if (role == 'manager'){
+                    status = 'รอผู้บริหารอนุมัติ'
+                }
+
+            const document = new Document({
+                document_id: docidString,
+                doc_date: doc_date,
+                headers: headers,
+                type : type,
+                to: to,
+                detail: req.body.detail,
+                file : [{
+                    file_doc : image
+                }],
+                status_document: status,
+                status_detail: [{
+                    employee_id: employee_id,
+                    role: role,
+                    position: position,
+                    date: dayjsTimestamp,
+                    status: status
+                }]
             });
-        }
-        return res.json({
-            message: 'Insert document successfully!',
-            status: true,
-            data: saved_document
-        });
+
+            if (req.body.type === "OT") {
+                if (!req.body.ot || !req.body.ot.timein || !req.body.ot.timeout) {
+                    return res.json({
+                        message: 'คุณจำเป็นต้องกรอก เวลา ขอทำ OT',
+                        status: false,
+                        data: null
+                    });
+                }
+
+                const timein = dayjs(req.body.ot.timein);
+                const timeout = dayjs(req.body.ot.timeout);
+                const totalHours = timeout.diff(timein, 'hour');
+                const totalMinutes = timeout.diff(timein, 'minute') % 60;
+                const totalSeconds = timeout.diff(timein, 'second') % 60;
+                const totalOTInSeconds = totalHours * 3600 + totalMinutes * 60 + totalSeconds;
+            
+                document.ot = {
+                    timein: timein,
+                    timeout: timeout,
+                    total_ot: {
+                        totaltime: (totalHours + " ชั่วโมง " + totalMinutes + " นาที " + totalSeconds + " วินาที"),
+                        totalseconds: totalOTInSeconds
+                    }
+                };
+            }
+
+            const saved_document = await document.save();
+            if (!saved_document) {
+                return res.json({
+                    message: 'can not save document',
+                    status: false,
+                    data: null
+                });
+            }
+            return res.json({
+                message: 'Insert document successfully!',
+                status: true,
+                data: saved_document,
+                file: [{file}]
+            });
+        })
     } catch (err) {
         console.log(err);
         return res.json({
@@ -249,8 +332,6 @@ exports.InsertDocument = async (req, res, next) => {
         });
     }
 };
-
-
 
 //Update Document
 exports.UpdateDocument = async (req, res, next) => {
