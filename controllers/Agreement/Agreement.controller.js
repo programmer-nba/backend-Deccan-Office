@@ -235,7 +235,7 @@ exports.Userconfirm = async (req, res, next) => {
                 first_name : userdata.name,
                 last_name : userdata.lastname,
                 iden_number : userdata.citizen_id,
-                password : await bcrypt.hash(userdata.citizen_id, 10),
+                password : await bcrypt.hash(userdata.citizen_id, 10) || await bcrypt.hash(userdata.citizen_id, 10),
                 role : "employee",
                 position : agreement.argument_position,
                 tel : userdata.tel,
