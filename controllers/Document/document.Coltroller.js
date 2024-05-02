@@ -375,7 +375,16 @@ exports.InsertDocument = async (req, res, next) => {
 
 //Update Document
 exports.UpdateDocument = async (req, res, next) => {
+    const trueorfalse = req.body.document_true
     try {
+        console.log(trueorfalse)
+        if(req.body.document_true != "ฉบับจริง" && req.body.document_true != "ฉบับร่าง"){
+            return res.json({
+                message: 'กรุณาใส่ ฉบับจริง หรือ ฉบับร่าง ที่ document_true',
+                status: false,
+                data: null
+            });
+        }
         const { id } = req.params; // รับ ID ของเอกสารที่ต้องการอัปเดต
         const employee_id = req.decoded.id
         const role = req.decoded.role
@@ -383,29 +392,86 @@ exports.UpdateDocument = async (req, res, next) => {
         // ทำการอัปเดตเอกสารโดยไม่ระบุชื่อตัวแปร
         const findDocument = await Document.findOne({_id:id})
             let statusDocs = findDocument.status_document
-                if(statusDocs == 'ไม่อนุมัติ'){
-                    return res
-                            .status(400)
-                            .send({status:false, message:"เอกสารนี้ไม่อนุมัติเป็นที่เรียบร้อยแล้ว"})
-                }else if (statusDocs == 'อนุมัติ'){
-                    return res
-                            .status(400)
-                            .send({status:false, message:"เอกสารนี้อนุมัติเป็นที่เรียบร้อยแล้ว"})
+            if(statusDocs == 'ไม่อนุมัติ'){
+                return res
+                    .status(400)
+                    .send({status:false, message:"เอกสารนี้ไม่อนุมัติเป็นที่เรียบร้อยแล้ว"})
+            }else if (statusDocs == 'อนุมัติ'){
+                return res
+                    .status(400)
+                    .send({status:false, message:"เอกสารนี้อนุมัติเป็นที่เรียบร้อยแล้ว"})
+            }
+        
+        if(req.body.document_true === "ฉบับจริง"){
+            const latestDoc = await Document.findOne({document_true : "ฉบับจริง"}).sort({ document_id: -1 }).limit(1);
+            let docid = 1; // ค่าเริ่มต้นสำหรับ docid
+            if (latestDoc) {
+                docid = parseInt(latestDoc.document_id.slice(2)) + 1; // เพิ่มค่า docid
+            }
+            const docidString = docid.toString().padStart(5, '0');
+
+            const reqFiles = [];
+                const result = [];
+                if (err) {
+                    return res.status(500).send(err);
                 }
+                let image = ''
+                if (req.files) {
+                    const url = req.protocol + "://" + req.get("host");
+                    for (var i = 0; i < req.files.length; i++) {
+                        const src = await uploadFileCreate(req.files, res, { i, reqFiles });
+                        result.push(src);
+                        //   reqFiles.push(url + "/public/" + req.files[i].filename);
+                    }
+                    image = reqFiles[0]
+                }
+            let status = "รอหัวหน้าแผนกอนุมัติ"
+                if(role == 'head_department'){
+                    status = 'รอผู้จัดการอนุมัติ'
+                }else if (role == 'manager'){
+                    status = 'รอผู้บริหารอนุมัติ'
+                }
+            
+            const updatedDocument = await Document.findOneAndUpdate(
+            { _id: id }, // เงื่อนไขในการค้นหาเอกสารที่ต้องการอัปเดต
+            {
+                document_id : docidString,
+                ...req.body,
+                status_document:status,
+                $push:{
+                    satus_detail:{
+                        employee_id : employee_id,
+                        role : role,
+                        position : position,
+                        date : dayjsTimestamp,
+                        status : status,
+                    }
+                }
+            },
+            { new: true } // ตั้งค่าเพื่อให้คืนค่าข้อมูลเอกสารที่ถูกอัปเดตแล้ว
+            );
+            if (!updatedDocument) {
+                return res.status(404).json({ message: 'Document not found' });
+            }
+            return res.json({
+                message: 'Document updated successfully!',
+                data: updatedDocument
+            });
+        }
         const updatedDocument = await Document.findOneAndUpdate(
             { _id: id }, // เงื่อนไขในการค้นหาเอกสารที่ต้องการอัปเดต
             {
-                    ...req.body,
-                    status_document:"รอหัวหน้าแผนกอนุมัติ",
-                    $push:{
-                        Ssatus_detail:{
-                            employee_id:employee_id,
-                            role:role,
-                            position:position,
-                            date: dayjsTimestamp,
-                            status:"รอหัวหน้าแผนกอนุมัติ",
-                        }
+                ...req.body,
+                status_document:"รอหัวหน้าแผนกอนุมัติ",
+                $push:{
+                    satus_detail:{
+                        employee_id:employee_id,
+                        role:role,
+                        position:position,
+                        date: dayjsTimestamp,
+                        status:"รอหัวหน้าแผนกอนุมัติ",
                     }
+                }
             },
             { new: true } // ตั้งค่าเพื่อให้คืนค่าข้อมูลเอกสารที่ถูกอัปเดตแล้ว
         );
