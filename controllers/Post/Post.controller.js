@@ -171,6 +171,13 @@ exports.Insertpost = async (req, res, next) => {
 exports.Updatepost = async (req, res, next) => {
     try {
         const post = await Post.findByIdAndUpdate(req.params.id, {...req.body, Update_date: Date.now()});
+        if (!post) {
+            return res.json({
+                message: 'Eror do not have value',
+                status: false,
+                data: null
+            })
+        }
         return res.json({
             message: 'Update post successfully!',
             status: true,
