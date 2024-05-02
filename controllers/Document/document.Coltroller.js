@@ -157,15 +157,32 @@ exports.InsertDocument = async (req, res, next) => {
         console.log(trueorfalse)
         if(req.body.document_true != "ฉบับจริง" && req.body.document_true != "ฉบับร่าง"){
             return res.json({
-                message: 'กรุณาใส่ true หรือ false ที่ document_true',
+                message: 'กรุณาใส่ ฉบับจริง หรือ ฉบับร่าง ที่ document_true',
                 status: false,
                 data: null
             });
+        }
+        if (req.body.type != "OT" && req.body.type != "Normal") {
+            return res.json({
+                message: 'it not OT or Normal',
+                status: false,
+                data: null
+            })
         }
 
         let upload = multer({ storage: storage }).array("image", 20);
         upload(req, res, async function (err){
             if(req.body.document_true === "ฉบับร่าง") {
+                if (req.body.type === "Normal") {
+                    if (req.body.ot) {
+                        return res.json({
+                            message: 'ไม่สามารถเพิ่ม OT หาก Type เป็น Normal',
+                            status: false,
+                            data: null
+                        });
+                    }
+                }
+
                 const { headers, type, to, document_true} = req.body;
                 const employee_id = req.decoded.id
 
@@ -199,6 +216,32 @@ exports.InsertDocument = async (req, res, next) => {
                     }]
                 });
 
+                if (req.body.type === "OT") {
+                    if (!req.body.ot || !req.body.ot.timein || !req.body.ot.timeout) {
+                        return res.json({
+                            message: 'คุณจำเป็นต้องกรอก เวลา ขอทำ OT',
+                            status: false,
+                            data: null
+                        });
+                    }
+    
+                    const timein = dayjs(req.body.ot.timein);
+                    const timeout = dayjs(req.body.ot.timeout);
+                    const totalHours = timeout.diff(timein, 'hour');
+                    const totalMinutes = timeout.diff(timein, 'minute') % 60;
+                    const totalSeconds = timeout.diff(timein, 'second') % 60;
+                    const totalOTInSeconds = totalHours * 3600 + totalMinutes * 60 + totalSeconds;
+                
+                    document.ot = {
+                        timein: timein,
+                        timeout: timeout,
+                        total_ot: {
+                            totaltime: (totalHours + " ชั่วโมง " + totalMinutes + " นาที " + totalSeconds + " วินาที"),
+                            totalseconds: totalOTInSeconds
+                        }
+                    };
+                }
+
                 const saved_document = await document.save();
                 if (!saved_document) {
                     return res.json({
@@ -214,18 +257,12 @@ exports.InsertDocument = async (req, res, next) => {
                 });
             }
 
-            const latestDoc = await Document.findOne({document_true : true}).sort({ document_id: -1 }).limit(1);
+            const latestDoc = await Document.findOne({document_true : "ฉบับจริง"}).sort({ document_id: -1 }).limit(1);
             const employee_id = req.decoded.id
             const role = req.decoded.role
             const position = req.decoded.position
-            if (req.body.type != "OT" && req.body.type != "Normal") {
-                return res.json({
-                    message: 'it not OT or Normal',
-                    status: false,
-                    data: null
-                })
-            }
-            else if (req.body.type === "Normal") {
+
+            if (req.body.type === "Normal") {
                 if (req.body.ot) {
                     return res.json({
                         message: 'ไม่สามารถเพิ่ม OT หาก Type เป็น Normal',
@@ -234,12 +271,14 @@ exports.InsertDocument = async (req, res, next) => {
                     });
                 }
             }
+
             let docid = 1; // ค่าเริ่มต้นสำหรับ docid
             if (latestDoc) {
                 docid = parseInt(latestDoc.document_id.slice(2)) + 1; // เพิ่มค่า docid
             }
+            
             const docidString = docid.toString().padStart(5, '0');
-            const { doc_date, headers, type, to } = req.body;
+            const { doc_date, headers, type, to, document_true } = req.body;
             const reqFiles = [];
                 const result = [];
                 if (err) {
@@ -270,6 +309,7 @@ exports.InsertDocument = async (req, res, next) => {
                 type : type,
                 to: to,
                 detail: req.body.detail,
+                document_true : document_true,
                 file : [{
                     file_doc : image
                 }],
