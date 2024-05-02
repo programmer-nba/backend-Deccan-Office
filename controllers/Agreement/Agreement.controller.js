@@ -22,6 +22,26 @@ exports.getallAgreement = async (req, res, next) => {
     }
 }
 
+//Get Agreement By Id
+exports.getAgreementById = async (req, res, next) => {
+    try {
+        const agreement = await Agreement.findById(req.params.id);
+        return res.json({
+            message: 'Get Agreement by id successfully!',
+            status : true,
+            data : agreement
+        })
+    }
+    catch (err){
+        console.log(err)
+        return res.json({
+            message: 'Can not get Agreement by id : '+ err.message,
+            status: false,
+            data : null
+        })
+    }
+};
+
 //Get Agreement by me
 exports.getallAgreementByme = async (req, res, next) => {
     try {
@@ -36,8 +56,8 @@ exports.getallAgreementByme = async (req, res, next) => {
         }
         console.log(userdata)
 
-        const agreement = await Agreement.findOne({
-            user_id : userdata.id,
+        const agreement = await Agreement.find({
+            user_id : userdata._id,
         });
 
         return res.json({

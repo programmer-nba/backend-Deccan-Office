@@ -152,8 +152,10 @@ exports.getdocumentByStatus = async (req, res, next) => {
 
 //Insert Document   
 exports.InsertDocument = async (req, res, next) => {
+    const trueorfalse = req.body.document_true
     try {
-        if(req.body.document_true != true && req.body.document_true != false){
+        console.log(trueorfalse)
+        if(req.body.document_true != "ฉบับจริง" && req.body.document_true != "ฉบับร่าง"){
             return res.json({
                 message: 'กรุณาใส่ true หรือ false ที่ document_true',
                 status: false,
@@ -163,7 +165,7 @@ exports.InsertDocument = async (req, res, next) => {
 
         let upload = multer({ storage: storage }).array("image", 20);
         upload(req, res, async function (err){
-            if(req.body.document_true === false) {
+            if(req.body.document_true === "ฉบับร่าง") {
                 const { headers, type, to, document_true} = req.body;
                 const employee_id = req.decoded.id
 
@@ -209,7 +211,6 @@ exports.InsertDocument = async (req, res, next) => {
                     message: 'เพิ่มฉบับร่างสำเร็จ',
                     status: true,
                     data: saved_document,
-                    file: [{file}]
                 });
             }
 
@@ -320,7 +321,6 @@ exports.InsertDocument = async (req, res, next) => {
                 message: 'Insert document successfully!',
                 status: true,
                 data: saved_document,
-                file: [{file}]
             });
         })
     } catch (err) {

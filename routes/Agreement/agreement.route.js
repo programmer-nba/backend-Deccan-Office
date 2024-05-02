@@ -11,6 +11,8 @@ const authUser = require("../../auten")
 router.get('/getall', authAdmin, AgreementController.getallAgreement);
 //Get By me
 router.get('/byme', authUser.user, AgreementController.getallAgreementByme);
+//Get By ID
+router.get('/byid', AgreementController.getAgreementById);
 
 //Insert Agreement
 router.post('/insert', authAdmin, AgreementController.InsertAgreement);

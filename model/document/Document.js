@@ -24,7 +24,7 @@ const DocumentSchema = new Schema({
         file_doc :  {type : String, required : false }
     }],
 
-    document_true : {type : Boolean, request : false},
+    document_true : {type : String, request : false},
     status_document : {type : String , required : false , default : "รอหัวหน้าแผนกอนุมัติ"},// 1 = รอหัวหน้า  /  2 = รอผู้จัดการ  /  3 = รอกรรมการ  /  4 = อนุมัติแล้ว / 5 = ไม่อนุมัติ / 6 = รอตรวจสอบ
     // หัวหน้าเห็นได้แค่ 1  ผู้จัดการเห็นได้แค่ 2  กรรมการเห็นทั้งหมด 
     status_detail : [{
