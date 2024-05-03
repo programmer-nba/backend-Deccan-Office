@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 const RequestProjectSchema = new mongoose.Schema({
     project_id: { type : String, required : false, default : ""},
-    type: { type : String, required : true },
+    type: { type : String, required : true },//dropdown
     sub_type: { type : String, required : true },//dropdown
     detail: { type : String, required : false, default : ""},//รายละเอียด
     start_date: { type : Date, required : false, default : null},//วันที่เริ่ม

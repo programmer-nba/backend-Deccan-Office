@@ -22,12 +22,6 @@ const LeaveSchema = new Schema({
     status : {
         status_name : { type : String, require: false ,default : "Waiting"},  //Allow , Waiting , Not_Allow
 
-        commander : {type: String, require : false, default : ""}, //หัวหน้า
-        commander_Date : {type : String, required: false, default : ""},
-
-        inspector : {type: String, required: false, default : ""}, //ผู้ตรวจสอบ
-        inspector_Date : {type : String, required: false, default : ""},
-
         approver : {type: String, required: false, default : ""}, //ผู้อนุมัติ
         approver_date : {type: String, require: false, default : ""}
     },

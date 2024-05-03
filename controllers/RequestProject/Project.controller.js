@@ -26,7 +26,7 @@ exports.InsertRequestProject = async (req, res, next) => {
     try {
         // รับข้อมูลจาก req.body
         const { typeid, sub_type, due_date, refs, remark, customer, employee_number , status_name} = req.body;
-
+ป_
         // หา ProjectType จาก type_code
         const projectType = await ProjectType.findOne({type_code: typeid });
         if (!projectType) {

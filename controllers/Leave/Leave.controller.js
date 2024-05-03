@@ -1,5 +1,7 @@
-const { trusted } = require("mongoose");
 const Leave = require("../../model/leave/Leave");
+const LeaveType = require("../../model/leave/LeaveType")
+const { Employees } = require("../../model/employee/employee");
+
 const dayjs = require('dayjs');
 
 //ดึงข้อมูลทั้งหมด
@@ -90,16 +92,26 @@ exports.getByEmployeeIdAndYear = async (req, res, next) => {
 //ดึงข้อมูลตาม Type ID
 exports.getByType = async (req, res, next) => {
     try {
-        const leave = await Leave.findOne({ leave_type : req.params.leave_type });
+        const leave = await Leave.findOne({ leave_type : req.body.leavetype_code });
+
+        const leavetype = await LeaveType.findOne({ _id : req.body.leavetype_code });
+        if (!leavetype) {
+            return res.json({
+                message: 'ไม่พบประเภทใบลา',
+                status: false,
+                data: null
+            });
+        }
+
         if (!leave) {
             return res.json({
-                message: 'not found leave',
+                message: 'ไม่พบใบลา',
                 status : false,
                 data : null
             })
         }
         return res.json({
-            message: 'Get leave by type successfully!',
+            message: 'ดึงข้อมูลตาม '+ leavetype.leavetype_name + ' สำเร็จ',
             status : true,
             data : leave
         })
@@ -174,7 +186,7 @@ exports.InsertLeave = async (req, res, next) => {
     }
 };
 
-//ดึงข้อมูลทั้งหมดตาม id ใบลา
+//ดึงข้อมูลตาม id ใบลา
 exports.getByID = async (req, res, next) => {
   try {
       const leave = await Leave.findById(req.params.id);
@@ -223,28 +235,28 @@ exports.getByEmID = async (req, res, next) => {
 
 //อัพเดตใบลา
 exports.Update = async (req, res, next) => {
-  try {
-      const leave = await Leave.findByIdAndUpdate(req.params.id, req.body, { new: true });
-      if (!leave) {
-          return res.status(404).json({
-              message: 'leave not found',
-              status: false,
-              data: null
-          });
-      }
-      return res.json({
-          message: 'Update leave successfully!',
-          status: true,
-          data: leave
-      });
-  } catch (err) {
-      console.error(err);
-      return res.status(500).json({
-          message: 'Can not update leave: ' + errorMessage,
-          status: false,
-          data: null
-      });
-  }
+    try {
+        const leave = await Leave.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!leave) {
+            return res.status(404).json({
+                message: 'leave not found',
+                status: false,
+                data: null
+            });
+        }
+        return res.json({
+            message: 'Update leave successfully!',
+            status: true,
+            data: leave
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            message: 'Can not update leave: ' + errorMessage,
+            status: false,
+            data: null
+        });
+    }
 };
 
 //ลบใบลา
@@ -265,172 +277,6 @@ exports.Delete = async (req, res, next) => {
       })
   }
 }
-
-//คำนวนวันที่ลาป่วยตาม id พนักงาน
-exports.calculateSick = async (req, res) => {
-    try {
-        const { employees_id } = req.params;
-    
-        const stats = await Leave.aggregate([
-            {
-            $match: {
-                employees_id: employees_id,
-                leave_type: "Sick",
-                "Status.Status_name": "Allow"
-            }
-            },
-            {
-            $group: {
-                _id: "$Employees_id",
-                totalSetDay: { $sum: "$Set_Day" }
-            }
-            }
-        ]);
-        if (stats.length === 0 || stats[0].totalSetDay <= 0) {
-            return res.json({
-                message: 'ผู้ใช้นี้ไม่มีวันที่เคยลาป่วย',
-                status: false,
-                data: Employees_id + " ลาทั้งหมด " + 0 + " วัน"
-            });
-        } else {
-            return res.json({
-                message: 'คำนวณจำนวนจำนวนวันลาทั้งหมดสำเร็จ',
-                status: true,
-                data: stats
-            });
-        }
-    } catch (err) {
-        console.log(err);
-        return res.json({
-            message: 'เกิดข้อผิดพลาดในการคำนวณจำนวน Set_Day Sick',
-            status: false
-        });
-    }
-};
-
-//คำนวนวันที่ลากิจตาม id พนักงาน
-exports.calculateBusinecss = async (req, res) => {
-    try {
-        const { employees_id } = req.params;
-        const stats = await Leave.aggregate([
-            {
-                $match: {
-                  employees_id: employees_id,
-                  leave_type: "Business",
-                  "status.status_name": "Allow"
-                }
-              },
-            {
-              $group: {
-                _id: "$employees_id",
-                totalSetDay: { $sum: "$set_day" }
-              }
-            }
-        ]);
-        if (stats.length === 0 || stats[0].totalSetDay <= 0) {
-            return res.json({
-                message: 'ผู้ใช้นี้ไม่มีวันที่เคยลากิจ',
-                status: false,
-                data: employees_id + " ลาทั้งหมด " + 0 + " วัน"
-            });
-        } else {
-            return res.json({
-                message: 'คำนวณจำนวนจำนวนวันลาทั้งหมดสำเร็จ',
-                status: true,
-                data: stats
-            });
-        }
-    } catch (err) {
-        console.log(err);
-        return res.json({
-            message: 'เกิดข้อผิดพลาดในการคำนวณจำนวน Set_Day Businecss',
-            status: false
-        });
-    }
-};
-
-//คำนวนวันที่ลาคลอดตาม id พนักงาน
-exports.calculateMaternity = async (req, res) => {
-    try {
-        const { employees_id } = req.params;
-        const stats = await Leave.aggregate([
-            {
-                $match: {
-                    employees_id: employees_id,
-                    leave_type: "Maternity",
-                    "status.status_name": "Allow"
-                }
-            },
-            {
-                $group: {
-                    _id: "$employees_id",
-                    totalSetDay: { $sum: "$set_say" }
-                }
-            }
-        ]);
-        if (stats.length === 0 || stats[0].totalSetDay <= 0) {
-            return res.json({
-                message: 'ผู้ใช้นี้ไม่มีวันที่เคยลาคลอด',
-                status: false,
-                data: employees_id + " ลาทั้งหมด " + 0 + " วัน"
-            });
-        } else {
-            return res.json({
-                message: 'คำนวณจำนวนจำนวนวันลาทั้งหมดสำเร็จ',
-                status: true,
-                data: stats
-            });
-        }
-    } catch (err) {
-        console.log(err);
-        return res.json({
-            message: 'เกิดข้อผิดพลาดในการคำนวณจำนวน Set_Day Maternity',
-            status: false
-        });
-    }
-};
-
-//คำนวนวันที่ลาบวชตาม id พนักงาน
-exports.calculateOrdination = async (req, res) => {
-    try {
-        const { employees_id } = req.params;
-        const stats = await Leave.aggregate([
-        {
-            $match: {
-                employees_id: employees_id,
-                leave_type: "Ordination",
-                "Status.Status_name": "Allow"
-            }
-        },
-        {
-            $group: {
-                _id: "$employees_id",
-                totalSetDay: { $sum: "$set_day" }
-            }
-        }
-    ]);
-        if  (stats.length === 0 || stats[0].totalSetDay <= 0) {
-            return res.json({
-                message: 'ผู้ใช้นี้ไม่มีวันที่เคยลาบวช',
-                status: false,
-                data: employees_id + " ลาทั้งหมด 0 วัน"
-            });
-        }else{
-            return res.json({
-                message: 'คำนวณจำนวนจำนวนวันลาทั้งหมดสำเร็จ',
-                status: true,
-                data: stats
-            });
-        }
-    } catch (err) {
-        console.log(err);
-        return res.json({
-            message: 'เกิดข้อผิดพลาดในการคำนวณจำนวน Set_Day Ordination',
-            status: false
-        });
-    }
-}; 
-
 // Get Leave By Me
 exports.getLeaveByMe = async (req, res, next) => {
     try {
@@ -449,45 +295,89 @@ exports.getLeaveByMe = async (req, res, next) => {
             data: null
         });
     }
-};//ใช้งานได้
+};
 
-//คำนวนวันที่ลาบวชตาม id พนักงาน
+//คำนวนวันที่ตาม id พนักงาน
 exports.calculateLeave = async (req, res) => {
     try {
-        const { employees_id, leavetype_code } = req.params;
+        const { employees_id, leavetype_code } = req.body;
+
         const stats = await Leave.aggregate([
-        {
-            $match: {
-                employees_id: employees_id,
-                leave_type: leavetype_code,
-                "Status.Status_name": "Allow"
+            {
+                $match: {
+                    employees_id: employees_id,
+                    leave_type: leavetype_code,
+                    "Status.Status_name": "Allow"
+                }
+            },
+            {
+                $group: {
+                    _id: "$employees_id",
+                    totalSetDay: { $sum: "$set_day" }
+                }
             }
-        },
-        {
-            $group: {
-                _id: "$employees_id",
-                totalSetDay: { $sum: "$set_day" }
-            }
+        ]);
+        const employeemodel = await Employees.findOne({ _id : employees_id });
+        if (!employeemodel) {
+            return res.json({
+                message: 'ไม่พบพนักงาน',
+                status: false,
+                data: null
+            });
         }
-    ]);
+        const leavetype = await LeaveType.findOne({ _id : leavetype_code });
+        if (!leavetype) {
+            return res.json({
+                message: 'ไม่พบประเภทใบลา',
+                status: false,
+                data: null
+            });
+        }
+
         if  (stats.length === 0 || stats[0].totalSetDay <= 0) {
             return res.json({
                 message: 'ผู้ใช้นี้ไม่มีวันลา',
                 status: false,
-                data: employees_id + " ลาทั้งหมด 0 วัน"
+                data: employeemodel.first_name + " " + employeemodel.last_name + " " + leavetype.leavetype_name + " ทั้งหมด 0 วัน"
             });
         }else{
             return res.json({
                 message: 'คำนวณจำนวนจำนวนวันลาทั้งหมดสำเร็จ',
                 status: true,
-                data: stats
+                data: employeemodel.first_name + " " + employeemodel.last_name + " " + leavetype.leavetype_name + " ทั้งหมด " + stats + " วัน"
             });
         }
     } catch (err) {
         console.log(err);
         return res.json({
-            message: 'เกิดข้อผิดพลาดในการคำนวณจำนวน ' ,
+            message: 'เกิดข้อผิดพลาดในการคำนวณจำนวน '+ err.message,
             status: false
         });
     }
-}; 
+};
+
+//อนุมัติใบลา
+exports.approveleave = async (req, res) => {
+    try {
+        const leave = await Leave.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!leave) {
+            return res.status(404).json({
+                message: 'leave not found',
+                status: false,
+                data: null
+            });
+        }
+        return res.json({
+            message: 'Update leave successfully!',
+            status: true,
+            data: leave
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({
+            message: 'Can not update leave: ' + errorMessage,
+            status: false,
+            data: null
+        });
+    }
+}
