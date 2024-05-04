@@ -25,8 +25,8 @@ exports.getRequestProject = async (req, res, next) => {
 exports.InsertRequestProject = async (req, res, next) => {
     try {
         // รับข้อมูลจาก req.body
-        const { typeid, sub_type, due_date, refs, remark, customer, employee_number , status_name} = req.body;
-ป_
+        const { typeid } = req.body;
+        console.log("Start Code")
         // หา ProjectType จาก type_code
         const projectType = await ProjectType.findOne({type_code: typeid });
         if (!projectType) {
@@ -36,6 +36,7 @@ exports.InsertRequestProject = async (req, res, next) => {
                 data: null
             });
         }
+        console.log(projectType)
 
         // หา Project ล่าสุดเพื่อสร้าง ProjectNumber ใหม่
         const latestProject = await RequestProject.findOne().sort({ project_id: -1 }).limit(1);
@@ -45,23 +46,12 @@ exports.InsertRequestProject = async (req, res, next) => {
         }
 
         // สร้าง ProjectNumberString
-        const ProjectNumberString = typeCode + ProjectNumber.toString().padStart(6, '0');
+        const ProjectNumberString = projectType.type_code + ProjectNumber.toString().padStart(6, '0');
 
         // สร้างข้อมูลใหม่ของ RequestProject
         const project = new RequestProject({
-            project_id: ProjectNumberString,
-            type: projectType._id, // ใช้ _id ของ projectType ที่คุณหามา
-            sub_type: sub_type,
-            detail: remark || '',
-            start_date: new Date(),
-            due_date: due_date,
-            refs: refs,
-            remark: remark,
-            customer: customer,
-            employee_number: employee_number,
-            status: {
-                status_name: status_name,
-            }
+            project_id : ProjectNumberString,
+            ...req.body
         });
 
         // บันทึกข้อมูลเอกสาร

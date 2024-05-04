@@ -1,4 +1,4 @@
-const Type = require('../../model/project/ProjectType.model');
+const Type = require('../../model/ProjectType/ProjectType.model');
 
 // เพิ่มประเภทงานใหม่
 exports.createType = async (req, res) => {
