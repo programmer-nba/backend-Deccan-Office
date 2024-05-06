@@ -39,11 +39,6 @@ const EmployeeSchema = new Schema({
 EmployeeSchema.pre('save',async function (next) {   //ทำ Middleware การ Hash ก่อน EmployeeScheme ที่ User กรอกมาจะ save
   try{
     const user = this
-      bcrypt.hash(user.password, 10).then(hash => {
-          user.password = hash
-        }).catch(error => {
-          console.error(error)
-        })
     const findNumber = await Employees.find();
     console.log(findNumber.length)
     const length = findNumber.length + 1;
