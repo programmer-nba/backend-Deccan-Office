@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const ProjectTypeController = require('../../controllers/project/ProjectType.controller');
+const ProjectTypeController = require('../../controllers/ProjectType/ProjectType.controller');
 
 // สร้างประเภทงานใหม่
 router.post('/add', ProjectTypeController.createType );

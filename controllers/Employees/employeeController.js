@@ -36,17 +36,13 @@ exports.Post = async (req, res) => {
       }
     }
     
-    let passwordToUse = req.body.password;
-    if (!req.body.password) {
-      passwordToUse = await bcrypt.hash(req.body.iden_number, 10);
-      // passwordToUse = req.body.iden_number;
-    } else {
-      // Hash the password
-      passwordToUse = await bcrypt.hash(req.body.password, 10);
-    }
+
+    const salt = await bcrypt.genSalt(Number(process.env.SALT)); 
+    const hashPassword = await bcrypt.hash(req.body.iden_number, 10);
+    
     const employee = await Employees.create({
       ...req.body,
-      password: passwordToUse,
+      password: hashPassword,
       role: req.body.role,
       position: req.body.position
     });
@@ -133,7 +129,6 @@ exports.getMe = async (req, res) => {
 exports.Update = async (req, res) => {
   try {
     const upID = req.params.id; //รับไอดีที่ต้องการอัพเดท
-    console.log(req.body);
     if (!req.body.password) { //กรณีที่ไม่ได้ยิง password
       const upload = multer({ storage: storage }).array("image", 20);
       upload(req, res, async function (err) {
@@ -173,7 +168,7 @@ exports.Update = async (req, res) => {
       });
     } else { //กรณีที่ได้ยิง password
       const salt = await bcrypt.genSalt(Number(process.env.SALT));
-      const hashPassword = await bcrypt.hash(req.body.password, salt);
+      const hashPassword = await bcrypt.hash(req.body.password, 10);
       const updateEmployee = await Employees.findByIdAndUpdate(
         upID,
         {

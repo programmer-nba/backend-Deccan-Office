@@ -20,7 +20,6 @@ const Role = require('./routes/role/role');
 const RequestProjectRoutes = require ('./routes/Project/Project.route');
 const ProjectTypeRoutes = require ('./routes/Project/ProjectType.route');
 const AgreementRoutes = require('./routes/Agreement/agreement.route');
-const DraftDocumentRoutes = require('./routes/Document/draftdocument.route');
 const UserRoutes = require ('./routes/User/user.route');
 const UserinfoRoutes = require ('./routes/Userinfo/userinfo.route');
 const ExamRoute = require('./routes/Exam/exam.route');
@@ -29,6 +28,7 @@ const PostRoutes = require('./routes/Post/post.route');
 const ExamResultsRoutes = require('./routes/Exam/examresults.route');
 const LeaveTypeRoutes = require ('./routes/Leave/LeaveType.route');
 const ContactRoutes = require ('./routes/Contact/contact.route');
+const SubTypeRoute = require ('./routes/Project/SubType.route')
 
 
 app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }));
@@ -46,23 +46,32 @@ app.use( ddsc , EmployeesRoutes);
 app.use( ddsc , RecordsRoutes);
 app.use( ddsc , TimeInOut);
 app.use( ddsc , Role);
+
+//ภายใน
 app.use( ddsc + '/leave', LeaveRoutes);
+app.use( ddsc + '/leavetype', LeaveTypeRoutes);
 app.use( ddsc + '/admin',AdminRoutes);
 app.use( ddsc + '/partners',PartnerRoutes);
 app.use( ddsc + '/document',DocumentRoutes);
-app.use( ddsc + '/project',RequestProjectRoutes);
-app.use( ddsc + '/project/type',ProjectTypeRoutes);
+
+// สัญญาจ้างพนักงาน
 app.use( ddsc + '/agreement', AgreementRoutes);
-app.use( ddsc + '/document/draft', DraftDocumentRoutes);
+
+//ผู้สมัครงาน
 app.use( ddsc + '/user', UserRoutes)
 app.use( ddsc + '/user_info', UserinfoRoutes)
+
+//รับสมัครพนักงาน
 app.use( ddsc + '/post', PostRoutes);
 app.use( ddsc + '/exam',ExamRoute);
 app.use( ddsc + '/exam-type', ExamTypeRoutes);
 app.use( ddsc + '/examresults',ExamResultsRoutes);
-app.use( ddsc + '/leavetype', LeaveTypeRoutes);
 app.use( ddsc + '/contact', ContactRoutes)
 
+// รับงาน
+app.use( ddsc + '/project',RequestProjectRoutes);
+app.use( ddsc + '/project/types',ProjectTypeRoutes);
+app.use ( ddsc + '/project/subtypes',SubTypeRoute);
 
 
 const port = process.env.PORT || 9996;

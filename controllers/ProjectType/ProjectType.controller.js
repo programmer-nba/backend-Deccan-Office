@@ -1,9 +1,16 @@
 const Type = require('../../model/ProjectType/ProjectType.model');
+const SubType = require('../../model/ProjectType/ProjectType.model');
 
 // เพิ่มประเภทงานใหม่
 exports.createType = async (req, res) => {
   try {
     const { type_name , type_code} = req.body;
+    if (!type_name || !type_code) {
+        res.status(500).json({
+            message: 'กรอกข้อมูลให้ครบ',
+            status: false,
+        });
+    }
     const newType = new Type({ 
         type_name : type_name,
         type_code : type_code
@@ -23,6 +30,13 @@ exports.createType = async (req, res) => {
 exports.updateType = async (req, res) => {
     try {
         const type = await Type.findByIdAndUpdate(req.params.id, req.body);
+        if (!type) {
+            return res.json({
+                message: err.message,
+                status: false,
+                data: null
+            })
+        }
         return res.json({
             message: 'Update Project Type successfully!',
             status: true,
@@ -43,6 +57,13 @@ exports.updateType = async (req, res) => {
 exports.deleteType = async (req, res) => {
     try {
         const projecttype = await Type.findByIdAndDelete(req.params.id);
+        if (!projecttype) {
+            return res.json({
+                message: err.message,
+                status: false,
+                data: null
+            })
+        }
         res.json({
             message: 'Delete Project Type successfully!',
             status: true,

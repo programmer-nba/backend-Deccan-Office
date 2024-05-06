@@ -21,14 +21,14 @@ exports.getRequestProject = async (req, res, next) => {
     }
 }
 
-// ตัวอย่างการใช้งานในฟังก์ชัน
+
 exports.InsertRequestProject = async (req, res, next) => {
     try {
         // รับข้อมูลจาก req.body
-        const { typeid } = req.body;
-        console.log("Start Code")
+        const { type } = req.body;
+
         // หา ProjectType จาก type_code
-        const projectType = await ProjectType.findOne({type_code: typeid });
+        const projectType = await ProjectType.findOne({ id: type });
         if (!projectType) {
             return res.status(400).json({
                 message: 'ไม่พบประเภทโครงการที่ระบุ',
@@ -36,7 +36,6 @@ exports.InsertRequestProject = async (req, res, next) => {
                 data: null
             });
         }
-        console.log(projectType)
 
         // หา Project ล่าสุดเพื่อสร้าง ProjectNumber ใหม่
         const latestProject = await RequestProject.findOne().sort({ project_id: -1 }).limit(1);
@@ -50,7 +49,7 @@ exports.InsertRequestProject = async (req, res, next) => {
 
         // สร้างข้อมูลใหม่ของ RequestProject
         const project = new RequestProject({
-            project_id : ProjectNumberString,
+            project_id: ProjectNumberString,
             ...req.body
         });
 
@@ -71,12 +70,13 @@ exports.InsertRequestProject = async (req, res, next) => {
     } catch (err) {
         console.log(err);
         return res.status(500).json({
-            message: err.message,
+            message: 'เกิดข้อผิดพลาดในการเพิ่มข้อมูลเอกสาร: ' + err.message,
             status: false,
             data: null
         });
     }
 }
+
 
 // อัพเดตข้อมูล RequestProject
 exports.updateRequestProject = async (req, res, next) => {

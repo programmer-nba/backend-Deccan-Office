@@ -13,7 +13,7 @@ loginController = async(req,res) =>{
         ]}).then((Employees)=>{
             if(Employees){
                 let cmp = bcrypt.compare(Password, Employees.password).then((match)=>{
-                    console.log(match)
+                    console.log(Employees.password)
                     if(match){
                         const secretKey = process.env.JWTPRIVATEKEY
                         const payload = {
