@@ -14,9 +14,10 @@ const RequestProjectSchema = new mongoose.Schema({
     refs : [{
         refs_file : { type : String, required : false },//การอ้างอิงเอกสาร
     }],
-    remark : { type: String, required : false, default : ""},//หมายเหตุ
+    remark : { type : String, required : false, default : ""},//หมายเหตุ
     employee : [{
-        employee_id : { type: String, required: false }
+        employee_id : { type : String, required : false },
+        time : { type : String, required : false}
     }],
     status: { type : String, required : false, default: 'New' },//สถานะของงาน
     progress: [{

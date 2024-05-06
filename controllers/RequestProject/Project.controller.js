@@ -1,6 +1,7 @@
 // controller.js
 const ProjectType = require('../../model/ProjectType/ProjectType.model');
 const RequestProject = require('../../model/RequestProject/RequestProject.model');
+const { Employees } = require('../../model/employee/employee');
 
 // เรียกใช้ข้อมูล RequestProject
 exports.getRequestProject = async (req, res, next) => {
@@ -21,7 +22,7 @@ exports.getRequestProject = async (req, res, next) => {
     }
 }
 
-
+//เพิ่มข้อมูล
 exports.InsertRequestProject = async (req, res, next) => {
     try {
         // รับข้อมูลจาก req.body
@@ -76,7 +77,6 @@ exports.InsertRequestProject = async (req, res, next) => {
         });
     }
 }
-
 
 // อัพเดตข้อมูล RequestProject
 exports.updateRequestProject = async (req, res, next) => {
@@ -163,3 +163,43 @@ exports.deleteRequestProject = async (req, res, next) => {
         });
     }
 }
+
+//Update Accept
+exports.Accept = async (req, res, next) => {
+    try {
+
+        const employee = req.decoded
+        console.log(employee)
+        if (!employee) {
+            return res.json({
+                message: 'ไม่พบพนักงาน',
+                status: false,
+                data: null
+            })
+        }
+
+        const accept = await RequestProject.findByIdAndUpdate(req.params.id, req.body); //แก้ไขสถาณะ
+
+        const employeeaccept = {
+            employee_id: req.decoded.id,
+            time: Date.now()
+        };
+
+        accept.status = "อยู่ระหว่างกำลังดำเนินการ"
+        accept.employee.push(employeeaccept);
+
+        return res.json({
+            message: 'Accept successfully!',
+            status: true,
+            data: accept
+        })
+    }
+    catch (err) {
+        console.log(err)
+        return res.json({
+            message: err.message,
+            status: false,
+            data: null
+        })
+    }
+};

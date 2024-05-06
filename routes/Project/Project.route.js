@@ -4,8 +4,8 @@ const RequestProjectController = require ('../../controllers/RequestProject/Proj
 
 router.get('/getall', RequestProjectController.getRequestProject);
 
-router.post('/insert', RequestProjectController.InsertRequestProject)
+router.post('/insert', RequestProjectController.InsertRequestProject);
 
-
+router.put('/accept/:id', RequestProjectController.Accept);
 
 module.exports = router;
