@@ -16,7 +16,7 @@ let dayTime
 //เมื่อใช้ dayjs และ ทำการใช้ format จะทำให้ค่าที่ได้เป็น String อัตโนมันติ
  function updateRealTime() {
     dayjsTimestamp = dayjs().tz('Asia/Bangkok');
-    dayTime = dayjsTimestamp.format('err');
+    dayTime = dayjsTimestamp.format('HH:mm:ss');
 }
 // เรียกใช้ฟังก์ชัน updateRealTime() ทุก 1 วินาที
 setInterval(updateRealTime, 500);
