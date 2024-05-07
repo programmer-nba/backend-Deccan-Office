@@ -18,4 +18,22 @@ create = async(req, res)=>{
     }
 }
 
-module.exports = { create }
+getall = async (req, res, next) => {
+    try {
+        const data = await roleEmployee.find();
+        return res.json({
+            message: 'Get data successfully!',
+            status: true,
+            data: data
+        });
+    } catch (err) {
+        console.log(err)
+        return res.json({
+            message: ('Can not get data', err.message),
+            status: false,
+            data: null
+        })
+    }
+}
+
+module.exports = { create , getall}

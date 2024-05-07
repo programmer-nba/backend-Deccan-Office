@@ -88,6 +88,7 @@ exports.Insertimage = async (req, res, next) => {
                 user_password,
                 name,
                 lastname, 
+                email, 
                 gender, 
                 birth, 
                 tel, 
@@ -147,6 +148,7 @@ exports.Insertimage = async (req, res, next) => {
                 user_password : user_password,
                 name : name,
                 lastname : lastname,
+                email : email,
                 gender : gender,
                 birth : birth,
                 tel : tel,
@@ -168,7 +170,7 @@ exports.Insertimage = async (req, res, next) => {
      
             // บันทึก Userinfo ลงในฐานข้อมูล
             const savedInfo = await userinfo.save();
-           
+            
             if (!savedInfo) {
                 return res.json({
                     message: 'can not save user',
