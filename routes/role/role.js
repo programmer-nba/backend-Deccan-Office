@@ -8,4 +8,6 @@ const authAdmin = require("../../lib/authAdmin");
 
 router.post('/role/create',auth,Role.create);
 
+router.get('/geall',Role.getall);
+
 module.exports = router;

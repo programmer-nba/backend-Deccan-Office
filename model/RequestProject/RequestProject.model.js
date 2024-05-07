@@ -17,7 +17,7 @@ const RequestProjectSchema = new mongoose.Schema({
     remark : { type : String, required : false, default : ""},//หมายเหตุ
     employee : [{
         employee_id : { type : String, required : false },
-        time : { type : String, required : false}
+        time : { type : Date, required : false}
     }],
     status: { type : String, required : false, default: 'New' },//สถานะของงาน
     progress: [{

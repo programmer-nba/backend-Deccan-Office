@@ -2,6 +2,8 @@
 const ProjectType = require('../../model/ProjectType/ProjectType.model');
 const RequestProject = require('../../model/RequestProject/RequestProject.model');
 const { Employees } = require('../../model/employee/employee');
+const Type = require('../../model/ProjectType/ProjectType.model');
+
 
 // เรียกใช้ข้อมูล RequestProject
 exports.getRequestProject = async (req, res, next) => {
@@ -168,7 +170,7 @@ exports.deleteRequestProject = async (req, res, next) => {
 exports.Accept = async (req, res, next) => {
     try {
 
-        const employee = req.decoded
+        const employee = req.decoded.id
         console.log(employee)
         if (!employee) {
             return res.json({
@@ -188,6 +190,8 @@ exports.Accept = async (req, res, next) => {
         accept.status = "อยู่ระหว่างกำลังดำเนินการ"
         accept.employee.push(employeeaccept);
 
+        await accept.save();
+
         return res.json({
             message: 'Accept successfully!',
             status: true,
@@ -203,3 +207,35 @@ exports.Accept = async (req, res, next) => {
         })
     }
 };
+
+// ดึงข้อมูลตาม types
+exports.getProjectType = async (req, res, next) => {
+    try {
+        em_id = req.decoded.id
+
+        const getEmployee = await Employees.findById({ _id: req.decoded.id })
+
+        console.log(req.decoded.position)
+
+        const projectdata = await RequestProject.find();
+
+        console.log('aaa',projectdata)
+
+        const projecttypes = await Type.findById(projectdata.type);
+
+        console.log(projecttypes)
+
+        return res.json({
+            message: 'Get data successfully!',
+            status: true,
+            data: projectdata
+        });
+    } catch (err) {
+        console.log(err)
+        return res.json({
+            message: ('Can not get data', err.message),
+            status: false,
+            data: null
+        })
+    }
+}
