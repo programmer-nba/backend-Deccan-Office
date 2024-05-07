@@ -57,6 +57,9 @@ app.use( ddsc + '/document',DocumentRoutes);
 // สัญญาจ้างพนักงาน
 app.use( ddsc + '/agreement', AgreementRoutes);
 
+// สัญญาฝ่ายกฎหมาย
+app.use( ddsc + '/lawyer', require('./routes/Term/term.route'));
+
 //ผู้สมัครงาน
 app.use( ddsc + '/user', UserRoutes)
 app.use( ddsc + '/user_info', UserinfoRoutes)
