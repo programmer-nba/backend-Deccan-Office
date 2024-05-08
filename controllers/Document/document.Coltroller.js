@@ -152,26 +152,23 @@ exports.getdocumentByStatus = async (req, res, next) => {
 
 //Insert Document   
 exports.InsertDocument = async (req, res, next) => {
-    const trueorfalse = req.body.document_true
     try {
-        console.log(trueorfalse)
-        if(req.body.document_true != "ฉบับจริง" && req.body.document_true != "ฉบับร่าง"){
-            return res.json({
-                message: 'กรุณาใส่ ฉบับจริง หรือ ฉบับร่าง ที่ document_true',
-                status: false,
-                data: null
-            });
-        }
-        if (req.body.type != "OT" && req.body.type != "Normal") {
-            return res.json({
-                message: 'it not OT or Normal',
-                status: false,
-                data: null
-            })
-        }
-
         let upload = multer({ storage: storage }).array("image", 20);
         upload(req, res, async function (err){
+            if (req.body.type != "OT" && req.body.type != "Normal") {
+                return res.json({
+                    message: 'it not OT or Normal',
+                    status: false,
+                    data: null
+                })
+            }
+            if(req.body.document_true != "ฉบับจริง" && req.body.document_true != "ฉบับร่าง"){
+                return res.json({
+                    message: 'กรุณาใส่ ฉบับจริง หรือ ฉบับร่าง ที่ document_true',
+                    status: false,
+                    data: null
+                });
+            }
             if(req.body.document_true === "ฉบับร่าง") {
                 if (req.body.type === "Normal") {
                     if (req.body.ot) {
