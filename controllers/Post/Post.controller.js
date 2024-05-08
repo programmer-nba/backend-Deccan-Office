@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
 exports.getpost = async (req, res, next) => {
     try {
         // ดึงวันที่ปัจจุบันในรูปแบบ 'DD/MM/YYYY'
-        const today = moment().format('DD/MM/YYYY');
+        const today = new Date()
 
         // ค้นหาโพสต์ทั้งหมด
         const posts = await Post.find();
@@ -37,15 +37,42 @@ exports.getpost = async (req, res, next) => {
         // ตรวจสอบว่าวันสุดท้ายของโพสต์ใดโพสต์หนึ่งเป็นวันนี้หรือผ่านไปแล้วและอัปเดตสถานะให้ปิดรับสมัคร
         formattedPosts.forEach(post => {
             const postEndDate = moment(post.end_date, 'DD/MM/YYYY');
-            if (postEndDate.isSameOrBefore(today) && post.Post_status === "เปิดรับสมัคร") {
-                post.Post_status = "ปิดรับสมัคร";
-            }
+            
+            // if (postEndDate.isSameOrBefore(today) && post.post_status === "เปิดรับสมัคร") {
+            //     post.post_status = "ปิดรับสมัคร";
+            // }
         });
-
+        let new_data = []
+        const data = await Post.find();
+        for(const newData of data){
+            const postEndDate = new Date(newData.end_date);
+            // console.log("endDay",postEndDate)
+            // console.log("today", today)
+            if (postEndDate <= today && newData.post_status === "เปิดรับสมัคร") {
+                let post_status = "ปิดรับสมัคร";
+                const update = await Post.findOneAndUpdate(
+                    {_id:newData._id},
+                    {
+                        post_status:post_status
+                    },
+                    {new:true})
+                    if(!update){
+                        return res
+                                .status(404)
+                                .send({status:false, message:"ไม่มีการอัพเดท"})
+                    }
+            }
+        }
+        const dataAgian = await Post.find();
+            if(dataAgian.length == 0){
+                return res
+                        .status(404)
+                        .send({status:false, message:"ไม่พบข้อมูล"})
+            }
         return res.json({
             message: 'ดึงข้อมูลโพสต์สำเร็จ!',
             status: true,
-            data: formattedPosts
+            data: dataAgian
         });
     } catch (err) {
         console.log(err);
@@ -56,7 +83,6 @@ exports.getpost = async (req, res, next) => {
         });
     }
 };
-
 
 
 
@@ -86,9 +112,9 @@ exports.Insertpost = async (req, res, next) => {
         let upload = multer({ storage: storage }).array("image", 20);
         upload(req, res, async function (err) {
         const { 
-            Company, 
-            Header, 
-            Description, 
+            company, 
+            header, 
+            description, 
             department,
             amount,// จำนวนคนที่รับ
             start_age,// อายุที่รับเข้าทำงาน
@@ -96,11 +122,11 @@ exports.Insertpost = async (req, res, next) => {
             salary, 
             sex, 
             experience, //ประสบการณ์
-            Education, //ระดับการศึกษา
+            education, //ระดับการศึกษา
              //สาขาวิชา
             feature, //คุณสมบัติ (เพิ่มได้หลายอัน)
-            Working, //ลักษณะงาน (เพิ่มได้หลายอัน)
-            Welfare, //สวัสดิการ (เพิ่มได้หลายอัน)
+            working, //ลักษณะงาน (เพิ่มได้หลายอัน)
+            welfare, //สวัสดิการ (เพิ่มได้หลายอัน)
             end_date
         } = req.body;
         const reqFiles = [];
@@ -121,16 +147,16 @@ exports.Insertpost = async (req, res, next) => {
             image = reqFiles[0]
         }
         const post = new Post({
-            Company : Company,
-            Header : Header,
-            Description : Description,
+            company : company,
+            header : header,
+            description : description,
             department : department,
             amount : amount,
             age : { start_age, end_age },
             salary : salary,
             sex : sex, 
             experience : experience,
-            Education : Education,
+            education : education,
             end_date : end_date,
             image : image
         });
@@ -143,17 +169,17 @@ exports.Insertpost = async (req, res, next) => {
             });
         }
 
-        if (Array.isArray(Working) && Working.length > 0) { //เมื่อไม่มีการส่งค่าของ Working มาจะไม่ทำขั้นตอนนี้
-            Working.forEach(item => {
-                post.Working.push({
+        if (Array.isArray(working) && working.length > 0) { //เมื่อไม่มีการส่งค่าของ Working มาจะไม่ทำขั้นตอนนี้
+            working.forEach(item => {
+                post.working.push({
                     working: item.working
                 });
             });
         }
 
-        if (Array.isArray(Welfare) && Welfare.length > 0) { //เมื่อไม่มีการส่งค่าของ Welfare มาจะไม่ทำขั้นตอนนี้
-            Welfare.forEach(item => {
-                post.Welfare.push({
+        if (Array.isArray(welfare) && welfare.length > 0) { //เมื่อไม่มีการส่งค่าของ Welfare มาจะไม่ทำขั้นตอนนี้
+            welfare.forEach(item => {
+                post.welfare.push({
                     welfare: item.welfare
                 });
             });
