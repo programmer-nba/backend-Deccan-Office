@@ -196,8 +196,15 @@ exports.InsertDocument = async (req, res, next) => {
                         result.push(src);
                         //   reqFiles.push(url + "/public/" + req.files[i].filename);
                     }
-                    image = reqFiles[0]
+                    
+                    image =reqFiles.map(item=>{
+                        return {
+                            file_doc:item
+                        }
+                    });
+               
                 }
+                
 
                 const document = new Document({
                     headers : headers,
@@ -205,9 +212,7 @@ exports.InsertDocument = async (req, res, next) => {
                     to : to,
                     detail : req.body.detail,
                     document_true : document_true,
-                    file : [{
-                        file_doc : image
-                    }],
+                    file : image,
                     status_detail: [{
                         employee_id: employee_id,
                     }]
@@ -289,8 +294,14 @@ exports.InsertDocument = async (req, res, next) => {
                         result.push(src);
                         //   reqFiles.push(url + "/public/" + req.files[i].filename);
                     }
-                    image = reqFiles[0]
+                    image =reqFiles.map(item=>{
+                        return {
+                            file_doc:item
+                        }
+                    });
                 }
+
+            
             
             let status = "รอหัวหน้าแผนกอนุมัติ"
                 if(role == 'head_department'){
@@ -307,9 +318,7 @@ exports.InsertDocument = async (req, res, next) => {
                 to: to,
                 detail: req.body.detail,
                 document_true : document_true,
-                file : [{
-                    file_doc : image
-                }],
+                file : image,
                 status_document: status,
                 status_detail: [{
                     employee_id: employee_id,
