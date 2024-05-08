@@ -78,7 +78,7 @@ exports.update = async (req, res) => {
         term.title = title || term.title
         term.code = code || term.code
         term.content = content || term.content
-        term.active = active || term.active
+        term.active = active !== null || active !== undefined ? active : term.active
         term.standard = standard || term.standard
         term.user = user || term.user
         term.signatures = signatures || term.signatures
