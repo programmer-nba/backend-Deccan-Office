@@ -20,12 +20,12 @@ router.post('/add/file/:id',DocumentController.addfileToDocument); //เพิ�
 
 //Update
 router.put('/update/:id',auth ,DocumentController.UpdateDocument);// แก้ไข Document
-
+router.put('/del/file/:id',DocumentController.DeleteFile); //ลบ 
 router.put('/update/status/:id', authAdmin, DocumentController.updateDocumentStatus)
 
 //delete
 router.delete('/delete/:id',DocumentController.DeleteDocument); //ลบ Document
-router.delete('/del/file/:id',DocumentController.DeleteFile); //ลบ 
+
 
 
 
