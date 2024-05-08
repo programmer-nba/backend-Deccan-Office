@@ -45,7 +45,7 @@ const ddsc = '/ddsc-office'
 app.use( ddsc , EmployeesRoutes);
 app.use( ddsc , RecordsRoutes);
 app.use( ddsc , TimeInOut);
-app.use( ddsc , Role);
+app.use( ddsc + '/role', Role);
 
 //ภายใน
 app.use( ddsc + '/leave', LeaveRoutes);

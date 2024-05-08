@@ -74,7 +74,7 @@ exports.InsertExam = async (req, res, next) => {
     try {
         let upload = multer({ storage: storage }).array("image", 20);
         upload(req, res, async function (err) {
-        const { exam_id, 
+        const {
             extype_id, 
             question_1, 
             question_2, 
@@ -109,7 +109,6 @@ exports.InsertExam = async (req, res, next) => {
             image = reqFiles[0]
         }
         const exam = new Exam({
-            exam_id : exam_id,
             extype_id : extype_id,
             question_1 : question_1,
             question_2 : question_2,

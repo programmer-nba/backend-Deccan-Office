@@ -6,8 +6,8 @@ const Role = require('../../controllers/Employees/role')
 const auth = require("../../lib/auth");
 const authAdmin = require("../../lib/authAdmin");
 
-router.post('/role/create',auth,Role.create);
+router.post('/create',auth,Role.create);
 
-router.get('/geall',Role.getall);
+router.get('/getall',Role.getall);
 
 module.exports = router;

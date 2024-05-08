@@ -33,7 +33,7 @@ const PostSchema = new mongoose.Schema({
     
     Update_date: { type: Date, default: Date.now },
     post_date: { type: Date, default: Date.now }, // วันที่ประกาศ
-    end_date : {type: String, required : false, default: null},//วันที่ปิดรับ
+    end_date : {type: Date, required : false, default: null},//วันที่ปิดรับ
     
     Post_status: {type : String, required : false, default : "เปิดรับสมัคร"} //เปิดรับสมัคร , ปิดรับสมัคร
 

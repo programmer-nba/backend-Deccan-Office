@@ -15,33 +15,50 @@ const storage = multer.diskStorage({
         },
 });
 
-//Get Post
+// Get Post
 exports.getpost = async (req, res, next) => {
     try {
+        // ดึงวันที่ปัจจุบันในรูปแบบ 'DD/MM/YYYY'
+        const today = moment().format('DD/MM/YYYY');
+
+        // ค้นหาโพสต์ทั้งหมด
         const posts = await Post.find();
-        console.log(posts)
+
+        // จัดรูปแบบวันที่ในแต่ละโพสต์
         const formattedPosts = posts.map(post => {
             return {
                 ...post._doc,
                 Update_date: moment(post.Update_date).format('DD/MM/YYYY HH:mm:ss'),
                 post_date: moment(post.post_date).format('DD/MM/YYYY HH:mm:ss'),
-                // แปลงเวลาให้อยู่ในรูปแบบ "วัน เดือน ปี เวลา" ตามต้องการ
+                end_date: moment(post.end_date).format('DD/MM/YYYY'),
             };
         });
+
+        // ตรวจสอบว่าวันสุดท้ายของโพสต์ใดโพสต์หนึ่งเป็นวันนี้หรือผ่านไปแล้วและอัปเดตสถานะให้ปิดรับสมัคร
+        formattedPosts.forEach(post => {
+            const postEndDate = moment(post.end_date, 'DD/MM/YYYY');
+            if (postEndDate.isSameOrBefore(today) && post.Post_status === "เปิดรับสมัคร") {
+                post.Post_status = "ปิดรับสมัคร";
+            }
+        });
+
         return res.json({
-            message: 'Get Post data successfully!',
+            message: 'ดึงข้อมูลโพสต์สำเร็จ!',
             status: true,
             data: formattedPosts
         });
     } catch (err) {
         console.log(err);
         return res.json({
-            message: 'Can not get Post data',
+            message: 'ไม่สามารถดึงข้อมูลโพสต์ได้',
             status: false,
             data: null
         });
     }
-}
+};
+
+
+
 
 //Get Post By Id
 exports.getPostById = async (req, res, next) => {
@@ -212,3 +229,78 @@ exports.Deletepost = async (req, res, next) => {
         })
     }
 }
+
+// On / Off ตามวันที่ระบุ
+exports.OnOffauto = async (req, res, next) => {
+    try {
+        const today = Date.now.format('DD/MM/YYYY');
+        const getdata = await Post.find({ end_date: today });
+        if (!getdata) {
+            return res.json({
+                message: 'Error: Post not found',
+                status: false,
+                data: null
+            });
+        }
+        for (let post of getdata) {
+            if (post.Post_status === "เปิดรับสมัคร") {
+                post.Post_status = "ปิดรับสมัคร";
+            } else if (post.Post_status === "ปิดรับสมัคร") {
+                post.Post_status = "เปิดรับสมัคร";
+            }
+
+            await post.save();
+            console.log(post);
+        }
+
+        return res.json({
+            message: 'Update post successfully!',
+            status: true,
+            data: getdata
+        });
+    } catch (err) {
+        console.log(err);
+        return res.json({
+            message: 'Can not Update post : ' + err.message,
+            status: false,
+            data: null
+        });
+    }
+};
+
+
+// On / Off
+exports.OnOff = async (req, res, next) => {
+    try {
+        const getdata = await Post.findById(req.params.id);
+        if (!getdata) {
+            return res.json({
+                message: 'Error: Post not found',
+                status: false,
+                data: null
+            });
+        }
+        if (getdata.Post_status === "เปิดรับสมัคร") {
+            getdata.Post_status = "ปิดรับสมัคร";
+        }
+        else if (getdata.Post_status === "ปิดรับสมัคร") {
+            getdata.Post_status = "เปิดรับสมัคร";
+        }
+
+        await getdata.save();
+        console.log(getdata);
+        return res.json({
+            message: 'Update post successfully!',
+            status: true,
+            data: getdata
+        });
+    }
+    catch (err) {
+        console.log(err);
+        return res.json({
+            message: 'Can not Update post : ' + err.message,
+            status: false,
+            data: null
+        });
+    }
+};

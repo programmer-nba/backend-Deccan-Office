@@ -17,4 +17,7 @@ router.put('/update-post/:id', PostController.Updatepost);
 //Delete Post
 router.delete('/delete-post/:id', PostController.Deletepost);
 
+//On / Off
+router.put('/onoff/:id', PostController.OnOff);
+
 module.exports = router;
