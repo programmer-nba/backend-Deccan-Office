@@ -11,10 +11,13 @@ const termSchema = new Schema(
 
         user: {
             _id: { type: String },
+            username: { type: String },
             name: { type: String },
             email: { type: String },
+            address: { type: String }
         },
 
+        requireSignature: { type: Boolean, default: false },
         signatures: { type: Array },
         status: { type: Array },
     },

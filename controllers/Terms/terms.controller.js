@@ -8,6 +8,7 @@ exports.create = async (req, res) => {
         active,
         standard,
         user,
+        requireSignature,
         signatures,
         status,
     } = req.body
@@ -23,9 +24,8 @@ exports.create = async (req, res) => {
             content: content,
             active: active,
             standard: standard,
-    
             user: user,
-    
+            requireSignature: requireSignature,
             signatures: signatures,
             status: status,
         }
@@ -60,6 +60,7 @@ exports.update = async (req, res) => {
         active,
         standard,
         user,
+        requireSignature,
         signatures,
         status,
     } = req.body
@@ -82,6 +83,7 @@ exports.update = async (req, res) => {
         term.user = user || term.user
         term.signatures = signatures || term.signatures
         term.status = status || term.status
+        term.requireSignature = requireSignature || term.requireSignature
 
         const saved_term = await term.save()
         if (!saved_term) {
