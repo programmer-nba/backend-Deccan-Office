@@ -14,7 +14,8 @@ const termSchema = new Schema(
             username: { type: String },
             name: { type: String },
             email: { type: String },
-            address: { type: String }
+            address: { type: String },
+            userType: { type: String }
         },
 
         requireSignature: { type: Boolean, default: false },
