@@ -640,10 +640,10 @@ exports.DeleteFile = async (req, res, next) => {
 
         const detailIndex = document.file.findIndex(data => data.file_doc == file_doc);
         console.log(file_doc)
-        console.log(detailIndex)
+        console.log("file : " + detailIndex)
         if (detailIndex === -1) {
             return res.status(404).json({ 
-                message: 'Detail not found' 
+                message: 'file not found' 
             });
 
         }
