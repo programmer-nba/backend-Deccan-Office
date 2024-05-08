@@ -205,7 +205,6 @@ exports.InsertDocument = async (req, res, next) => {
                
                 }
                 
-
                 const document = new Document({
                     headers : headers,
                     type : type,
@@ -226,14 +225,14 @@ exports.InsertDocument = async (req, res, next) => {
                             data: null
                         });
                     }
-    
+
                     const timein = dayjs(req.body.ot.timein);
                     const timeout = dayjs(req.body.ot.timeout);
                     const totalHours = timeout.diff(timein, 'hour');
                     const totalMinutes = timeout.diff(timein, 'minute') % 60;
                     const totalSeconds = timeout.diff(timein, 'second') % 60;
                     const totalOTInSeconds = totalHours * 3600 + totalMinutes * 60 + totalSeconds;
-                
+
                     document.ot = {
                         timein: timein,
                         timeout: timeout,
@@ -278,7 +277,7 @@ exports.InsertDocument = async (req, res, next) => {
             if (latestDoc) {
                 docid = parseInt(latestDoc.document_id.slice(2)) + 1; // เพิ่มค่า docid
             }
-            
+
             const docidString = docid.toString().padStart(5, '0');
             const { doc_date, headers, type, to, document_true } = req.body;
             const reqFiles = [];
@@ -301,8 +300,6 @@ exports.InsertDocument = async (req, res, next) => {
                     });
                 }
 
-            
-            
             let status = "รอหัวหน้าแผนกอนุมัติ"
                 if(role == 'head_department'){
                     status = 'รอผู้จัดการอนุมัติ'
@@ -391,6 +388,7 @@ exports.UpdateDocument = async (req, res, next) => {
                 data: null
             });
         }
+
         const { id } = req.params; // รับ ID ของเอกสารที่ต้องการอัปเดต
         const employee_id = req.decoded.id
         const role = req.decoded.role
@@ -553,32 +551,60 @@ exports.updateDocumentDetail = async (req, res, next) => {
     }
 };//ใช้งานได้
   
-//Add detail only
-exports.addDetailToDocument = async (req, res, next) => {
+//Add file only
+exports.addfileToDocument = async (req, res, next) => {
     try {
-        const { id } = req.params; // รับ ID ของเอกสารที่ต้องการเพิ่ม Detail
-        const { detail, price, qty } = req.body; // รับข้อมูล Detail ที่ต้องการเพิ่ม
+        let upload = multer({ storage: storage }).array("image", 20);
+        upload(req, res, async function (err){
+            const { id } = req.params; // รับ ID ของเอกสารที่ต้องการเพิ่ม File
 
-        // ทำการเพิ่ม Detail ใหม่เข้าไปในอาร์เรย์ Detail ของเอกสาร
-        const updatedDocument = await Document.findOneAndUpdate(
-            { _id: id }, // เงื่อนไขในการค้นหาเอกสารที่ต้องการอัปเดต
-            { $push: { 'Detail': { detail, price, qty } } }, // เพิ่มข้อมูลใหม่ลงในอาร์เรย์ Detail
-            { new: true } // ตั้งค่าเพื่อให้คืนค่าข้อมูลเอกสารที่ถูกอัปเดตแล้ว
-        );
+            if (err instanceof multer.MulterError) {
+                return res.status(500).json({ message: 'Failed to upload file' });
+            } else if (err) {
+                return res.status(500).json({ message: 'An unexpected error occurred' });
+            }
 
-        if (!updatedDocument) {
-            return res.status(404).json({ message: 'Document not found' });
-        }
+            const reqFiles = [];
+            const result = [];
 
-        return res.json({
-            message: 'Detail added to document successfully!',
-            data: updatedDocument
-        });
+            let image = '';
+            if (req.files) {
+                const url = req.protocol + "://" + req.get("host");
+                for (var i = 0; i < req.files.length; i++) {
+                    const src = await uploadFileCreate(req.files, res, { i, reqFiles });
+                    result.push(src);
+                    //   reqFiles.push(url + "/public/" + req.files[i].filename);
+                }
+
+                image = reqFiles.map(item=>{
+                    return {
+                        file_doc:item
+                    }
+                });
+            }
+
+            // เพิ่มไฟล์ใหม่ลงในอาร์เรย์ 'file' ของเอกสาร
+            const addfile = await Document.findOneAndUpdate(
+                { _id: id }, // เงื่อนไขในการค้นหาเอกสารที่ต้องการอัปเดต
+                { $push: { 'file': { $each: image } } }, // เพิ่มข้อมูลใหม่ลงในอาร์เรย์ 'file'
+                { new: true } // ตั้งค่าเพื่อให้คืนค่าข้อมูลเอกสารที่ถูกอัปเดตแล้ว
+            );
+
+            if (!addfile) {
+                return res.status(404).json({ message: 'Document not found' });
+            }
+
+            return res.json({
+                message: 'Files added to document successfully!',
+                data: addfile
+            });
+        })
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ message: 'Failed to add detail to document' });
+        return res.status(500).json({ message: 'Failed to add files to document' });
     }
-};//ใช้งานได้
+};
+
 
 //Delete Document
 exports.DeleteDocument = async (req, res, next) =>{
@@ -600,24 +626,38 @@ exports.DeleteDocument = async (req, res, next) =>{
 };
 
 //Delete Detail Only
-exports.DeleteDetail = async (req, res, next) => {
+exports.DeleteFile = async (req, res, next) => {
     try {
-        const { id, detailId } = req.params;
+        const id = req.params.id;
+        const file_doc = req.body.file_doc;
 
         const document = await Document.findById(id);
         if (!document) {
-            return res.status(404).json({ message: 'Document not found' });
+            return res.status(404).json({ 
+                message: 'Document not found' 
+            });
         }
 
-        const detailIndex = document.Detail.findIndex(d => d._id.toString() === detailId);
+        const detailIndex = document.file.findIndex(data => data.file_doc == file_doc);
+        console.log(file_doc)
+        console.log(detailIndex)
         if (detailIndex === -1) {
-            return res.status(404).json({ message: 'Detail not found' });
-        }
+            return res.status(404).json({ 
+                message: 'Detail not found' 
+            });
 
-        document.Detail.splice(detailIndex, 1);
+        }
+        const src = await deleteFile(document.file[detailIndex].file_doc);
+        console.log(document.file[detailIndex].file_doc)
+
+        document.file.splice(detailIndex, 1);
+
         const savedDocument = await document.save();
 
-        return res.status(200).json({ message: 'Detail deleted successfully', data: savedDocument });
+        return res.status(200).json({ 
+            message: 'Detail deleted successfully', 
+            data: savedDocument 
+        });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ message: 'Failed to delete detail from document' });

@@ -16,7 +16,7 @@ router.get('/approve/byMe', auth, DocumentController.getDocumentApproveByMe);
 
 //Post
 router.post('/insert', auth,DocumentController.InsertDocument); // เพิ่ม Document
-router.post('/add/detail/:id',DocumentController.addDetailToDocument); //เพิ่ม detail ใน Document
+router.post('/add/file/:id',DocumentController.addfileToDocument); //เพิ่ม detail ใน Document
 
 //Update
 router.put('/update/:id',auth ,DocumentController.UpdateDocument);// แก้ไข Document
@@ -25,6 +25,7 @@ router.put('/update/status/:id', authAdmin, DocumentController.updateDocumentSta
 
 //delete
 router.delete('/delete/:id',DocumentController.DeleteDocument); //ลบ Document
+router.delete('/del/file/:id',DocumentController.DeleteFile); //ลบ 
 
 
 
