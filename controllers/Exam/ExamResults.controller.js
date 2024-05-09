@@ -1,4 +1,7 @@
 const ExamResults = require ('../../model/Exam/ExamResults')
+const Post = require('../../model/Post/Post')
+const Userinfo =require ('../../model/Userinfo/Userinfo')
+
 
 //Get ExamResults
 exports.getExamResults = async (req, res, next) => {
@@ -45,18 +48,55 @@ exports.getExamResultsById = async (req, res, next) => {
     }
 };
 
-
 //Insert ExamResults
 exports.InsertExamResults = async (req, res, next) => {
     try {
-        const { User_id, Position_applied, Score, Result } = req.body
+        const { Position_applied, Score, Result, postid } = req.body
+
+        const checkdata = await ExamResults.findOne({ 
+            $and: [
+                { 'User_id': req.decoded.id },
+                { 'Position_applied': Position_applied }
+            ]
+        });
+        if(checkdata) {
+            return res.json({
+                message: 'ไม่สามารถสมัครตำแหน่งเดิมได้',
+                status: false,
+                data: null
+            })
+        }
+        const postdata = await Post.findById(postid)
+        if (!postdata) {
+            return res.json({
+                message: 'ไม่พบ ID ประกาศ',
+                status: false,
+                data: null
+            })
+        }
+
+        const pushuserdata = {
+            user_id : req.decoded.id,
+        }
+        postdata.applicants.push(pushuserdata);
+
         const examresults = new ExamResults({
-            User_id : User_id,
+            User_id : req.decoded.id,
             Position_applied : Position_applied,
             Score : Score,
-            Result : Result
+            Result : Result,
+            postid : postid
         })
         
+        const saved_user = await examresults.save()  
+        if (!saved_user) {
+            return res.json({
+                message: 'can not save user',
+                status: false,
+                data: null
+            })
+        }
+
         const saved_examresults = await examresults.save()  
         if (!saved_examresults) {
             return res.json({
@@ -65,6 +105,18 @@ exports.InsertExamResults = async (req, res, next) => {
                 data: null
             })
         }
+
+        const saved_post = await postdata.save();
+        if (!saved_post) {
+            return res.json({
+                message: 'can not save post',
+                status: false,
+                data: null
+            })
+        }
+
+        await Userinfo.findByIdAndUpdate(req.decoded.id, { neworold: "Old" });
+
         return res.json({
             message: 'Insert examresults successfully!',
             status: true,

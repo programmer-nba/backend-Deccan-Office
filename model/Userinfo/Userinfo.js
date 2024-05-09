@@ -1,4 +1,5 @@
 const { request } = require('express');
+const { required } = require('joi');
 const mongoose = require('mongoose');
 
 const UserinfoSchema = new mongoose.Schema({
@@ -35,7 +36,8 @@ const UserinfoSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User', // กำหนดความสัมพันธ์กับโมเดล User
         required: true
-    }
+    },
+    neworold : { type : String, required : false, default : "New"}
 }, { versionKey: false });
 
 module.exports = mongoose.model('Userinfo', UserinfoSchema);

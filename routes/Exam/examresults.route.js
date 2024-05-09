@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const ExamResultsController = require('../../controllers/Exam/ExamResults.controller')
 
+const authUser = require("../../auten")
+
 //Get ExamResults
 router.get('/', ExamResultsController.getExamResults);
 
@@ -11,7 +13,7 @@ router.get('/byid/:id', ExamResultsController.getExamResultsById);
 
 
 //Insert ExamResults
-router.post('/insert-examresults', ExamResultsController.InsertExamResults);
+router.post('/insert-examresults', authUser.user, ExamResultsController.InsertExamResults);
 
 
 //Update ExamResults

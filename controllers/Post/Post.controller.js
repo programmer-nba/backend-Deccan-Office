@@ -38,10 +38,6 @@ exports.getpost = async (req, res, next) => {
         // ตรวจสอบว่าวันสุดท้ายของโพสต์ใดโพสต์หนึ่งเป็นวันนี้หรือผ่านไปแล้วและอัปเดตสถานะให้ปิดรับสมัคร
         formattedPosts.forEach(post => {
             const postEndDate = moment(post.end_date, 'DD/MM/YYYY');
-            
-            // if (postEndDate.isSameOrBefore(today) && post.post_status === "เปิดรับสมัคร") {
-            //     post.post_status = "ปิดรับสมัคร";
-            // }
         });
         let new_data = []
         const data = await Post.find();
@@ -97,11 +93,11 @@ exports.getPostById = async (req, res, next) => {
             });
         }
         const userinfodata = await Userinfo.findById(req.decoded.id);
-        
+
         const check = await Post.findOne({ 'views.user_id': req.decoded.id });
 
         let status_user;
-        if (userinfodata.status === 'New') {
+        if (userinfodata.neworold === 'New') {
             status_user = 'New';
         } else {
             status_user = 'Old';
