@@ -1,3 +1,4 @@
+const { required } = require('joi');
 const mongoose = require('mongoose');
 
 const PostSchema = new mongoose.Schema({
@@ -27,10 +28,14 @@ const PostSchema = new mongoose.Schema({
     }],
     welfare : [{
         welfare : {type: String, required : false}//สวัสดิการ (เพิ่มได้หลายอัน)
+    }], 
+    views: [{
+        user_id : { type : String, required : false},
+        user_status : { type : String, required : false}
     }],
-
-    views: {type: Number, required : false, default : 0},
-    applicants : {type: Number, required : false, default : 0},//จำนวนผู้สมัคร
+    applicants : [{
+        user_id : { type : String, required : false}//จำนวนผู้สมัคร
+    }],
     
     update_date: { type: Date, default: Date.now },
     post_date: { type: Date, default: Date.now }, // วันที่ประกาศ

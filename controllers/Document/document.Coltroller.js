@@ -605,7 +605,6 @@ exports.addfileToDocument = async (req, res, next) => {
     }
 };
 
-
 //Delete Document
 exports.DeleteDocument = async (req, res, next) =>{
     try {
@@ -625,7 +624,7 @@ exports.DeleteDocument = async (req, res, next) =>{
     }
 };
 
-//Delete Detail Only
+//Delete File Only
 exports.DeleteFile = async (req, res, next) => {
     try {
         const id = req.params.id;

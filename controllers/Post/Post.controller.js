@@ -1,4 +1,5 @@
 const Post = require('../../model/Post/Post')
+const Userinfo =require ('../../model/Userinfo/Userinfo')
 const multer = require('multer');
 const upload = multer();
 const moment = require('moment');
@@ -84,27 +85,51 @@ exports.getpost = async (req, res, next) => {
     }
 };
 
-
-
 //Get Post By Id
 exports.getPostById = async (req, res, next) => {
     try {
         const post = await Post.findById(req.params.id);
-        return res.json ({
-            message: 'get post by id successfully!',
+        if (!post) {
+            return res.json({
+                message: 'Post not found',
+                status: false,
+                data: null
+            });
+        }
+        const userinfodata = await Userinfo.findById(req.decoded.id);
+        
+        const check = await Post.findOne({ 'views.user_id': req.decoded.id });
+
+        let status_user;
+        if (userinfodata.status === 'New') {
+            status_user = 'New';
+        } else {
+            status_user = 'Old';
+        }
+
+        const pushuserdata = {
+            user_id : req.decoded.id,
+            user_status : status_user
+        }
+        if(!check) {
+            post.views.push(pushuserdata);
+        }
+        await post.save();
+        return res.json({
+            message: 'Get post by id successfully!',
             status: true,
             data: post
-        })
-    }
-    catch (err) {
-        console.log (err)
-        return res.json ({
-            message: 'Can not get post by id : '+err.message,
+        });
+
+    } catch (err) {
+        console.log(err);
+        return res.json({
+            message: 'Cannot get post by id: ' + err.message,
             status: false,
             data: null
-        })
+        });
     }
-}
+};
 
 //Insert Post
 exports.Insertpost = async (req, res, next) => {
@@ -119,14 +144,13 @@ exports.Insertpost = async (req, res, next) => {
             amount,// จำนวนคนที่รับ
             start_age,// อายุที่รับเข้าทำงาน
             end_age,
-            salary, 
-            sex, 
-            experience, //ประสบการณ์
-            education, //ระดับการศึกษา
-             //สาขาวิชา
-            feature, //คุณสมบัติ (เพิ่มได้หลายอัน)
-            working, //ลักษณะงาน (เพิ่มได้หลายอัน)
-            welfare, //สวัสดิการ (เพิ่มได้หลายอัน)
+            salary,
+            sex,
+            experience, // ประสบการณ์
+            education, // ระดับการศึกษา
+            feature, // คุณสมบัติ (เพิ่มได้หลายอัน)
+            working, // ลักษณะงาน (เพิ่มได้หลายอัน)
+            welfare, // สวัสดิการ (เพิ่มได้หลายอัน)
             end_date
         } = req.body;
         const reqFiles = [];
@@ -255,45 +279,6 @@ exports.Deletepost = async (req, res, next) => {
         })
     }
 }
-
-// On / Off ตามวันที่ระบุ
-exports.OnOffauto = async (req, res, next) => {
-    try {
-        const today = Date.now.format('DD/MM/YYYY');
-        const getdata = await Post.find({ end_date: today });
-        if (!getdata) {
-            return res.json({
-                message: 'Error: Post not found',
-                status: false,
-                data: null
-            });
-        }
-        for (let post of getdata) {
-            if (post.Post_status === "เปิดรับสมัคร") {
-                post.Post_status = "ปิดรับสมัคร";
-            } else if (post.Post_status === "ปิดรับสมัคร") {
-                post.Post_status = "เปิดรับสมัคร";
-            }
-
-            await post.save();
-            console.log(post);
-        }
-
-        return res.json({
-            message: 'Update post successfully!',
-            status: true,
-            data: getdata
-        });
-    } catch (err) {
-        console.log(err);
-        return res.json({
-            message: 'Can not Update post : ' + err.message,
-            status: false,
-            data: null
-        });
-    }
-};
-
 
 // On / Off
 exports.OnOff = async (req, res, next) => {

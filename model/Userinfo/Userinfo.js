@@ -10,7 +10,7 @@ const UserinfoSchema = new mongoose.Schema({
     gender: { type: String, request: false, default : ""},
     birth: { type: String, request: false, default : ""},
     tel: { type: String, request: false, default : ""},
-    status: { type: String, default: 'รอการสัมภาษณ์', request : false },
+    status: { type: String, default: 'New', request : false },
     role: { type: String, default: 'User', request : false },
     country: { type: String, request: false, default : ""},
     religion: { type: String, request: false, default : ""},

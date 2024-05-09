@@ -2,11 +2,13 @@ const express = require('express');
 const router = express.Router();
 const PostController = require('../../controllers/Post/Post.controller')
 
+const authUser = require("../../auten")
+
 //Get Post
 router.get('/', PostController.getpost);
 
 //Get Post By Id
-router.get('/byid/:id', PostController.getPostById);
+router.get('/byid/:id', authUser.user, PostController.getPostById);
 
 //Insert Post or Register
 router.post('/Insert-post', PostController.Insertpost);
