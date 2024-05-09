@@ -196,7 +196,6 @@ exports.InsertDocument = async (req, res, next) => {
                         result.push(src);
                         //   reqFiles.push(url + "/public/" + req.files[i].filename);
                     }
-                    
                     image =reqFiles.map(item=>{
                         return {
                             file_doc:item
@@ -218,29 +217,43 @@ exports.InsertDocument = async (req, res, next) => {
                 });
 
                 if (req.body.type === "OT") {
-                    if (!req.body.ot || !req.body.ot.timein || !req.body.ot.timeout) {
+                    try {
+                        const otData = JSON.parse(req.body.ot);
+                        console.log(otData);
+                
+                        if (!otData.timein || !otData.timeout) {
+                            return res.json({
+                                message: 'คุณจำเป็นต้องกรอก เวลา ขอทำ OT',
+                                status: false,
+                                data: null
+                            });
+                        }
+                
+                        console.log('จริง');
+            
+                        const timein = dayjs(otData.timein);
+                        const timeout = dayjs(otData.timeout);
+                        const totalHours = timeout.diff(timein, 'hour');
+                        const totalMinutes = timeout.diff(timein, 'minute') % 60;
+                        const totalSeconds = timeout.diff(timein, 'second') % 60;
+                        const totalOTInSeconds = totalHours * 3600 + totalMinutes * 60 + totalSeconds;
+                
+                        document.ot = {
+                            timein: timein,
+                            timeout: timeout,
+                            total_ot: {
+                                totaltime: (totalHours + " ชั่วโมง " + totalMinutes + " นาที " + totalSeconds + " วินาที"),
+                                totalseconds: totalOTInSeconds
+                            }
+                        };
+                    } catch (error) {
+                        console.error('Error parsing otData:', error);
                         return res.json({
-                            message: 'คุณจำเป็นต้องกรอก เวลา ขอทำ OT',
+                            message: 'ข้อมูล OT ไม่ถูกต้อง',
                             status: false,
                             data: null
                         });
                     }
-
-                    const timein = dayjs(req.body.ot.timein);
-                    const timeout = dayjs(req.body.ot.timeout);
-                    const totalHours = timeout.diff(timein, 'hour');
-                    const totalMinutes = timeout.diff(timein, 'minute') % 60;
-                    const totalSeconds = timeout.diff(timein, 'second') % 60;
-                    const totalOTInSeconds = totalHours * 3600 + totalMinutes * 60 + totalSeconds;
-
-                    document.ot = {
-                        timein: timein,
-                        timeout: timeout,
-                        total_ot: {
-                            totaltime: (totalHours + " ชั่วโมง " + totalMinutes + " นาที " + totalSeconds + " วินาที"),
-                            totalseconds: totalOTInSeconds
-                        }
-                    };
                 }
 
                 const saved_document = await document.save();
@@ -327,31 +340,44 @@ exports.InsertDocument = async (req, res, next) => {
             });
 
             if (req.body.type === "OT") {
-                if (!req.body.ot || !req.body.ot.timein || !req.body.ot.timeout) {
+                try {
+                    const otData = JSON.parse(req.body.ot);
+                    console.log(otData);
+            
+                    if (!otData.timein || !otData.timeout) {
+                        return res.json({
+                            message: 'คุณจำเป็นต้องกรอก เวลา ขอทำ OT',
+                            status: false,
+                            data: null
+                        });
+                    }
+            
+                    console.log('จริง');
+        
+                    const timein = dayjs(otData.timein);
+                    const timeout = dayjs(otData.timeout);
+                    const totalHours = timeout.diff(timein, 'hour');
+                    const totalMinutes = timeout.diff(timein, 'minute') % 60;
+                    const totalSeconds = timeout.diff(timein, 'second') % 60;
+                    const totalOTInSeconds = totalHours * 3600 + totalMinutes * 60 + totalSeconds;
+            
+                    document.ot = {
+                        timein: timein,
+                        timeout: timeout,
+                        total_ot: {
+                            totaltime: (totalHours + " ชั่วโมง " + totalMinutes + " นาที " + totalSeconds + " วินาที"),
+                            totalseconds: totalOTInSeconds
+                        }
+                    };
+                } catch (error) {
+                    console.error('Error parsing otData:', error);
                     return res.json({
-                        message: 'คุณจำเป็นต้องกรอก เวลา ขอทำ OT',
+                        message: 'ข้อมูล OT ไม่ถูกต้อง',
                         status: false,
                         data: null
                     });
                 }
-
-                const timein = dayjs(req.body.ot.timein);
-                const timeout = dayjs(req.body.ot.timeout);
-                const totalHours = timeout.diff(timein, 'hour');
-                const totalMinutes = timeout.diff(timein, 'minute') % 60;
-                const totalSeconds = timeout.diff(timein, 'second') % 60;
-                const totalOTInSeconds = totalHours * 3600 + totalMinutes * 60 + totalSeconds;
-            
-                document.ot = {
-                    timein: timein,
-                    timeout: timeout,
-                    total_ot: {
-                        totaltime: (totalHours + " ชั่วโมง " + totalMinutes + " นาที " + totalSeconds + " วินาที"),
-                        totalseconds: totalOTInSeconds
-                    }
-                };
             }
-
             const saved_document = await document.save();
             if (!saved_document) {
                 return res.json({

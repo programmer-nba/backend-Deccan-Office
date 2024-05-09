@@ -9,7 +9,6 @@ const DocumentSchema = new Schema({
     headers : {type: String, required: false, default : ""},//เรื่อง
     type : {type : String, required: false},
     to : {type: String, required: false, default : ""},
-
     ot : {
         timein : {type : Date, required : false},
         timeout : {type : Date, required : false},
