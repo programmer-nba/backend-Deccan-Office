@@ -4,7 +4,6 @@ const RequestProject = require('../../model/RequestProject/RequestProject.model'
 const { Employees } = require('../../model/employee/employee');
 const Type = require('../../model/ProjectType/ProjectType.model');
 
-
 // เรียกใช้ข้อมูล RequestProject
 exports.getRequestProject = async (req, res, next) => {
     try {
@@ -53,6 +52,10 @@ exports.InsertRequestProject = async (req, res, next) => {
         // สร้างข้อมูลใหม่ของ RequestProject
         const project = new RequestProject({
             project_id: ProjectNumberString,
+            timeline : {
+                time : Date.now(),
+                timeline_name : "สั่งซื้อสินค้า"
+            },
             ...req.body
         });
 
@@ -169,7 +172,6 @@ exports.deleteRequestProject = async (req, res, next) => {
 //Update Accept
 exports.Accept = async (req, res, next) => {
     try {
-
         const employee = req.decoded.id
         console.log(employee)
         if (!employee) {
@@ -182,12 +184,41 @@ exports.Accept = async (req, res, next) => {
 
         const accept = await RequestProject.findByIdAndUpdate(req.params.id, req.body); //แก้ไขสถาณะ
 
+        const checktimeline = await RequestProject.findOne({ 'timeline.timeline_name': "กำลังดำเนินการ" });
+
+        const checkemployee = await RequestProject.findOne({ 'employee.employee_id': req.decoded.id});
+
+        const data = await RequestProject.findById(req.params.id);
+        if (!data) {
+            return res.json({
+                message: 'data not found',
+                status: false,
+                data: null
+            });
+        }
+
+        if(checkemployee) {
+            return res.json({
+                message: 'คุณรับงานนี้ไปแล้ว',
+                status: false,
+            })
+        }
+
+        const pushtimeline = {
+            time : Date.now(),
+            timeline_name : "กำลังดำเนินการ"
+        }
+
+        if(!checktimeline) {
+            accept.timeline.push(pushtimeline);
+        }
+
         const employeeaccept = {
             employee_id: req.decoded.id,
             time: Date.now()
         };
 
-        accept.status = "อยู่ระหว่างกำลังดำเนินการ"
+        accept.status = "กำลังดำเนินการ"
         accept.employee.push(employeeaccept);
 
         await accept.save();

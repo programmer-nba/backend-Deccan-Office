@@ -32,29 +32,20 @@ const RequestProjectSchema = new mongoose.Schema({
         customer_address : { type : String, required : false, default : "" },
         customer_line : { type : String, required : false, default : "" }
     },
-    order : {
-        receiptnumber : { type : String, required : false, default : ""},
-        shop_id : { type : String, required : false, default : ""},
-        shop_type : { type : String, required : false, default : ""},
-        paymenttype : { type : String, required : false, default : ""},
-        const : { type : Number, required : false, default : null},
+    receiptnumber : { type : String, required : false, default : ""},
+    product_detail : [{
+        packageid : { type : String, required : false, default : ""},
+        packagename : { type : String, required : false, default : ""},
+        packagedetail : { type : String, required : false, default : ""},
+        quantity : { type : Number, required : false, default : null},
         price : { type : Number, required : false, default : null},
-        freight : { type : Number, required : false, default : null},
-        moneyreceive : { type : Number, required : false, default : null},
-        change : { type : Number, required : false, default : null},
-        order_employee : { type : String, required : false, default : null},
-    },
-    product_detail : {
-        type : [{
-            packageid : { type : String, required : false, default : ""},
-            packagename : { type : String, required : false, default : ""},
-            packagedetail : { type : String, required : false, default : ""},
-            quantity : { type : Number, required : false, default : null},
-            price : { type : Number, required : false, default : null},
-            cost : { type : Number, required : false, default : null},
-            freight : { type : Number, required : false, default : null}
-        }]
-    }
+        cost : { type : Number, required : false, default : null},
+        freight : { type : Number, required : false, default : null}
+    }],
+    timeline : [{
+        time : { type : Date, required : false},
+        timeline_name : { type : String ,required : false}
+    }]
 
 },{ timestamps : true}, { versionKey: false });
 
