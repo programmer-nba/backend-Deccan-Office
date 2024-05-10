@@ -229,6 +229,13 @@ exports.Userconfirm = async (req, res, next) => {
                     .json({ status: false, message: 'มีผู้ใช้นี้ในระบบแล้ว' });
                 }
             }
+        
+            let checkrole;
+            if (agreement.argument_position === 'hr'){
+                checkrole = 'hr'
+            } else {
+                checkrole = 'employee'
+            }
 
             const newEmployeeData = {
                 userid: userdata.citizen_id,
@@ -236,7 +243,7 @@ exports.Userconfirm = async (req, res, next) => {
                 last_name : userdata.lastname,
                 iden_number : userdata.citizen_id,
                 password : await bcrypt.hash(userdata.citizen_id, 10),
-                role : "employee",
+                role : checkrole,
                 position : agreement.argument_position,
                 tel : userdata.tel,
                 address : userdata.address,
