@@ -5,7 +5,7 @@ const PostController = require('../../controllers/Post/Post.controller')
 const authUser = require("../../auten")
 
 //Get Post
-router.get('/', PostController.getpost);
+router.get('/getall', PostController.getpost);
 
 //Get Post By Id
 router.get('/byid/:id', authUser.user, PostController.getPostById);
