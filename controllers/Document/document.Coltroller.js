@@ -31,6 +31,32 @@ dayTime = dayjsTimestamp.format('YYYY-MM-DD HH:mm:ss');
 exports.getdocument = async (req, res, next) => {
     try {
         const document = await Document.find();
+        const today = new Date()
+
+        if ( !document ) {
+            return res.json({
+                message: 'Do not have document successfully!',
+                status: false,
+                data: null
+            });
+        }
+
+        let new_data = []
+        const data = await Document.find();
+        for(const newData of data){
+            const documentEndDate = new Date(newData.doc_date);
+            console.log("endDay",documentEndDate)
+            console.log("today", today)
+            if (documentEndDate <= today && newData.document_true === "ฉบับร่าง") {
+                const del = await Document.findByIdAndDelete({_id:newData._id})
+                    if(!del){
+                        return res
+                                .status(404)
+                                .send({status:false, message:"ไม่มีการลบ"})
+                    }
+            }
+        }
+
         return res.json({
             message: 'Get document successfully!',
             status: true,
@@ -201,10 +227,10 @@ exports.InsertDocument = async (req, res, next) => {
                             file_doc:item
                         }
                     });
-               
                 }
-                
+
                 const document = new Document({
+                    doc_date : dayjs().add(7, 'day').toDate(),
                     headers : headers,
                     type : type,
                     to : to,
