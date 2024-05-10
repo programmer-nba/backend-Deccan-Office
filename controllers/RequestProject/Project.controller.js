@@ -27,17 +27,17 @@ exports.getRequestProject = async (req, res, next) => {
 exports.InsertRequestProject = async (req, res, next) => {
     try {
         // รับข้อมูลจาก req.body
-        const { type } = req.body;
+        // const { type } = req.body;
 
-        // หา ProjectType จาก type_code
-        const projectType = await ProjectType.findOne({ id: type });
-        if (!projectType) {
-            return res.status(400).json({
-                message: 'ไม่พบประเภทโครงการที่ระบุ',
-                status: false,
-                data: null
-            });
-        }
+        // // หา ProjectType จาก type_code
+        // const projectType = await ProjectType.findOne({ id: type });
+        // if (!projectType) {
+        //     return res.status(400).json({
+        //         message: 'ไม่พบประเภทโครงการที่ระบุ',
+        //         status: false,
+        //         data: null
+        //     });
+        // }
 
         // หา Project ล่าสุดเพื่อสร้าง ProjectNumber ใหม่
         const latestProject = await RequestProject.findOne().sort({ project_id: -1 }).limit(1);
@@ -47,7 +47,7 @@ exports.InsertRequestProject = async (req, res, next) => {
         }
 
         // สร้าง ProjectNumberString
-        const ProjectNumberString = projectType.type_code + ProjectNumber.toString().padStart(6, '0');
+        const ProjectNumberString = /**projectType.type_code +**/ ProjectNumber.toString().padStart(6, '0');
 
         // สร้างข้อมูลใหม่ของ RequestProject
         const project = new RequestProject({

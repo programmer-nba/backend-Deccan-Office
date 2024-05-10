@@ -5,8 +5,8 @@ const mongoose = require('mongoose');
 
 const RequestProjectSchema = new mongoose.Schema({
     project_id : { type : String, required : false },
-    type : { type : String, required : true },//dropdown
-    sub_type : { type : String, required : true },//dropdown
+    type : { type : String, required : false },//dropdown
+    sub_type : { type : String, required : false },//dropdown
     detail : { type : String, required : false, default : ""},//รายละเอียด
     start_date : { type : Date, required : false, default : null},//วันที่เริ่ม
     due_date : { type : Date, required : false, default : null },//เวลาสิ้นสุด
