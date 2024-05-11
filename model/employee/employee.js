@@ -51,9 +51,6 @@ EmployeeSchema.pre('save',async function (next) {   //ทำ Middleware กา�
       }else if(user.position == 'admin'){
         user.employee_number = 'ADMIN';
         next();
-      }else if(user.position == 'hr'){
-        user.employee_number = 'HR';
-        next();
       } else {
         if (user.position == 'programmer') {
           data = 'DEV';
@@ -63,6 +60,12 @@ EmployeeSchema.pre('save',async function (next) {   //ทำ Middleware กา�
           data = 'ACC';
         } else if (user.position == 'manager') {
           data = 'MGR';
+        } else if (user.position == 'marketting') {
+          data = 'MKT';
+        } else if (user.position == 'lawyer') {
+          data = 'LAW';
+        } else if (user.position == 'hr') {
+          data = 'HR_';
         }
         if (findNumber.length == 0) {
           user.employee_number = data + String(length).padStart(6, '0');

@@ -14,5 +14,7 @@ router.post('/insert', RequestProjectController.InsertRequestProject);
 
 router.put('/accept/:id', auth, RequestProjectController.Accept);
 
+router.put('/finish/:id', auth, RequestProjectController.Finish);
+
 
 module.exports = router;

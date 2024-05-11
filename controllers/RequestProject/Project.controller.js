@@ -7,7 +7,7 @@ const Type = require('../../model/ProjectType/ProjectType.model');
 // เรียกใช้ข้อมูล RequestProject
 exports.getRequestProject = async (req, res, next) => {
     try {
-        const requestproject = await RequestProject.find().populate('type');
+        const requestproject = await RequestProject.find();
         return res.json({
             message: 'Get RequestProject data successfully!',
             status: true,
@@ -26,35 +26,35 @@ exports.getRequestProject = async (req, res, next) => {
 //เพิ่มข้อมูล
 exports.InsertRequestProject = async (req, res, next) => {
     try {
-        // รับข้อมูลจาก req.body
-        // const { type } = req.body;
+        const reqBody = req.body.detail.toLowerCase();// แปลงเป็นตัวเล็ก
+        const findCode = await ProjectType.findOne({ 'type_name' : reqBody})
+        
+        console.log('req.body : ',reqBody)
+        console.log(findCode)
 
-        // // หา ProjectType จาก type_code
-        // const projectType = await ProjectType.findOne({ id: type });
-        // if (!projectType) {
-        //     return res.status(400).json({
-        //         message: 'ไม่พบประเภทโครงการที่ระบุ',
-        //         status: false,
-        //         data: null
-        //     });
-        // }
+        if (!findCode) {
+            return res.status(400).json({
+                message: 'ไม่พบข้อมูล '+reqBody+' ในระบบ',
+                status: false,
+            });
+        }
 
         // หา Project ล่าสุดเพื่อสร้าง ProjectNumber ใหม่
         const latestProject = await RequestProject.findOne().sort({ project_id: -1 }).limit(1);
         let ProjectNumber = 1;
         if (latestProject && latestProject.project_id) {
-            ProjectNumber = parseInt(latestProject.project_id.slice(7)) + 1;
+            ProjectNumber = parseInt(latestProject.project_id.slice(8)) + 1;
         }
 
         // สร้าง ProjectNumberString
-        const ProjectNumberString = /**projectType.type_code +**/ ProjectNumber.toString().padStart(6, '0');
+        const ProjectNumberString = findCode.type_code + ProjectNumber.toString().padStart(6, '0');
 
         // สร้างข้อมูลใหม่ของ RequestProject
         const project = new RequestProject({
-            project_id: ProjectNumberString,
+            project_id : ProjectNumberString,
             timeline : {
                 time : Date.now(),
-                timeline_name : "สั่งซื้อสินค้า"
+                timeline_name : "รอรับงาน"
             },
             ...req.body
         });
@@ -186,12 +186,22 @@ exports.Accept = async (req, res, next) => {
 
         const checktimeline = await RequestProject.findOne({ 'timeline.timeline_name': "กำลังดำเนินการ" });
 
+        const checktimeline2 = await RequestProject.findOne({ 'timeline.timeline_name': "ดำเนินการสำเร็จ" });
+
         const checkemployee = await RequestProject.findOne({ 'employee.employee_id': req.decoded.id});
 
         const data = await RequestProject.findById(req.params.id);
         if (!data) {
             return res.json({
                 message: 'data not found',
+                status: false,
+                data: null
+            });
+        }
+
+        if (checktimeline2) {
+            return res.json({
+                message: 'งานสำเร็จไปแล้ว',
                 status: false,
                 data: null
             });
@@ -239,27 +249,99 @@ exports.Accept = async (req, res, next) => {
     }
 };
 
-// ดึงข้อมูลตาม types
+//Project Finish
+exports.Finish = async (req, res, next) => {
+    try {
+        const employee = req.decoded.id
+        console.log(employee)
+        if (!employee) {
+            return res.json({
+                message: 'ไม่พบพนักงาน',
+                status: false,
+                data: null
+            })
+        }
+
+        const finish = await RequestProject.findByIdAndUpdate(req.params.id, req.body); //แก้ไขสถาณะ
+
+        const checktimeline = await RequestProject.findOne({ 'timeline.timeline_name': "ดำเนินการสำเร็จ" });
+
+        const checktimeline2 = await RequestProject.findOne({ 'timeline.timeline_name': "กำลังดำเนินการ" });
+
+        const data = await RequestProject.findById(req.params.id);
+        if (!data) {
+            return res.json({
+                message: 'data not found',
+                status: false,
+                data: null
+            });
+        }
+        if (!checktimeline2) {
+            return res.json({
+                message: 'โปรเจคยังไม่ได้เริ่ม',
+                status: false,
+                data: null
+            });
+        }
+
+        const pushtimeline = {
+            time : Date.now(),
+            timeline_name : "ดำเนินการสำเร็จ"
+        }
+        const employeefinish = {
+            employee_id: req.decoded.id,
+            time: Date.now()
+        };
+
+        if(!checktimeline) {
+            finish.timeline.push(pushtimeline);
+            finish.status = "ดำเนินการสำเร็จ"
+            finish.employee.push(employeefinish);
+        }
+
+        await finish.save();
+
+        return res.json({
+            message: 'Project successfully!',
+            status: true,
+            data: finish
+        })
+    }
+    catch (err) {
+        console.log(err)
+        return res.json({
+            message: err.message,
+            status: false,
+            data: null
+        })
+    }
+};
+
+// ดึงข้อมูลตามตำแหน่ง
 exports.getProjectType = async (req, res, next) => {
     try {
         em_id = req.decoded.id
 
         const getEmployee = await Employees.findById({ _id: req.decoded.id })
-
-        console.log(req.decoded.position)
-
+        const firstThreeDigits = getEmployee.employee_number.substring(0, 3);
         const projectdata = await RequestProject.find();
 
-        console.log('aaa',projectdata)
+        const matchingProjects = projectdata.filter(project => {
+            const firstThreeDigitsProject = project.project_id.substring(0, 3);
+            return firstThreeDigitsProject === firstThreeDigits;
+        });
 
-        const projecttypes = await Type.findById(projectdata.type);
-
-        console.log(projecttypes)
+        if (!matchingProjects) {
+            return res.json({
+                message: 'ไม่พบข้อมูล',
+                status: 404,
+            });
+        }
 
         return res.json({
             message: 'Get data successfully!',
             status: true,
-            data: projectdata
+            data: matchingProjects
         });
     } catch (err) {
         console.log(err)
