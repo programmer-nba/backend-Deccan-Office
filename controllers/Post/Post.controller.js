@@ -94,7 +94,7 @@ exports.getPostById = async (req, res, next) => {
         }
         const userinfodata = await Userinfo.findById(req.decoded.id);
 
-        const check = await Post.findOne({ 'views.user_id': req.decoded.id });
+        const check = await Post.findOne({ _id: req.params.id, 'views.user_id': req.decoded.id });
 
         let status_user;
         if (userinfodata.neworold === 'New') {
