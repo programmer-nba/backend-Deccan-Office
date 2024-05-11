@@ -78,7 +78,7 @@ exports.approveOneStopService = async(req, res) => {
         const data ={
             shop_status:true
         }
-        const response = await axios.put(`${Url}/partner/shop/approve/${id}`, data, {
+        const response = await axios.put(`${Url}/partner/shop/${id}`, data, {
             headers: {
                 'Accept': 'application/json',
             }
