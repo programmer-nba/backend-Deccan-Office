@@ -53,7 +53,7 @@ exports.updateOneStopService = async(req, res) => {
     try{
         const Url = process.env.URL_TOSSAGUN;
         const id = req.params.id;
-        const response = await axios.put(`${Url}/partner/shop/${id}`, req.body, {
+        const response = await axios.put(`${Url}/partner/shop/shop/${id}`, req.body, {
             headers: {
                 'Accept': 'application/json',
             }
@@ -63,7 +63,7 @@ exports.updateOneStopService = async(req, res) => {
                 .status(400)
                 .send({ status: false, message: "ไม่สามารถเชื่อมต่อได้" });
         }
-        return res.status(200).send({ status: true, data: response.data.data });
+        return res.status(200).send({ status: true, message: "แก้ไขสำเร็จ"});
 
     }catch(err){
         return res.status(500).json({message: err.message,status: false})
@@ -78,7 +78,7 @@ exports.approveOneStopService = async(req, res) => {
         const data ={
             shop_status:true
         }
-        const response = await axios.put(`${Url}/partner/shop/${id}`, data, {
+        const response = await axios.put(`${Url}/partner/shop/shop/${id}`, data, {
             headers: {
                 'Accept': 'application/json',
             }
@@ -88,7 +88,8 @@ exports.approveOneStopService = async(req, res) => {
                 .status(400)
                 .send({ status: false, message: "ไม่สามารถเชื่อมต่อได้" });
         }
-        return res.status(200).send({ status: true, data: response.data.data });
+        
+        return res.status(200).send({ status: true, message: "อนุมัติสำเร็จ"});
 
     }catch(err){
         return res.status(500).json({message: err.message,status: false})
