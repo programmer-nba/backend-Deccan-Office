@@ -1,4 +1,5 @@
 const Partner = require("../../model/partners/partners");
+//const { getMessaging } = FireBaseAdmin;
 
 confirmPartner = async (req, res)=>{
     try{
@@ -48,5 +49,76 @@ cancelPartner = async (req, res)=>{
     }
 }
 
+sendNotification = async (req, res) => {
+    const { text_title, text_body } = req.body
+    try {
+        var admin = require("firebase-admin");
+        var serviceAccount = require("./demofires-01-firebase-adminsdk-sbd7f-d13d9819fb.json");
 
-module.exports = { confirmPartner, cancelPartner }
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount)
+        });
+
+        const registrationToken = 'ef6etFEIVF7fA1nOfZ1kkl:APA91bHoWuNEqSECLI3Rth3yVnSIq-JMUu5tCxzp08jhGKI2kKrTZzqo6Ds_9PNXwCb3fQB-eskmI7Whg68sonLX-kQWOa1g2myqXn9_mc1dF8V0GvK1JcLNPoj-J_6Z-RtXyuaJTIyx';
+        /* const registrationTokens = [
+            'ef6etFEIVF7fA1nOfZ1kkl:APA91bHoWuNEqSECLI3Rth3yVnSIq-JMUu5tCxzp08jhGKI2kKrTZzqo6Ds_9PNXwCb3fQB-eskmI7Whg68sonLX-kQWOa1g2myqXn9_mc1dF8V0GvK1JcLNPoj-J_6Z-RtXyuaJTIyx',
+        ]; */
+
+        const message = {
+            notification: {
+                title: text_title + "",
+                body: text_body + ""
+            },
+            android: {
+                notification: {
+                    clickAction: 'news_intent'
+                }
+            },
+            apns: {
+                payload: {
+                    aps: {
+                        'category': 'INVITE_CATEGORY'
+                    }
+                }
+            },
+            webpush: {
+                fcmOptions: {
+                    link: '/?breakingnews'
+                }
+            },
+            token: registrationToken
+        };
+
+        const messaging = admin.messaging();
+
+        //console.log(FireBaseAdmin)
+
+        messaging.send(message)
+            .then((response) => {
+                // Response is a message ID string.
+                console.log('Successfully sent message:', response);
+                return res.json({
+                    message: "success",
+                    status: true,
+                    data: response
+                })
+            })
+            .catch((error) => {
+                console.log('Error sending message:', error);
+                return res.json({
+                    message: 'error',
+                    data: error
+                })
+            });
+    }
+    catch (err) {
+        console.log(err)
+        return res.json({
+            message: err.message
+        })
+    }
+}
+
+
+
+module.exports = { confirmPartner, cancelPartner, sendNotification }

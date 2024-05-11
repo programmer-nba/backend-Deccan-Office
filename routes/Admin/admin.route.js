@@ -10,4 +10,6 @@ router.put('/partner/confirm/:id', authAdmin, AdminController.confirmPartner);
 
 router.put('/partner/cancel/:id', authAdmin, AdminController.cancelPartner);
 
+router.post('/notify', AdminController.sendNotification);
+
 module.exports = router;
