@@ -19,8 +19,8 @@ const DocumentSchema = new Schema({
     },
     remark : { type : String, required : false, default : "" },
     detail : { type : String, required: false, default:""},
+    file_name : {type : String, required : false },
     file : [{
-        file_name : {type : String, required : false },
         file_doc :  {type : String, required : false }
     }],
 

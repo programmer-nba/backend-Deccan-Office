@@ -230,7 +230,6 @@ exports.InsertDocument = async (req, res, next) => {
                     }
                     image =reqFiles.map(item=>{
                         return {
-                            file_name:file_name,
                             file_doc:item
                         }
                     });
@@ -242,6 +241,7 @@ exports.InsertDocument = async (req, res, next) => {
                     to : to,
                     detail : req.body.detail,
                     document_true : document_true,
+                    file_name:file_name,
                     file : image,
                     status_detail: [{
                         employee_id: employee_id,
@@ -323,7 +323,7 @@ exports.InsertDocument = async (req, res, next) => {
             }
 
             const docidString = docid.toString().padStart(5, '0');
-            const { doc_date, headers, type, to, document_true } = req.body;
+            const { doc_date, headers, type, to, document_true, file_name } = req.body;
             const reqFiles = [];
                 const result = [];
                 if (err) {
@@ -359,6 +359,7 @@ exports.InsertDocument = async (req, res, next) => {
                 to: to,
                 detail: req.body.detail,
                 document_true : document_true,
+                file_name:file_name,
                 file : image,
                 status_document: status,
                 status_detail: [{
