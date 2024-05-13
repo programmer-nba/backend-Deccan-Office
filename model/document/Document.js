@@ -18,22 +18,22 @@ const DocumentSchema = new Schema({
         } // รวมชั่วโมงการทำ OT
     },
     remark : { type : String, required : false, default : "" },
-    detail : { type : String, required: false, default:""},
-    file_name : {type : String, required : false },
+    detail : { type : String, required: false, default : "" },
+    file_name : {type : String, required : false, default : "" },
     file : [{
-        file_doc :  {type : String, required : false }
+        file_doc :  { type : String, required : false }
     }],
 
-    document_true : {type : String, request : false},
-    status_document : {type : String , required : false , default : "รอหัวหน้าแผนกอนุมัติ"},
+    document_true : { type : String, request : false },
+    status_document : { type : String , required : false , default : "รอหัวหน้าแผนกอนุมัติ" },
     // หัวหน้าเห็นได้แค่ 1  ผู้จัดการเห็นได้แค่ 2  กรรมการเห็นทั้งหมด 
     status_detail : [{
-        employee_id : {type : String, required : false, default : ""},
-        role : {type : String, required : false, default : ""},
-        position : {type : String, required : false, default : ""},
-        date : {type : Date, required : false, default : null},
-        status : {type : String, required : false, default : ""},
-        remark : {type : String, required : false, default : ""}
+        employee_id : { type : String, required : false, default : "" },
+        role : { type : String, required : false, default : "" },
+        position : { type : String, required : false, default : "" },
+        date : { type : Date, required : false, default : null },
+        status : { type : String, required : false, default : "" },
+        remark : { type : String, required : false, default : "" }
     }],
 
 
