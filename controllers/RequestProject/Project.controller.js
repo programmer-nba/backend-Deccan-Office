@@ -326,6 +326,7 @@ exports.getProjectType = async (req, res, next) => {
         const firstThreeDigits = getEmployee.employee_number.substring(0, 3);
         const projectdata = await RequestProject.find();
 
+        //ดึงข้อมูลตาม 3 ตัวแรกของ id เช่น พนักงาน DEV00001 ดึงโครงการตาม DEV
         const matchingProjects = projectdata.filter(project => {
             const firstThreeDigitsProject = project.project_id.substring(0, 3);
             return firstThreeDigitsProject === firstThreeDigits;

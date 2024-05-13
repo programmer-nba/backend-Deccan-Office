@@ -2,7 +2,6 @@ const ExamResults = require ('../../model/Exam/ExamResults')
 const Post = require('../../model/Post/Post')
 const Userinfo =require ('../../model/Userinfo/Userinfo')
 
-
 //Get ExamResults
 exports.getExamResults = async (req, res, next) => {
     try {
@@ -183,7 +182,6 @@ exports.UpdateExamResultsByID = async (req, res, next) => {
         });
     }
 };
-
 
 //Delete ExamResults
 exports.DeleteExamResults = async (req, res, next) => {

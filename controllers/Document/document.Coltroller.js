@@ -45,8 +45,8 @@ exports.getdocument = async (req, res, next) => {
         const data = await Document.find();
         for(const newData of data){
             const documentEndDate = new Date(newData.doc_date);
-            console.log("endDay",documentEndDate)
-            console.log("today", today)
+            // console.log("endDay",documentEndDate)
+            // console.log("today", today)
             if (documentEndDate <= today && newData.document_true === "ฉบับร่าง") {
                 const del = await Document.findByIdAndDelete({_id:newData._id})
                     if(!del){
@@ -76,6 +76,13 @@ exports.getdocument = async (req, res, next) => {
 exports.getdocumentById = async (req, res, next) => {
     try {
         const document = await Document.findById(req.params.id);
+        if (!document) {
+            return res.json({
+                message: 'not found document',
+                status : true,
+                data : document
+            })
+        }
         return res.json({
             message: 'Get document by id successfully!',
             status : true,
@@ -206,7 +213,7 @@ exports.InsertDocument = async (req, res, next) => {
                     }
                 }
 
-                const { headers, type, to, document_true} = req.body;
+                const { headers, type, to, document_true, file_name} = req.body;
                 const employee_id = req.decoded.id
 
                 const reqFiles = [];
@@ -224,11 +231,11 @@ exports.InsertDocument = async (req, res, next) => {
                     }
                     image =reqFiles.map(item=>{
                         return {
+                            file_name:file_name,
                             file_doc:item
                         }
                     });
                 }
-
                 const document = new Document({
                     doc_date : dayjs().add(7, 'day').toDate(),
                     headers : headers,
@@ -241,7 +248,6 @@ exports.InsertDocument = async (req, res, next) => {
                         employee_id: employee_id,
                     }]
                 });
-
                 if (req.body.type === "OT") {
                     try {
                         const otData = JSON.parse(req.body.ot);
@@ -345,7 +351,7 @@ exports.InsertDocument = async (req, res, next) => {
                 }else if (role == 'manager'){
                     status = 'รอผู้บริหารอนุมัติ'
                 }
-
+                
             const document = new Document({
                 document_id: docidString,
                 doc_date: doc_date,
@@ -524,7 +530,7 @@ exports.UpdateDocument = async (req, res, next) => {
         let status = "รอหัวหน้าแผนกอนุมัติ"
                 if(role == 'head_department'){
                     status = 'รอผู้จัดการอนุมัติ'
-                }else if (role == 'manager'){
+                }else if (role == 'manager' || role == 'hr'){
                     status = 'รอผู้บริหารอนุมัติ'
                 }
         const findEm = findDocument.status_detail.findIndex(item => item.employee_id == employee_id)
@@ -545,6 +551,7 @@ exports.UpdateDocument = async (req, res, next) => {
                 status:status,
             }) 
         }
+
         const updatedDocument = await Document.findOneAndUpdate(
             { _id: id }, // เงื่อนไขในการค้นหาเอกสารที่ต้องการอัปเดต
             {

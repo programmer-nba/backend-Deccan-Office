@@ -37,7 +37,6 @@ exports.create = async (req, res) => {
                 message: 'ไม่สามารถบันทึกข้อมูล'
             })
         }
-
         return res.json({
             message: 'success!',
             status: true,

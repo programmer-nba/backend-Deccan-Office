@@ -28,7 +28,9 @@ const PostRoutes = require('./routes/Post/post.route');
 const ExamResultsRoutes = require('./routes/Exam/examresults.route');
 const LeaveTypeRoutes = require ('./routes/Leave/LeaveType.route');
 const ContactRoutes = require ('./routes/Contact/contact.route');
-const SubTypeRoute = require ('./routes/Project/SubType.route')
+const SubTypeRoute = require ('./routes/Project/SubType.route');
+const SignatureRoutes = require ('./routes/Employees/signature.route');
+
 
 
 app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }));
@@ -63,6 +65,7 @@ app.use( ddsc + '/lawyer', require('./routes/Term/term.route'));
 //ผู้สมัครงาน
 app.use( ddsc + '/user', UserRoutes)
 app.use( ddsc + '/user_info', UserinfoRoutes)
+app.use( ddsc + '/signature', SignatureRoutes)
 
 //รับสมัครพนักงาน
 app.use( ddsc + '/post', PostRoutes);
