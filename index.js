@@ -31,8 +31,6 @@ const ContactRoutes = require ('./routes/Contact/contact.route');
 const SubTypeRoute = require ('./routes/Project/SubType.route');
 const SignatureRoutes = require ('./routes/Employees/signature.route');
 
-
-
 app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }));
 app.use(bodyParser.urlencoded({ extended: true }));
 mongoose.set("strictQuery", true);

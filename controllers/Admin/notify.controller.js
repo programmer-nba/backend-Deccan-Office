@@ -1,5 +1,12 @@
 const { NotifyToken } = require("../../model/services/notify.model")
 
+var admin = require("firebase-admin");
+var serviceAccount = require("./demofires-01-firebase-adminsdk-sbd7f-d13d9819fb.json");
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+});
+
 exports.createNotifyToken = async (req, res) => {
     const { user_id, token } = req.body
     try {
@@ -70,9 +77,6 @@ exports.getNotifyTokens = async (req, res) => {
 exports.sendNotification = async (req, res) => {
     const { text_title, text_body, users } = req.body
     try {
-        var admin = require("firebase-admin");
-        var serviceAccount = require("./demofires-01-firebase-adminsdk-sbd7f-d13d9819fb.json");
-        //const alreadyCreatedAps = admin.getApps();
 
         const user_tokens = !users ? await NotifyToken.find() : await NotifyToken.find( { user_id: {$in: users} } )
         if (user_tokens.length === 0) {
@@ -82,11 +86,9 @@ exports.sendNotification = async (req, res) => {
             })
         }
 
-        const tokens = user_tokens.map( tok => tok.token )
+        //const user_tokens = [ { user_id: '001', token: 'fCfwaCJK4g-ma5G_0JlZDD:APA91bHFo00Za_muES7BvHhpM-F-g6opd9wU6mecXr2L74LxPruF3BKLkk2l2LUpc-zPaAoqz1yTV67eEotaPbWZyhf_RgCOC579DX8tAsrbrfB8cCOISIqac2xPBrP3CdC5eTvG6jkW' } ]
 
-        admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount)
-        });
+        const tokens = user_tokens.map( tok => tok.token )
 
         const sendedNotify = tokens.map( token => {
 
@@ -116,9 +118,9 @@ exports.sendNotification = async (req, res) => {
                 token: registrationToken
             }
 
-            const messaging = admin.messaging()
+            //const messaging = admin.messaging()
 
-            messaging.send(message)
+            admin.messaging().send(message)
                 .then((response) => {
                     // Response is a message ID string.
                     console.log('Successfully sent message:', response)
