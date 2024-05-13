@@ -1,4 +1,5 @@
 const {Partner} = require('../../model/partners/partners')
+const {Employees} = require('../../model/employee/employee')
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken");
 const axios = require('axios')
@@ -277,9 +278,10 @@ module.exports.approve = async (req, res)=>{
         const Url = process.env.URL_PARTNER
         const id = req.params.id
         const token = process.env.TOKEN_PARTNER
+        const office  = await Employees.findById(req.decoded.id) 
         const response = await axios.put(`${Url}/partner/officeaccept/${id}`,{
-            office_id: req.decoded.id,
-            office_name: req.decoded.first_name + " " + req.decoded.last_name
+            office_id: office?._id,
+            office_name: office?.first_name + " " + office?.last_name
         },{
               headers: {
                   'Accept': 'application/json',
