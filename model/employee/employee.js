@@ -33,7 +33,8 @@ const EmployeeSchema = new Schema({
       maternity_leave : {type: Number, default: 0, required: false}, //ลาดคลอด
       ordination_leave : {type: Number, default: 0 , required: false}, //ลาบวช
       disbursement: { type: Number, default:0, required: false } //การเบิกจ่าย
-  }
+  },
+  massage_token : { type : String, required : false, default : ""}
 }, { timestamps: true });
 
 EmployeeSchema.pre('save',async function (next) {   //ทำ Middleware การ Hash ก่อน EmployeeScheme ที่ User กรอกมาจะ save

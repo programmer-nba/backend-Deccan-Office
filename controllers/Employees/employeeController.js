@@ -295,3 +295,25 @@ exports.UpdateImage = async (req, res) => {
   }
 
 }
+
+exports.Update_token = async (req, res) => {
+  try {
+    const update = await Employees.findByIdAndUpdate(req.params.id, req.body);
+    if (!update) {
+      return res.status(404).json({
+          message: 'ไม่มีการแก้ไข',
+          status: false,
+          data: null
+      });
+    }
+    return res.json({
+      message: 'Update successfully!',
+      status: true,
+      data: update
+    });
+  }
+  catch (err) {
+      console.log(err);
+      return res.status(500).send({ message: err });
+  }
+}

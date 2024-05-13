@@ -9,6 +9,7 @@ const RequestProjectSchema = new mongoose.Schema({
     start_date : { type : Date, required : false, default : null},//วันที่เริ่ม
     due_date : { type : Date, required : false, default : null },//เวลาสิ้นสุด
     finish_date : { type : Date, required : false, default : null}, //วันที่งานสำเร็จ
+    partner : { type : String, required : false, default : ""},
     refs : [{
         refs_file : { type : String, required : false },//การอ้างอิงเอกสาร
     }],

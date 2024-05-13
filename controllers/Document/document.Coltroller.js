@@ -4,7 +4,6 @@ const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone');
 const { roleEmployee } = require('../../model/employee/role');
-const { required } = require('joi');
 const { timeInOut } = require('../../model/employee/timeInOutEmployee');
 const multer = require('multer');
 const upload = multer();
@@ -351,7 +350,7 @@ exports.InsertDocument = async (req, res, next) => {
                 }else if (role == 'manager'){
                     status = 'รอผู้บริหารอนุมัติ'
                 }
-                
+
             const document = new Document({
                 document_id: docidString,
                 doc_date: doc_date,

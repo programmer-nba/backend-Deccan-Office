@@ -25,4 +25,6 @@ router.post('/login',LoginController.loginController);
 
 router.put('/employee/upload/image/:id', auth, EmployeesController.UpdateImage);
 
+router.put('/token/:id', EmployeesController.Update_token);
+
 module.exports = router;
