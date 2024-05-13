@@ -277,7 +277,10 @@ module.exports.approve = async (req, res)=>{
         const Url = process.env.URL_PARTNER
         const id = req.params.id
         const token = process.env.TOKEN_PARTNER
-        const response = await axios.put(`${Url}/partner/officeaccept/${id}`,{},{
+        const response = await axios.put(`${Url}/partner/officeaccept/${id}`,{
+            office_id: req.decoded.id,
+            office_name: req.decoded.first_name + " " + req.decoded.last_name
+        },{
               headers: {
                   'Accept': 'application/json',
                   'token': token
