@@ -53,12 +53,13 @@ exports.getById = async (req, res, next) => {
     }
 };
 
-//Insert ExamType
+//Insert
 exports.Insert = async (req, res, next) => {
     try {
         const {terms_id, signature} = req.body
 
         const signaturedata = new Signature({
+            user_id : req.decoded.id,
             terms_id : terms_id,
             signature: signature
         })
@@ -107,21 +108,21 @@ exports.Insert = async (req, res, next) => {
 //     }
 // }
 
-// //Delete ExamType
-exports.DeleteExamType = async (req, res, next) => {
-    try {
-        const examtype = await ExamType.findByIdAndDelete(req.params.id);
-        res.json({
-            message: 'Delete employees successfully!',
-            status: true,
-            data: examtype
-        });
-    } catch (err) {
-        console.log(err)
-        return res.json({
-            message: err.message,
-            status: false,
-            data: null
-        })
-    }
-};
+// Delete ExamType
+// exports.DeleteExamType = async (req, res, next) => {
+//     try {
+//         const examtype = await ExamType.findByIdAndDelete(req.params.id);
+//         res.json({
+//             message: 'Delete employees successfully!',
+//             status: true,
+//             data: examtype
+//         });
+//     } catch (err) {
+//         console.log(err)
+//         return res.json({
+//             message: err.message,
+//             status: false,
+//             data: null
+//         })
+//     }
+// };
