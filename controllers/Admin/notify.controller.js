@@ -84,10 +84,11 @@ exports.sendNotification = async (req, res) => {
 
         const tokens = user_tokens.map( tok => tok.token )
 
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount)
+        }, "DDSC_OFFICE");
+
         const sendedNotify = tokens.map( token => {
-            admin.initializeApp({
-                credential: admin.credential.cert(serviceAccount)
-            }, "DDSC_OFFICE");
 
             const registrationToken = token
             const message = {
