@@ -86,7 +86,7 @@ exports.sendNotification = async (req, res) => {
 
         admin.initializeApp({
             credential: admin.credential.cert(serviceAccount)
-        }, "DDSC_OFFICE");
+        });
 
         const sendedNotify = tokens.map( token => {
 
