@@ -28,7 +28,7 @@ router.put('/upIden/:id', PartnerController.iden);
 
 router.put('/upCompany/:id', PartnerController.fileCompany);
 
-router.put('/approve/:id', PartnerController.approve);
+router.put('/approve/:id',auth ,PartnerController.approve);
 
 router.put('/wait/:id', PartnerController.waitStatus);
 
