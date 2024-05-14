@@ -7,9 +7,9 @@ const LoginController = require('../../controllers/Employees/loginController');
 const auth = require("../../lib/auth");
 const authAdmin = require("../../lib/authAdmin");
 
-router.get('/get',authAdmin,EmployeesController.getAll);
+router.get('/get',auth,EmployeesController.getAll);
 
-router.get('/getid/:id',authAdmin,EmployeesController.getByID);
+router.get('/getid/:id',auth,EmployeesController.getByID);
 
 router.get('/getme',auth,EmployeesController.getMe);
 
