@@ -12,4 +12,10 @@ router.post('/insert', authUser.user, SignatureController.Insert);
 //Get by ID
 router.post('/getbyid/:id', SignatureController.getById);
 
+//Update
+router.put('/update/:id', SignatureController.Update);
+
+//Delete
+router.post('/delete/:id', SignatureController.Delete);
+
 module.exports = router;

@@ -88,41 +88,41 @@ exports.Insert = async (req, res, next) => {
     }
 };
 
-// //Update ExamType
-// exports.UpdateExamType = async (req, res, next) => {
-//     try {
-//         const examtype = await ExamType.findByIdAndUpdate(req.params.id, req.body);
-//         return res.json({
-//             message: 'Update examtype successfully!',
-//             status: true,
-//             data: examtype
-//         })
-//     }
-//     catch (err) {
-//         console.log(err)
-//         return res.json({
-//             message: err.message,
-//             status: false,
-//             data: null
-//         })
-//     }
-// }
+// //Update
+exports.Update = async (req, res, next) => {
+    try {
+        const signature = await Signature.findByIdAndUpdate(req.params.id, req.body);
+        return res.json({
+            message: 'Update successfully!',
+            status: true,
+            data: signature
+        })
+    }
+    catch (err) {
+        console.log(err)
+        return res.json({
+            message: err.message,
+            status: false,
+            data: null
+        })
+    }
+}
 
-// Delete ExamType
-// exports.DeleteExamType = async (req, res, next) => {
-//     try {
-//         const examtype = await ExamType.findByIdAndDelete(req.params.id);
-//         res.json({
-//             message: 'Delete employees successfully!',
-//             status: true,
-//             data: examtype
-//         });
-//     } catch (err) {
-//         console.log(err)
-//         return res.json({
-//             message: err.message,
-//             status: false,
-//             data: null
-//         })
-//     }
-// };
+// Delete
+exports.Delete = async (req, res, next) => {
+    try {
+        const signature = await Signature.findByIdAndDelete(req.params.id);
+        res.json({
+            message: 'Delete successfully!',
+            status: true,
+            data: signature
+        });
+    } catch (err) {
+        console.log(err)
+        return res.json({
+            message: err.message,
+            status: false,
+            data: null
+        })
+    }
+};

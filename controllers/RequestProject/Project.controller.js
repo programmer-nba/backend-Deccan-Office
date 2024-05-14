@@ -34,11 +34,22 @@ exports.InsertRequestProject = async (req, res, next) => {
 
         if (!findCode) {
             return res.status(400).json({
-                message: 'ไม่พบข้อมูล '+reqBody+' ในระบบ',
+                message: 'ไม่พบข้อมูล '+ reqBody +' ในระบบ',
                 status: false,
             });
         }
 
+        let partnerdata = ""
+
+        if (!req.body.partner){
+            partnerdata = "tossagun"
+        } else if (req.body.partner === "") {
+            partnerdata = "tossagun"
+        } else {
+            partnerdata = req.body.partner
+        }
+
+        console.log(req.body.partner)
         // หา Project ล่าสุดเพื่อสร้าง ProjectNumber ใหม่
         const latestProject = await RequestProject.findOne().sort({ project_id: -1 }).limit(1);
         let ProjectNumber = 1;
@@ -52,6 +63,7 @@ exports.InsertRequestProject = async (req, res, next) => {
         // สร้างข้อมูลใหม่ของ RequestProject
         const project = new RequestProject({
             project_id : ProjectNumberString,
+            partner : partnerdata,
             timeline : {
                 time : Date.now(),
                 timeline_name : "รอรับงาน"
