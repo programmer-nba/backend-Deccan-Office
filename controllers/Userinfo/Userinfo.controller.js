@@ -23,7 +23,7 @@ const upload = multer({ storage: storage }).single('image'); // กำหนด�
 // ตัวอย่างโค้ดที่ส่ง response หลายครั้ง เพิ่ม try-catch block ในฟังก์ชัน getUser
 exports.getUser = async (req, res, next) => {
     try {
-        // ใช้ .populate() เพื่อเติมข้อมูลจาก User ลงใน Userinfo
+        // ใช้.populate() เพื่อเติมข้อมูลจาก User ลงใน Userinfo
         const users = await Userinfo.find().populate('user');
         // ส่ง response ครั้งที่ 1
         return res.json({
@@ -53,7 +53,7 @@ exports.getUserById = async (req, res, next) => {
             });
         }
 
-        // ใช้ .populate() เพื่อเติมข้อมูลจาก User ลงใน Userinfo
+        // ใช้.populate() เพื่อเติมข้อมูลจาก User ลงใน Userinfo
         const user = await Userinfo.findById(userId).populate('user');
 
         if (!user) {
@@ -82,112 +82,50 @@ exports.getUserById = async (req, res, next) => {
 //Insert user
 exports.Insertimage = async (req, res, next) => {
     try {
-        let upload = multer({ storage: storage }).array("image", 20);
-        upload(req, res, async function (err) {
-            const { citizen_id, 
-                user_password,
-                name,
-                lastname, 
-                email, 
-                gender, 
-                birth, 
-                tel, 
-                country, 
-                religion, 
-                height, 
-                weight, 
-                marry, 
-                soldier, 
-                address, 
-                province, 
-                postal_code, 
-                line_id, 
-                job_title, 
-                desired_salary
-            } = req.body;
-            const reqFiles = [];
-            const result = [];
-            if (err) {
-                return res.status(500).send(err);
-            }
-            let image = ''; // ตั้งตัวแปรรูป
-            //ถ้ามีรูปให้ทำฟังก์ชั่นนี้ก่อน
-          
-            if (req.files) {
-                const url = req.protocol + "://" + req.get("host");
-                for (var i = 0; i < req.files.length; i++) {
-                    const src = await uploadFileCreate(req.files, res, { i, reqFiles });
-                    result.push(src);
-                    //   reqFiles.push(url + "/public/" + req.files[i].filename);
-                }
-                image = reqFiles[0];
-            }
-            
-            // สร้าง User ในส่วนของลงทะเบียน
-            const newUser = new User({
-                citizen_id: citizen_id,
-                user_password : bcrypt.hashSync( req.body.user_password, 10), // แปลงรหัสผ่านเป็นแบบเข้ารหัส
-            });
-     
-            // บันทึก User ลงในฐานข้อมูล
-            const savedUser = await newUser.save();
-            
-            // ตรวจสอบว่า User ถูกบันทึกเรียบร้อยหรือไม่
-            if (!savedUser) {
-                return res.json({
-                    message: 'can not save user',
-                    status: false,
-                    data: null
-                });
-            }
-            
-            // สร้าง Userinfo
-            const userinfo = new Userinfo({
-                _id : savedUser._id,
-                citizen_id : citizen_id,
-                user_password : user_password,
-                name : name,
-                lastname : lastname,
-                email : email,
-                gender : gender,
-                birth : birth,
-                tel : tel,
-                country: country,
-                religion: religion,
-                height: height,
-                weight: weight,
-                marry: marry,
-                soldier: soldier,
-                address: address,
-                province: province,
-                postal_code: postal_code,
-                line_id: line_id,
-                job_title: job_title,
-                desired_salary: desired_salary,
-                image: image,
-                user: savedUser._id // เพิ่ม user ที่เชื่อมโยงกับ User ที่ถูกสร้าง
-            });
-     
-            // บันทึก Userinfo ลงในฐานข้อมูล
-            const savedInfo = await userinfo.save();
-            
-            if (!savedInfo) {
-                return res.json({
-                    message: 'can not save user',
-                    status: false,
-                    data: null
-                });
-            }
-            
+        // ลบโค้ดที่เกี่ยวข้องกับการอัปโหลดไฟล์รูปภาพ
+
+        const newUser = new User({
+            citizen_id: req.body.citizen_id,
+            user_password : bcrypt.hashSync( req.body.user_password, 10),
+        });
+
+        const savedUser = await newUser.save();
+
+        if (!savedUser) {
             return res.json({
-                message: 'Insert user successfully!',
-                status: true,
-                data: savedUser, // ส่งข้อมูล User ที่ถูกบันทึกไป
-                userinfo: savedInfo // ส่งข้อมูล Userinfo ที่ถูกบันทึกไป
+                message: 'can not save user',
+                status: false,
+                data: null
             });
+        }
+
+        const userinfo = new Userinfo({
+            _id : savedUser._id,
+            user: savedUser._id,
+            status: 'รอการสัมภาษณ์',
+            role: 'User',
+            updated_at: Date.now(),
+          ...req.body
+        });
+
+        const savedInfo = await userinfo.save();
+
+        if (!savedInfo) {
+            return res.json({
+                message: 'can not save user',
+                status: false,
+                data: null
+            });
+        }
+
+        return res.json({
+            message: 'Insert user successfully!',
+            status: true,
+            data: savedUser,
+            userinfo: savedInfo
         });
     } catch (err) {
-        console.log(err);
+        console.log(err);  
         return res.json({
             message: err.message,
             status: false,
@@ -196,10 +134,9 @@ exports.Insertimage = async (req, res, next) => {
     }
 }
 
-// อัปเดตข้อมูลส่วนตัวของผู้ใช้
 exports.updateUserinfo = async (req, res, next) => {
     try {
-        // อัปโหลดรูปภาพโดยใช้ multer
+        // อัปโหลดไฟล์รูปภาพและไฟล์วุฒิการศึกษา
         await new Promise((resolve, reject) => {
             upload(req, res, (err) => {
                 if (err instanceof multer.MulterError) {
@@ -222,19 +159,18 @@ exports.updateUserinfo = async (req, res, next) => {
         });
 
         const userinfoId = req.params.id; // รหัส ID ของข้อมูลส่วนตัวของผู้ใช้ที่ต้องการอัปเดต
-        console.log(userinfoId)
         let userinfoData = req.body; // ข้อมูลใหม่ที่จะใช้ในการอัปเดต
-        if (!userinfoId) {
-            return res.status(404).json({
-                message : "User not found",
-                status : false
-            })
-        }
 
         // ตรวจสอบว่ามีการอัปโหลดไฟล์รูปภาพหรือไม่
-        if (req.file) {
+        if (req.files && req.files.image) {
             // ถ้ามี กำหนดชื่อรูปภาพใหม่ในข้อมูลผู้ใช้
-            userinfoData.image = req.file.filename;
+            userinfoData.image = req.files.image[0].filename;
+        }
+
+        // ตรวจสอบว่ามีการอัปโหลดไฟล์วุฒิการศึกษาออกมาหรือไม่
+        if (req.files && req.files.educationCertificates) {
+            // ถ้ามี กำหนดชื่อไฟล์วุฒิการศึกษาออกมาใหม่ในข้อมูลผู้ใช้
+            userinfoData.educationCertificates = req.files.educationCertificates.map(file => file.filename);
         }
 
         // เพิ่ม user_password ในข้อมูลผู้ใช้
@@ -265,6 +201,80 @@ exports.updateUserinfo = async (req, res, next) => {
             status: false,
         });
     }
+};
+
+// อัปเดตไฟล์รูปภาพ
+exports.updateUploadimage = async (req, res, next) => {
+    try {
+        let upload = multer({ storage: storage }).array("image", 20);
+        upload(req, res, async function (err) {
+            if (err) {
+                return res.status(500).send(err.message);
+            }
+
+            const reqFiles = [];
+            if (req.files) {
+                const url = req.protocol + "://" + req.get("host");
+                for (var i = 0; i < req.files.length; i++) {
+                    const src = await uploadFileCreate(req.files, res, { i, reqFiles });
+                    reqFiles.push(src);
+                }
+            }
+
+            // ส่งข้อมูลไฟล์ที่อัปโหลดกลับไป
+            return res.json({
+                message: 'Files uploaded successfully!',
+                status: true,
+                data: reqFiles // ส่งข้อมูลไฟล์ที่อัปโหลด
+            });
+        });
+    } catch (err) {
+        console.log(err);
+        return res.json({
+            message: err.message,
+            status: false,
+            data: null
+        });
+    }
+
+};
+
+// อัปเดตไฟล์วุฒิการศึกษา
+exports.updateUploadfile = async (req, res, next) => {
+    try {
+        let upload = multer({ storage: storage }).array("file", 20);
+        upload(req, res, async function (err) {
+            
+            if (err) {
+                console.log(err);
+                return res.status(500).send(err.message);
+            }
+
+            const reqFiles = [];
+            if (req.files) {
+                const url = req.protocol + "://" + req.get("host");
+                for (var i = 0; i < req.files.length; i++) {
+                    const src = await uploadFileCreate(req.files, res, { i, reqFiles });
+                    reqFiles.push(src);
+                }
+            }
+
+            // ส่งข้อมูลไฟล์ที่อัปโหลดกลับไป
+            return res.json({
+                message: 'Files uploaded successfully!',
+                status: true,
+                data: reqFiles // ส่งข้อมูลไฟล์ที่อัปโหลด
+            });
+        });
+    } catch (err) {
+        console.log(err);
+        return res.json({
+            message: err.message,
+            status: false,
+            data: null
+        });
+    }
+
 };
 
 // ลบข้อมูลส่วนตัวของผู้ใช้
@@ -314,6 +324,8 @@ exports.deleteUserinfo = async (req, res, next) => {
 // Get logged-in user details
 exports.getme = async (req, res) => {
     try {
+        const idd = req.body.idd
+        console.log("id :",idd)
         const id = req.headers['token'];
         const secretKey = "loginload";
         const decoded = jwt.verify(id, secretKey);
