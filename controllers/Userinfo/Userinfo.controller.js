@@ -102,7 +102,6 @@ exports.Insertimage = async (req, res, next) => {
         const userinfo = new Userinfo({
             _id : savedUser._id,
             user: savedUser._id,
-            status: 'รอการสัมภาษณ์',
             role: 'User',
             updated_at: Date.now(),
           ...req.body
