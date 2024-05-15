@@ -17,6 +17,12 @@ router.post('/info' ,UserinfoController.Insertimage );
 //Update User
 router.put('/update/:id', UserinfoController.updateUserinfo);
 
+//Update User image
+router.put('/update-image/:id', UserinfoController.updateUploadimage);
+
+//Update User file
+router.put('/update-file/:id', UserinfoController.updateUploadfile);
+
 //Delete User
 router.delete('/delete-user/:id', UserinfoController.deleteUserinfo);
 
