@@ -129,66 +129,77 @@ exports.getMe = async (req, res) => {
 exports.Update = async (req, res) => {
   try {
     const upID = req.params.id; //รับไอดีที่ต้องการอัพเดท
-    if (!req.body.password) { //กรณีที่ไม่ได้ยิง password
-      const upload = multer({ storage: storage }).array("image", 20);
-      upload(req, res, async function (err) {
-        if (err) {
-          return res.status(500).send(err);
-        }
-        let image = ''; // ตั้งตัวแปรรูป
-        if (req.files) {
-          const url = req.protocol + "://" + req.get("host");
-          const reqFiles = [];
-          for (let i = 0; i < req.files.length; i++) {
-            const src = await uploadFileCreate(req.files, res, { i, reqFiles });
-            reqFiles.push(src); // แก้ไขจาก result เป็น reqFiles
-          }
-          image = reqFiles[0];
-        }
-        Employees.findByIdAndUpdate(
-          upID,
-          {
-            ...req.body,
-            image: image,
-            "leave.business_leave": req.body.business_leave,
-            "leave.sick_leave": req.body.sick_leave,
-            "leave.annual_leave": req.body.annual_leave,
-            "leave.disbursement": req.body.disbursement,
-          },
-          { new: true }
-        ).then((data) => {
-          if (!data) {
-            res.status(400).send({ status: false, message: "ไม่สามารถแก้ไขผู้ใช้งานนี้ได้" });
-          } else {
-            res.status(200).send({ status: true, message: "อัพเดทข้อมูลแล้ว", data: data });
-          }
-        }).catch((err) => {
-          res.status(500).send({ status: false, message: "มีบางอย่างผิดพลาด" });
-        });
-      });
-    } else { //กรณีที่ได้ยิง password
-      const salt = await bcrypt.genSalt(Number(process.env.SALT));
-      const hashPassword = await bcrypt.hash(req.body.password, 10);
-      const updateEmployee = await Employees.findByIdAndUpdate(
-        upID,
-        {
-          ...req.body,
-          password: hashPassword,
-          image: req.body.image,
-          "leave.business_leave": req.body.business_leave,
-          "leave.sick_leave": req.body.sick_leave,
-          "leave.annual_leave": req.body.annual_leave,
-          "leave.disbursement": req.body.disbursement,
-        },
-        { new: true }
-      );
-
-      if (updateEmployee) {
-        return res.status(200).send({ status: true, data: updateEmployee });
-      } else {
-        return res.status(400).send({ status: false, message: "อัพเดทข้อมูลไม่สำเร็จ" });
+    
+    const upload = multer({ storage: storage }).array("image", 20);
+    upload(req, res, async function (err) {
+      if (err) {
+        return res.status(500).send(err);
       }
-    }
+      let image = ''; // ตั้งตัวแปรรูป
+      if (req.files) {
+        //const url = req.protocol + "://" + req.get("host");
+        const reqFiles = [];
+        for (let i = 0; i < req.files.length; i++) {
+          const src = await uploadFileCreate(req.files, res, { i, reqFiles });
+          reqFiles.push(src); // แก้ไขจาก result เป็น reqFiles
+        }
+        image = reqFiles[0];
+      }
+
+      let employee = await Employees.findById(upID)
+      if (!employee) return res.status(404).json({
+        message: 'employee id not founded'
+      })
+
+      const currentYear = new Date().getFullYear();
+      const birthYear = new Date(employee.birthday).getFullYear();
+      const age = currentYear - birthYear;
+
+      const hashPassword = req.body.password ? await bcrypt.hash(req.body.password, 10) : null
+      
+      employee.password = hashPassword || employee.password
+      employee.employee_number = req.body.employee_number || employee.employee_number
+      employee.userid = req.body.userid || employee.userid
+      employee.name_title = req.body.name_title || employee.name_title
+      employee.first_name = req.body.first_name || employee.first_name
+      employee.last_name = req.body.last_name || employee.last_name
+      employee.nick_name = req.body.nick_name || employee.nick_name
+      employee.iden_number = req.body.iden_number || employee.iden_number
+      employee.role = req.body.role || employee.role
+      employee.position = req.body.position || employee.position
+      employee.tel = req.body.tel || employee.tel
+      employee.address = req.body.address || employee.address
+      employee.subdistrict = req.body.subdistrict || employee.subdistrict
+      employee.district = req.body.district || employee.district
+      employee.provice = req.body.provice || employee.provice
+      employee.postcode = req.body.postcode || employee.postcode
+      employee.birthday = req.body.birthday || employee.birthday
+      employee.age = age
+      employee.email = req.body.email || employee.email
+      employee.blacklist = req.body.blacklist || employee.blacklist
+      employee.salary = req.body.salary || employee.salary
+      employee.image = image || employee.image
+      employee.leave = {
+        business_leave: req.body.business_leave || employee.leave.business_leave,
+        sick_leave: req.body.sick_leave || employee.leave.sick_leave,
+        annual_leave: req.body.annual_leave || employee.leave.annual_leave,
+        maternity_leave : req.body.maternity_leave || employee.leave.maternity_leave,
+        ordination_leave : req.body.ordination_leave || employee.leave.ordination_leave,
+        disbursement: req.body.disbursement || employee.leave.disbursement,
+      }
+
+      const saved_employee = await employee.save()
+      if(!saved_employee) return res.status(500).json({
+        message: 'can not save data!'
+      })
+
+      return res.status(201).json({
+        message: 'update success!',
+        status: true,
+        data: saved_employee
+      })
+    })
+
   } catch (err) {
     console.log(err);
     return res.status(500).send({ message: err });

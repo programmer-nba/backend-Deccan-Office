@@ -104,7 +104,7 @@ timeInMorning = async (req, res)=>{
             time:dayTime,
             time_line:time_line
           });
-          // console.log(createTime)
+          
           if (createTime){
               return res
                       .status(200)
@@ -288,7 +288,7 @@ approveTime = async(req, res)=>{
       }else if(time >= '18:01:00' && time <= '23:59:59'){
         time_line = "ลงเวลาออกงาน"
       }
-      console.log(time_line)
+      
     const checkTime = await timeInOut.findOne(
         {
           employee_id:id,

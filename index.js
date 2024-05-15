@@ -30,6 +30,7 @@ const LeaveTypeRoutes = require ('./routes/Leave/LeaveType.route');
 const ContactRoutes = require ('./routes/Contact/contact.route');
 const SubTypeRoute = require ('./routes/Project/SubType.route');
 const SignatureRoutes = require ('./routes/Employees/signature.route');
+const ImagehandlingRoutes = require('./routes/services/imageHandling.route')
 
 app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -39,6 +40,7 @@ const cors = require("cors");
 
 app.use(express.json());
 app.use(cors());
+app.use(express.static(path.join(__dirname, 'uploads')));
 
 const ddsc = '/ddsc-office'
 // เรียกใช้ Path ตรงนี้ <=
@@ -63,6 +65,8 @@ app.use( ddsc + '/lawyer', require('./routes/Term/term.route'));
 // services
 // notify
 app.use( ddsc + '/notify', require('./routes/services/notify.route'));
+// image
+app.use( ddsc + '/uploads', ImagehandlingRoutes);
 
 //ผู้สมัครงาน
 app.use( ddsc + '/user', UserRoutes)
