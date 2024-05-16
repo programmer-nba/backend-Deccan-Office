@@ -11,6 +11,6 @@ router.get("/:code/one", TermsController.getOneByCode)
 router.delete("/:id", TermsController.deleteOne)
 
 router.post("/accepted", TermsController.createAcceptedTerm)
-router.get("/accepted", TermsController.getAcceptedTerms)
+router.get("/accepted/all", TermsController.getAcceptedTerms)
 
 module.exports = router;
