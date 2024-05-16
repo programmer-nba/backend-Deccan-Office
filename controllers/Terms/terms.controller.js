@@ -1,4 +1,5 @@
 const Term = require("../../model/Terms/terms.model")
+const AcceptedTerm = require("../../model/Terms/acceptedHis.model")
 
 exports.create = async (req, res) => {
     const {
@@ -147,6 +148,54 @@ exports.getOne = async (req, res) => {
     }
 }
 
+exports.getOneStandardByCode = async (req, res) => {
+    const { code } = req.params
+    try {
+        const term = await Term.findOne( { code: code, standard: true, active: true } )
+        if (!term) {
+            return res.status(404).json({
+                message: "ไม่พบข้อมูล",
+            })
+        }
+
+        return res.json({
+            message: `success`,
+            status: true,
+            data: term
+        })
+    }
+    catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            message: err.message
+        })
+    }
+}
+
+exports.getAllSrandardByCode = async (req, res) => {
+    const { code } = req.params
+    try {
+        const terms = await Term.find( { code: code, standard: true, active: true } )
+        if (!terms.length) {
+            return res.status(404).json({
+                message: "ไม่พบข้อมูล",
+            })
+        }
+
+        return res.json({
+            message: `success`,
+            status: true,
+            data: terms
+        })
+    }
+    catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            message: err.message
+        })
+    }
+}
+
 exports.deleteOne = async (req, res) => {
     const { id } = req.params
     try {
@@ -167,6 +216,58 @@ exports.deleteOne = async (req, res) => {
         console.log(err)
         return res.status(500).json({
             message: err.message
+        })
+    }
+}
+
+exports.createAcceptedTerm = async (req, res) => {
+    const {
+        standard_id,
+        user_id,
+        user_type,
+        fromUrl
+    } = req.body
+    try {
+        const user_ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
+        const data = { 
+            standard_id: standard_id,
+            user_id: user_id,
+            user_ip: user_ip,
+            user_type: user_type, //tossagun, //partner ...
+            fromUrl: fromUrl
+        }
+        const new_accepted = new AcceptedTerm(data)
+        const accepted = await new_accepted.save()
+        if(!accepted) return res.status(500).json({ message: "can not save data to database" })
+        
+        return res.status(200).json({
+            message: "Success",
+            status: true,
+            data: accepted
+        })
+    }
+    catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+}
+
+exports.getAcceptedTerms = async (req, res) => {
+    try {
+        const accepted = await AcceptedTerm.find()
+        
+        return res.status(200).json({
+            message: "Success",
+            status: true,
+            data: accepted
+        })
+    }
+    catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            message: "Internal server error"
         })
     }
 }

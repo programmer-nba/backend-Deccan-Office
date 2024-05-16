@@ -6,6 +6,11 @@ router.post("/create", TermsController.create)
 router.put("/:id", TermsController.update)
 router.get("/all", TermsController.getAll)
 router.get("/:id", TermsController.getOne)
+router.get("/:code/all", TermsController.getAllByCode)
+router.get("/:code/one", TermsController.getOneByCode)
 router.delete("/:id", TermsController.deleteOne)
+
+router.post("/accepted", TermsController.createAcceptedTerm)
+router.get("/accepted", TermsController.getAcceptedTerms)
 
 module.exports = router;
