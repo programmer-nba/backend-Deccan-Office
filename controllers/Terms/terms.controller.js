@@ -172,7 +172,7 @@ exports.getOneStandardByCode = async (req, res) => {
     }
 }
 
-exports.getAllSrandardByCode = async (req, res) => {
+exports.getAllStandardByCode = async (req, res) => {
     const { code } = req.params
     try {
         const terms = await Term.find( { code: code, standard: true, active: true } )
@@ -222,15 +222,16 @@ exports.deleteOne = async (req, res) => {
 
 exports.createAcceptedTerm = async (req, res) => {
     const {
-        standard_id,
+        term_id,
+        user_ip,
         user_id,
         user_type,
         fromUrl
     } = req.body
     try {
-        const user_ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
+        //const user_ip = 'https://api64.ipify.org?format=json'
         const data = { 
-            standard_id: standard_id,
+            term_id: term_id,
             user_id: user_id,
             user_ip: user_ip,
             user_type: user_type, //tossagun, //partner ...
