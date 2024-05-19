@@ -4,16 +4,16 @@ const SubType = require('../../model/ProjectType/ProjectType.model');
 // เพิ่มประเภทงานใหม่
 exports.createType = async (req, res) => {
   try {
-    const { type_name , type_code} = req.body;
-    if (!type_name || !type_code) {
-        res.status(500).json({
+    const { name , code} = req.body;
+    if (!name || !code) {
+        return res.status(500).json({
             message: 'กรอกข้อมูลให้ครบ',
             status: false,
         });
     }
     const newType = new Type({ 
-        type_name : type_name,
-        type_code : type_code
+        name : name,
+        code : code
     });
     await newType.save();
     res.status(201).json({
