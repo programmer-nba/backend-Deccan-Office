@@ -1,4 +1,4 @@
-const Type = require('../../model/ProjectType/ProjectType.model');
+const Type = require('../../model/project/ProjectType.model');
 
 // เพิ่มประเภทงานใหม่
 exports.createType = async (req, res) => {
@@ -69,13 +69,13 @@ exports.deleteType = async (req, res) => {
 exports.getTypes = async (req, res) => {
     try {
         const types = await Type.find()
-        res.status(200).json({
+        return res.status(200).json({
             message : 'success!',
             status : true, 
             data : types 
         })
     } catch (error) {
-        res.status(500).json({ 
+        return res.status(500).json({ 
             message : err.message,
         })
     }
