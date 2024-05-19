@@ -82,8 +82,8 @@ app.use( ddsc + '/contact', ContactRoutes)
 
 // รับงาน
 app.use( ddsc + '/project',RequestProjectRoutes);
-app.use( ddsc + '/project/types',ProjectTypeRoutes);
-app.use ( ddsc + '/project/subtypes',SubTypeRoute);
+app.use( ddsc + '/project-types',ProjectTypeRoutes);
+app.use ( ddsc + '/project-subtypes',SubTypeRoute);
 
 //tossgun
 app.use(ddsc+'/onestopservice', require('./routes/Tossagunshop/onestopservice'));
