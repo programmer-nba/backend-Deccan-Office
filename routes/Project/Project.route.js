@@ -1,20 +1,24 @@
 const express = require ('express')
 const router =  express.Router();
-const RequestProjectController = require ('../../controllers/RequestProject/Project.controller')
+const ProjectController = require ('../../controllers/project/Project.controller')
 
 //Auth
 const auth = require("../../lib/auth");
 const authAdmin = require("../../lib/authAdmin");
 
-router.get('/getall', RequestProjectController.getRequestProject);
+router.get('/', ProjectController.getProjects);
 
-router.get('/getbyme', auth, RequestProjectController.getProjectType);
+router.get('/:id', ProjectController.getProject);
 
-router.post('/insert', RequestProjectController.InsertRequestProject);
+router.post('/', ProjectController.createProject);
 
-router.put('/accept/:id', auth, RequestProjectController.Accept);
+router.put('/:id', ProjectController.updateProject);
 
-router.put('/finish/:id', auth, RequestProjectController.Finish);
+router.delete('/:id', ProjectController.deleteProject);
+
+//router.put('/accept/:id', auth, ProjectController.Accept);
+
+//router.put('/finish/:id', auth, ProjectController.Finish);
 
 
 module.exports = router;

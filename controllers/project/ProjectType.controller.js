@@ -2,76 +2,81 @@ const Type = require('../../model/ProjectType/ProjectType.model');
 
 // เพิ่มประเภทงานใหม่
 exports.createType = async (req, res) => {
-  try {
-    const { Type_name , Type_code} = req.body;
+try {
+    const { name , code} = req.body
     const newType = new Type({ 
-        Type_name : Type_name,
-        Type_code : Type_code
+        name : name,
+        code : code
     });
-    await newType.save();
-    res.status(201).json({
-        message: 'ประเภทงานถูกเพิ่มเรียบร้อยแล้ว',
+    const savedType = await newType.save()
+    if (!savedType) return res.json({
+        message: "can not create new-type"
+    })
+    return res.status(201).json({
+        message: 'success!',
         status: true,
         data : newType
     });
-  } catch (error) {
-    res.status(500).json({ status: false, message: 'เกิดข้อผิดพลาดในการเพิ่มประเภทงาน', error: error.message });
-  }
-};
+} catch (error) {
+    res.status(500).json({ message: error.message })
+    }
+}
 
 // แก้ไขข้อมูลประเภทงาน
 exports.updateType = async (req, res) => {
     try {
-        const type = await Type.findByIdAndUpdate(req.params.id, req.body);
+        const newType = await Type.findByIdAndUpdate(req.params.id, {
+            $set: {
+                name: req.body.name,
+                code: req.body.code
+            }
+        }, { new : true })
         return res.json({
-            message: 'Update Project Type successfully!',
+            message: 'success!',
             status: true,
-            data: req.body
+            data: newType
         })
     }
     catch (err) {
         console.log(err)
         return res.json({
-            message: err.message,
-            status: false,
-            data: null
+            message: err.message
         })
     }
-};
+}
 
 // ลบประเภทงาน
 exports.deleteType = async (req, res) => {
     try {
-        const projecttype = await Type.findByIdAndDelete(req.params.id);
-        res.json({
+        const deletedType = await Type.findByIdAndDelete(req.params.id)
+        if (!deletedType) return res.json({
+            message: 'can not delete this type'
+        })
+        return res.json({
             message: 'Delete Project Type successfully!',
             status: true,
-            data: projecttype
-        });
+            data: deletedType.deletedCount
+        })
     } catch (err) {
         console.log(err)
         return res.json({
-            message: err.message,
-            status: false,
-            data: null
+            message: err.message
         })
     }
-};
+}
 
 // ดึงข้อมูลประเภทงานทั้งหมด
 exports.getTypes = async (req, res) => {
-  try {
-    const types = await Type.find();
-    res.status(200).json({
-        message : 'ดึงประเภทงานทั้งหมดสำเร็จ',
-        status : true, 
-        data : types 
-    });
-  } catch (error) {
-    res.status(500).json({ 
-        message : 'เกิดข้อผิดพลาดในการดึงข้อมูลประเภทงาน : ' + err.message,
-        status : false, 
-        data : null
-    });
-  }
-};
+    try {
+        const types = await Type.find()
+        res.status(200).json({
+            message : 'success!',
+            status : true, 
+            data : types 
+        })
+    } catch (error) {
+        res.status(500).json({ 
+            message : err.message,
+        })
+    }
+}
