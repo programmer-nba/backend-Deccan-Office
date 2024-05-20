@@ -1,25 +1,28 @@
 const mongoose = require('mongoose');
 
 const RequestProjectSchema = new mongoose.Schema({
-    code : { type : String, required : false },
-    title : { type : String, required : false },
-    projectType : { type : String, required : false },
-    projectSubType : { type : String, required : false },
-    detail : { type : String, required : false },
+    code : { type : String, required : false, default: "DWG" }, // TSG
+    title : { type : String, required : false, default: "" },
+    projectType : { type : String, required : false, default: "" },
+    projectSubType : { type : String, required : false, default: "" },
+    detail : { type : String, required : false, default: "" }, // require
     startDate : { type : Date, required : false, default : Date.now() },
-    dueDate : { type : Date, required : false },
-    refs : { type : Array, required : false },
-    billNo : { type : String, required : false },
-    remark : { type : String, required : false },
+    dueDate : { type : Date, required : false, default: null },
+    refs : { type : Array, required : false, default: [] },
+    qty: { type : Number, required : false, default: 1 },
+    unit: { type : String, required : false, default: "งาน" },
+    billNo : { type : String, required : false, default: "" },
+    remark : { type : String, required : false, default: "" },
     customer : {
-        _id : { type : String, required : false },
-        name : { type : String, required : false },
-        customerType : { type : String, required : false },
-        customerTel : { type : String, required : false }
+        _id : { type : String, required : false, default: "" },
+        name : { type : String, required : false, default: "" },
+        customerType : { type : String, required : false, default: "" },
+        customerTel : { type : String, required : false, default: "" }
     },
-    status : { type : Array, required : false },
-    permisses : { type : Array, required : false },
-    employees : { type : Array, required : false },
+    sendAddress: { type : String, required : false, default: "" },
+    status : { type : Array, required : false, timestamps: true },
+    permisses : { type : Array, required : false, default: [] },
+    employees : { type : Array, required : false, default: [] },
 
 }, { timestamps: true });
 

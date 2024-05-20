@@ -20,7 +20,7 @@ exports.getProjects = async (req, res, next) => {
 //Insert a new Project
 exports.createProject = async (req, res) => {
     try {
-        const { code, title, projectType, projectSubType, dueDate, refs, remark, customer, status, permisses, billNo, startDate, detail, employees } = req.body
+        const { code, title, qty, unit, projectType, projectSubType, dueDate, refs, remark, customer, status, permisses, billNo, startDate, detail, employees, sendAddress } = req.body
         const projects = await RequestProject.find()
         let projectNumber = 0
         if (!projects.length) {
@@ -29,9 +29,10 @@ exports.createProject = async (req, res) => {
             const latestProject = projects[projects.length - 1]
             projectNumber = parseInt(latestProject.code.slice(7)) + 1
         }
-
+        
         const projectNumberString = code + projectNumber.toString().padStart(6, '0')
-
+        const defaultPermiss = []
+        const permiss = permisses && permisses.length ? [...permisses] : defaultPermiss
         const project = new RequestProject({
             code: projectNumberString,
             title : title,
@@ -50,8 +51,11 @@ exports.createProject = async (req, res) => {
                 customerTel : ""
             },
             status : status,
-            permisses : permisses,
-            employees: employees
+            permisses : permiss,
+            employees: employees,
+            sendAddress: sendAddress,
+            qty: qty,
+            unit: unit
         });
 
         // บันทึกเอกสาร
@@ -76,7 +80,7 @@ exports.createProject = async (req, res) => {
 
 exports.updateProject = async (req, res) => {
     try {
-        const { code, title, projectType, projectSubType, dueDate, refs, remark, customer, status, permisses, billNo, startDate, detail, employees } = req.body
+        const { code, title, projectType, qty, unit, projectSubType, dueDate, refs, remark, customer, status, permisses, billNo, startDate, detail, employees } = req.body
         const { id } = req.params
         const project = await RequestProject.findByIdAndUpdate( id, {
             $set: {
@@ -93,7 +97,10 @@ exports.updateProject = async (req, res) => {
                 billNo : billNo, 
                 startDate : startDate, 
                 detail : detail,
-                employees: employees
+                employees: employees,
+                sendAddress: sendAddress,
+                qty: qty,
+                unit: unit
             }
         }, { new : true } )
 

@@ -53,3 +53,17 @@ exports.handleImageUpload = async (req, res, next) => {
       res.status(500).json({ message: err.message });
     }
   };  
+
+  exports.getImageThumbnail = (req, res) => {
+    const { imageId } = req.body
+    try {
+      const thumbnail = `https://drive.google.com/thumbnail?id=${imageId}`
+      return res.status(200).send(thumbnail)
+    }
+    catch(err) {
+      console.log(err)
+      return res.json({
+        message: err.message
+      })
+    }
+  }
