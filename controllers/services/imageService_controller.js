@@ -58,7 +58,15 @@ exports.handleImageUpload = async (req, res, next) => {
     const { imageId } = req.body
     try {
       const thumbnail = `https://drive.google.com/thumbnail?id=${imageId}`
-      return res.status(200).send(thumbnail)
+      if (!imageId) {
+        return res.status(200).send({
+          data: null
+        })
+      }
+      return res.status(200).send({
+        data: thumbnail,
+        status: true
+      })
     }
     catch(err) {
       console.log(err)

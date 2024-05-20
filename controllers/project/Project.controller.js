@@ -80,7 +80,7 @@ exports.createProject = async (req, res) => {
 
 exports.updateProject = async (req, res) => {
     try {
-        const { code, title, projectType, qty, unit, projectSubType, dueDate, refs, remark, customer, status, permisses, billNo, startDate, detail, employees } = req.body
+        const { code, title, projectType, qty, unit, projectSubType, dueDate, refs, remark, customer, status, permisses, billNo, startDate, detail, employees, sendAddress } = req.body
         const { id } = req.params
         const project = await RequestProject.findByIdAndUpdate( id, {
             $set: {
