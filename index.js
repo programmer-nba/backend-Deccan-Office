@@ -85,6 +85,9 @@ app.use( ddsc + '/project',RequestProjectRoutes);
 app.use( ddsc + '/project-types',ProjectTypeRoutes);
 app.use ( ddsc + '/project-subtypes',SubTypeRoute);
 
+// ปฏิทิน
+app.use( ddsc + '/event', require('./routes/event/event.route'))
+
 //tossgun
 app.use(ddsc+'/onestopservice', require('./routes/Tossagunshop/onestopservice'));
 
