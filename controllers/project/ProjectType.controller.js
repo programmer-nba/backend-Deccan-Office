@@ -3,10 +3,11 @@ const Type = require('../../model/project/ProjectType.model');
 // เพิ่มประเภทงานใหม่
 exports.createType = async (req, res) => {
 try {
-    const { name , code} = req.body
+    const { name , code, roles} = req.body
     const newType = new Type({ 
         name : name,
-        code : code
+        code : code,
+        roles: roles
     });
     const savedType = await newType.save()
     if (!savedType) return res.json({
@@ -28,7 +29,8 @@ exports.updateType = async (req, res) => {
         const newType = await Type.findByIdAndUpdate(req.params.id, {
             $set: {
                 name: req.body.name,
-                code: req.body.code
+                code: req.body.code,
+                roles: req.body.roles
             }
         }, { new : true })
         return res.json({

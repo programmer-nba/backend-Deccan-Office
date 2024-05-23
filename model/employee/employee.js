@@ -23,7 +23,7 @@ const EmployeeSchema = new Schema({
   district: { type: String, default: "", required: false },
   provice: { type: String, default: "", required: false },
   postcode: { type: String, default: "", required: false },
-  birthday: { type: String, default: "", required: false },
+  birthday: { type: Date, default: null, required: false },
   age: { type: Number, default:0, required: false },
   email: { type: String, default: "", required: false },
   blacklist : {type: Boolean, default:false, required: false},

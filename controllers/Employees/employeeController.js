@@ -40,14 +40,14 @@ exports.Post = async (req, res) => {
     const refRole = await roleEmployee.findById(req.body.role_id)
 
     const salt = await bcrypt.genSalt(Number(process.env.SALT)); 
-    const hashPassword = await bcrypt.hash(req.body.iden_number, 10);
+    const hashPassword = await bcrypt.hash(req.body.iden_number, salt);
     
     const employee = await Employees.create({
       ...req.body,
       password: hashPassword,
       role: refRole.role,
       role_id: req.body.role_id,
-      position: req.body.position,
+      position: refRole.position,
       permissioins: refRole.permissions
     });
 
@@ -156,8 +156,20 @@ exports.Update = async (req, res) => {
       })
 
       const currentYear = new Date().getFullYear();
-      const birthYear = new Date(employee.birthday).getFullYear();
-      const age = currentYear - birthYear;
+      const birthDate = new Date(employee.birthday);
+      console.log('employee.birthday', employee.birthday)
+      const birthYear = birthDate.getFullYear();
+      let age = currentYear - birthYear;
+
+      // Adjust age if the birthday hasn't occurred yet this year
+      const currentMonth = new Date().getMonth();
+      const currentDay = new Date().getDate();
+      const birthMonth = birthDate.getMonth();
+      const birthDay = birthDate.getDate();
+
+      if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
+        age--;
+      }
 
       const hashPassword = req.body.password ? await bcrypt.hash(req.body.password, 10) : null
 
