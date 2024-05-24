@@ -176,6 +176,7 @@ module.exports.createProjectShop = async (req, res) => {
         const ProjectNumber = await GenerateProjectNumber();
         const data = {
             code: ProjectNumber,
+            title: 'งานจากทศกัณฐ์',
             detail: req.body.detail,
             customer: req.body.customer,
             refs: req.body.product_detail,

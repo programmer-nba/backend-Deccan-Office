@@ -22,7 +22,7 @@ const RequestProjectSchema = new mongoose.Schema({
         customer_address: { type: String, required: false, default: "" },
     },
     sendAddress: { type: String, required: false, default: "" },
-    status: { type: Array, required: false, timestamps: true },
+    status: { type: Array, required: false, default: [] },
     permisses: { type: Array, required: false, default: [] },
     employees: { type: Array, required: false, default: [] },
 
