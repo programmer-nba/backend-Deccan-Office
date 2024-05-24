@@ -1,4 +1,5 @@
-const RequestProject = require ('../../model/project/RequestProject.model')
+const RequestProject = require('../../model/project/RequestProject.model')
+const dayjs = require("dayjs");
 
 //Get Projects
 exports.getProjects = async (req, res, next) => {
@@ -29,29 +30,29 @@ exports.createProject = async (req, res) => {
             const latestProject = projects[projects.length - 1]
             projectNumber = parseInt(latestProject.code.slice(7)) + 1
         }
-        
+
         const projectNumberString = code + projectNumber.toString().padStart(6, '0')
         const defaultPermiss = []
         const permiss = permisses && permisses.length ? [...permisses] : defaultPermiss
         const project = new RequestProject({
             code: projectNumberString,
-            title : title,
-            projectType : projectType,
-            projectSubType : projectSubType,
-            detail : detail,
-            startDate : startDate,
-            dueDate : dueDate,
-            refs : refs,
-            billNo : billNo,
-            remark : remark,
-            customer : customer || {
-                _id : "",
-                name : "",
-                customerType : "",
-                customerTel : ""
+            title: title,
+            projectType: projectType,
+            projectSubType: projectSubType,
+            detail: detail,
+            startDate: startDate,
+            dueDate: dueDate,
+            refs: refs,
+            billNo: billNo,
+            remark: remark,
+            customer: customer || {
+                _id: "",
+                name: "",
+                customerType: "",
+                customerTel: ""
             },
-            status : status,
-            permisses : permiss,
+            status: status,
+            permisses: permiss,
             employees: employees,
             sendAddress: sendAddress,
             qty: qty,
@@ -82,27 +83,27 @@ exports.updateProject = async (req, res) => {
     try {
         const { code, title, projectType, qty, unit, projectSubType, dueDate, refs, remark, customer, status, permisses, billNo, startDate, detail, employees, sendAddress } = req.body
         const { id } = req.params
-        const project = await RequestProject.findByIdAndUpdate( id, {
+        const project = await RequestProject.findByIdAndUpdate(id, {
             $set: {
-                code : code, 
-                title: title, 
-                projectType : projectType, 
-                projectSubType : projectSubType, 
-                dueDate : dueDate, 
-                refs : refs, 
-                remark : remark, 
-                customer : customer, 
-                status : status, 
-                permisses : permisses, 
-                billNo : billNo, 
-                startDate : startDate, 
-                detail : detail,
+                code: code,
+                title: title,
+                projectType: projectType,
+                projectSubType: projectSubType,
+                dueDate: dueDate,
+                refs: refs,
+                remark: remark,
+                customer: customer,
+                status: status,
+                permisses: permisses,
+                billNo: billNo,
+                startDate: startDate,
+                detail: detail,
                 employees: employees,
                 sendAddress: sendAddress,
                 qty: qty,
                 unit: unit
             }
-        }, { new : true } )
+        }, { new: true })
 
         // บันทึกเอกสาร
         if (!project) {
@@ -126,7 +127,7 @@ exports.updateProject = async (req, res) => {
 exports.getProject = async (req, res) => {
     try {
         const { id } = req.params
-        const project = await RequestProject.findById( id )
+        const project = await RequestProject.findById(id)
 
         if (!project) {
             return res.status(404).json({
@@ -149,7 +150,7 @@ exports.getProject = async (req, res) => {
 exports.deleteProject = async (req, res) => {
     try {
         const { id } = req.params
-        const project = await RequestProject.findByIdAndDelete( id )
+        const project = await RequestProject.findByIdAndDelete(id)
 
         if (!project) {
             return res.status(404).json({
@@ -169,3 +170,34 @@ exports.deleteProject = async (req, res) => {
         })
     }
 }
+
+module.exports.createProjectShop = async (req, res) => {
+    try {
+        const ProjectNumber = await GenerateProjectNumber();
+        const data = {
+            code: ProjectNumber,
+            detail: req.body.detail,
+            customer: req.body.customer,
+            refs: req.body.product_detail,
+            billNo: req.body.receiptnumber,
+            status: {
+                name: 'รอรับงาน',
+                timestamp: dayjs(Date.now()).format(""),
+            },
+        };
+        const new_project = new RequestProject(data);
+        if (!new_project)
+            return res.status(403).send({ status: false, message: "ไม่สามารถเพิ่มงานในระบบได้" });
+        return res.status(200).send({ status: true, message: "เพิ่มงานในระบบสำเร็จ" });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: "Internal Server Error" });
+    }
+}
+
+async function GenerateProjectNumber() {
+    const project = await RequestProject.find();
+    const count = project.length == null ? 0 : 1;
+    const data = `DWG${count.toString().padStart(6, "0")}`;
+    return data;
+};
