@@ -188,6 +188,7 @@ module.exports.createProjectShop = async (req, res) => {
         const new_project = new RequestProject(data);
         if (!new_project)
             return res.status(403).send({ status: false, message: "ไม่สามารถเพิ่มงานในระบบได้" });
+        new_project.save();
         return res.status(200).send({ status: true, message: "เพิ่มงานในระบบสำเร็จ" });
     } catch (error) {
         console.error(error);
