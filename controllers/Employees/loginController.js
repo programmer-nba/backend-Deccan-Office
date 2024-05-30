@@ -6,7 +6,9 @@ loginController = async(req,res) =>{
     try{
         const UserID = req.body.userid //รับ UserId ที่ User กรอกมา
         const Password = req.body.password //รับ Password ที่ User กรอกมา
-        Employees.findOne({
+        // const find = await Employees.find()
+        //     console.log(find)
+        await Employees.findOne({
             $or: [
             { userid: UserID },
             { iden_number: UserID }

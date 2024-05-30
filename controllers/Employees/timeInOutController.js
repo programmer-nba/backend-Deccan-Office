@@ -684,5 +684,98 @@ getTimemonthAll = async (req, res) => {
   }
 };
 
+getTimeAllEmployee = async (req, res) => {
+  try {
+    const mount = req.body.mount
+    const year = req.body.year
+    const findEmployees = await Employees.find()
+      if(findEmployees.length == 0){
+        return res
+                .status(404)
+                .send({status:false, data:[]})
+      }
 
-module.exports = { timeInMorning, getMe, updateTime, deleteTime, getTimeDay, approveTime, getAll, getTimeDayAll, getTimeByEmployee, getAllOT, getOTByEmployeeId, getTimeAll}
+    // const findId = await timeInOut.find({ day: { $exists: true } });
+    const findId = await timeInOut.find(
+      { mount: mount, year: year }
+    );
+    if (findId.length > 0) {
+      const groupedData = findId.reduce((data, cur) => {
+        let key = cur.employee_id + '/' + cur.day + '/' + cur.mount + '/' + cur.year;
+        if (!data[key]) {
+          let findEm = findEmployees.find(item => item._id.toString() == cur.employee_id)
+          // console.log(findEm)
+          data[key] = {
+            employee_id: cur.employee_id,
+            day: cur.day + '/' + cur.mount + '/' + cur.year,
+            employee_number: "",
+            name: "",
+            morningIn: "",
+            morningOut: "",
+            afterIn: "",
+            afterOut: "",
+            date: "",
+            time_in: "",
+            time_out: "",
+            total_ot: ""
+          };
+          if(findEm){
+            data[key].employee_number = findEm.employee_number
+            data[key].name = findEm.first_name +' '+ findEm.last_name
+          }
+        }
+    
+        if (cur.time_line === 'เข้างานช่วงเช้า') {
+          data[key].morningIn = cur.time;
+    
+        } else if (cur.time_line === 'พักเที่ยง') {
+          data[key].morningOut = cur.time;
+    
+        } else if (cur.time_line === 'เข้างานช่วงบ่าย') {
+          data[key].afterIn = cur.time;
+    
+        } else if (cur.time_line === 'ลงเวลาออกงาน') {
+          data[key].afterOut = cur.time;
+    
+        } else if (cur.time_line === 'OT') {
+          if (typeof cur.total_ot === 'number') {
+            const totalOtInSeconds = cur.total_ot;
+            const hours = Math.floor(totalOtInSeconds / 3600);
+            const minutes = Math.floor((totalOtInSeconds % 3600) / 60);
+            const seconds = totalOtInSeconds % 60;
+    
+            data[key].date = `${cur.day}/${cur.mount}/${cur.year}`;
+            data[key].time_in = cur.time_in;
+            data[key].time_out = cur.time_out;
+            data[key].total_ot = `${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
+          } else {
+            // Handle invalid total_ot value
+            console.error(`Invalid total_ot value for employee ${cur.employee_id}: ${cur.total_ot}`);
+          }
+        }
+        return data;
+      }, {});
+       // Convert groupedData to array and sort by date
+      const sortedData = Object.values(groupedData).sort((a, b) => {
+        const [dayA, monthA, yearA] = a.day.split('/').map(Number);
+        const [dayB, monthB, yearB] = b.day.split('/').map(Number);
+        const dateA = new Date(yearA, monthA - 1, dayA);
+        const dateB = new Date(yearB, monthB - 1, dayB);
+        return dateA - dateB;
+      });
+
+      return res.status(200).send({ status: true, data: sortedData });
+    } else {
+      return res
+        .status(400)
+        .send({ status: true, message: "วันนี้ท่านยังไม่ได้ลงเวลางาน" });
+    }
+  } catch (err) {
+    return res
+      .status(500)
+      .send({ status: false, message: err.message });
+  }
+};
+
+module.exports = { timeInMorning, getMe, updateTime, deleteTime, getTimeDay, approveTime, getAll, getTimeDayAll, 
+  getTimeByEmployee, getAllOT, getOTByEmployeeId, getTimeAll, getTimeAllEmployee}
