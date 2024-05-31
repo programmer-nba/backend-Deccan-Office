@@ -82,7 +82,7 @@ exports.update = async (req, res) => {
         term.standard = standard || term.standard
         term.user = user || term.user
         term.signatures = signatures || term.signatures
-        term.status = status || term.status
+        term.status = status ? [...term.status, status] : term.status
         term.requireSignature = requireSignature || term.requireSignature
 
         const saved_term = await term.save()
