@@ -83,7 +83,12 @@ exports.getUserById = async (req, res, next) => {
 exports.Insertimage = async (req, res, next) => {
     try {
         // ลบโค้ดที่เกี่ยวข้องกับการอัปโหลดไฟล์รูปภาพ
-
+        const findCitizen_id = await User.findOne({citizen_id:req.body.citizen_id})
+            if(findCitizen_id){
+                return res
+                        .status(400)
+                        .send({status:false, message:"มีบัตรประชาชนนี้ในระบบแล้ว"})
+            }
         const newUser = new User({
             citizen_id: req.body.citizen_id,
             user_password : bcrypt.hashSync( req.body.user_password, 10),

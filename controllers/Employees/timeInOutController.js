@@ -724,6 +724,7 @@ getTimeAllEmployee = async (req, res) => {
   try {
     const mount = req.body.mount
     const year = req.body.year
+    const day = req.body.day
     const findEmployees = await Employees.find()
       if(findEmployees.length == 0){
         return res
@@ -731,10 +732,17 @@ getTimeAllEmployee = async (req, res) => {
                 .send({status:false, data:[]})
       }
 
-    // const findId = await timeInOut.find({ day: { $exists: true } });
-    const findId = await timeInOut.find(
-      { mount: mount, year: year }
-    );
+    let findId
+    if(day){
+      findId = await timeInOut.find(
+        { day:day, mount: mount, year: year }
+      )
+    }else{
+      findId = await timeInOut.find(
+        { mount: mount, year: year }
+      )
+    }
+  
     if (findId.length > 0) {
       const groupedData = findId.reduce((data, cur) => {
         let key = cur.employee_id + '/' + cur.day + '/' + cur.mount + '/' + cur.year;
