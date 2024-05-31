@@ -25,11 +25,21 @@ exports.getExam = async (req, res, next) => {
                         .status(200)
                         .send({status:false, data:[]})
             }
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        const shuffledExams = shuffleArray(exams);
+        const selectedExams = shuffledExams.slice(0, 5);
 
         return res.json({
             message: 'Get exam data successfully!',
             status: true,
-            data: exams
+            data: selectedExams
         });
     } catch (err) {
         console.log(err);
