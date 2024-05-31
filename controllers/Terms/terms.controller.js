@@ -272,3 +272,32 @@ exports.getAcceptedTerms = async (req, res) => {
         })
     }
 }
+
+exports.getUserAcceptedTerms = async (req, res) => {
+    const { id } = req.params
+    try {
+        const accepteds = await AcceptedTerm.find({ 'user_id' : id })
+        const acceptedTermIds = accepteds.map(term => term.term_id)
+        let matchedTerms = await Term.find({ _id: { $in: acceptedTermIds } })
+
+        matchedTerms = matchedTerms.map(term => term.toObject())
+
+        matchedTerms.forEach(term => {
+            const acc = accepteds.find(t => t.term_id.toString() === term._id.toString())
+            term.standard = false
+            term.acceptedAt = acc.createdAt
+        })
+
+        return res.status(200).json({
+            message: `มีสัญญาทั้งหมด ${matchedTerms.length} ฉบับ`,
+            status: true,
+            data: matchedTerms
+        })
+    }
+    catch(err) {
+        console.log(err)
+        return res.status(500).json({
+            message: err.message
+        })
+    }
+}
