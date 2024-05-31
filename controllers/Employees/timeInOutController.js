@@ -118,6 +118,42 @@ timeInMorning = async (req, res)=>{
     }
 };
 
+updateTimeEasy = async(req, res)=>{
+  try{
+    const { employee_id, day, mount, year, time_line, time } = req.body
+    if(time_line != "เข้างานช่วงเช้า" && time_line != "พักเที่ยง" && time_line != "เข้างานช่วงบ่าย" && time_line != "ลงเวลาออกงาน" ){
+        return res
+                .status(400)
+                .send({status:false, message:"กรุณากรอก Time line ให้ถูกต้อง"})
+    }
+    const checkTime = await timeInOut.findOne(
+      {
+        employee_id:employee_id,
+        day:day,
+        mount:mount,
+        year:year,
+        time_line:time_line
+      })
+      if(checkTime){
+        return res
+                .status(200)
+                .send({status:true, message:"ท่านได้ลงเวลางานช่วงนั้นไปแล้ว"})
+      }
+    const createTime = await timeInOut.create({...req.body})
+      if(!createTime){
+        return res
+                .status(400)
+                .send({status:false, message:"ไม่สามารถสร้างข้อมูลการลงเวลางานได้"})
+      }
+    return res
+            .status(200)
+            .send({status:true, data:createTime})
+  }catch(err){
+    return res
+            .status(500)
+            .send({status:false, message:err.message})
+  }
+}
 getMe = async (req, res)=>{
     try{
       const id = req.decoded.id
@@ -778,4 +814,4 @@ getTimeAllEmployee = async (req, res) => {
 };
 
 module.exports = { timeInMorning, getMe, updateTime, deleteTime, getTimeDay, approveTime, getAll, getTimeDayAll, 
-  getTimeByEmployee, getAllOT, getOTByEmployeeId, getTimeAll, getTimeAllEmployee}
+  getTimeByEmployee, getAllOT, getOTByEmployeeId, getTimeAll, getTimeAllEmployee, updateTimeEasy}
