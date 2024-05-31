@@ -33,6 +33,7 @@ const UserinfoSchema = new mongoose.Schema({
     postal_code: { type: String, request: false, default : "" },
     line_id: { type: String, request: false, default : "" },
     job_title: { type: String, request: false, default : "" },
+    position: { type: String, request: false, default : "" },
     desired_salary: { type: Number, request: false, default : null },
     image: { type: String, request: false, default : "" },
     can_work_outside_province: { type: Boolean, request: false, default: false },
