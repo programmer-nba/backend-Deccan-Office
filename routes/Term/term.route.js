@@ -5,7 +5,7 @@ const TermsController = require('../../controllers/Terms/terms.controller');
 router.post("/create", TermsController.create)
 router.put("/:id", TermsController.update)
 router.get("/all", TermsController.getAll)
-router.get("/:id/one", TermsController.getOne)
+router.get("/:id/term", TermsController.getOne)
 router.get("/:code/all", TermsController.getAllStandardByCode)
 router.get("/:code/one", TermsController.getOneStandardByCode)
 router.delete("/:id", TermsController.deleteOne)
