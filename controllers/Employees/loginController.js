@@ -22,6 +22,7 @@ loginController = async(req,res) =>{
                             user_id: Employees.userid,
                             role: Employees.role,
                             position: Employees.position,
+                            employee_number: Employees.employee_number,
                             firstname: Employees.first_name,
                             lastname: Employees.last_name,
                         }

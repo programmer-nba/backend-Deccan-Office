@@ -31,6 +31,7 @@ const ContactRoutes = require ('./routes/Contact/contact.route');
 const SubTypeRoute = require ('./routes/Project/SubType.route');
 const SignatureRoutes = require ('./routes/Employees/signature.route');
 const ImagehandlingRoutes = require('./routes/services/imageHandling.route')
+const RequestUpateTime = require('./routes/Time_to_Work/requesttime.route')
 
 app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -47,6 +48,7 @@ const ddsc = '/ddsc-office'
 app.use( ddsc , EmployeesRoutes);
 app.use( ddsc , RecordsRoutes);
 app.use( ddsc , TimeInOut);
+app.use( ddsc + '/request', RequestUpateTime);
 app.use( ddsc + '/role', Role);
 
 //ภายใน

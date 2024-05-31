@@ -270,22 +270,15 @@ getTimeDay = async (req, res) => {
 updateTime = async (req, res)=>{
     try{
       const upID = req.params.id; //รับไอดีที่ต้องการอัพเดท
-        timeInOut.findByIdAndUpdate(upID,req.body, {new:true}).then((data) =>{
-          if (!data) {
-            res
-              .status(400)
-              .send({status:false, message: "ไม่สามารถแก้ไขผู้ใช้งานนี้ได้"})
-          }else {
-            res
+      let update = await timeInOut.findByIdAndUpdate(upID,{...req.body}, {new:true})
+        if(!update){
+          return res
+                  .status(400)
+                  .send({status:false, message:"ไม่สามารถอัพเดทข้อมูล / ไม่พบไอดีที่ท่านต้องการแก้ไข"})
+        }
+      return res
               .status(200)
-              .send({status:true, message: "อัพเดทข้อมูลแล้ว",data: data})
-          }
-        }).catch((err)=>{
-          res
-            .status(500)
-            .send({status: false, maessage: err.message})
-        })
-  
+              .send({status:true, data:update})
   }catch(err){
       console.log(err);
       return res.status(500).send({ maessage: err.message });
