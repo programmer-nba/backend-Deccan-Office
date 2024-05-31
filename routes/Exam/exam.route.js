@@ -5,7 +5,7 @@ const upload = multer();
 const ExamController = require('../../controllers/Exam/Exams.controller') //สร้างตัวแปร รับฟังชั่นจากไฟล์ Exams.controller.js
 
 //Get Exam
-router.get('/', ExamController.getExam);
+router.post('/', ExamController.getExam);
 //ใช้โมดูล router และ เมธอด get กำหนดไปที่ path exam/ จากนั้นเรียกใช้ function getExam จากตัวแปร ExamController
 
 //Get Exam By Id
