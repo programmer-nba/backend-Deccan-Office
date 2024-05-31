@@ -120,7 +120,7 @@ timeInMorning = async (req, res)=>{
 
 updateTimeEasy = async(req, res)=>{
   try{
-    const { employee_id, day, mount, year, time_line, time } = req.body
+    const { employee_id, day, mount, year, time_line, time, remark } = req.body
     if(time_line != "เข้างานช่วงเช้า" && time_line != "พักเที่ยง" && time_line != "เข้างานช่วงบ่าย" && time_line != "ลงเวลาออกงาน" ){
         return res
                 .status(400)
