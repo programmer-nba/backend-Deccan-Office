@@ -30,7 +30,7 @@ router.get('/time/getall/ot/byem/:employee_id', auth, TimeToWorkController.getOT
 
 router.get('/time/getall', authAdmin, TimeToWorkController.getTimeAll)// ดึงข้อมูลทั้งหมด
 
-router.get('/time/getall/employee',TimeToWorkController.getTimeAllEmployee)
+router.post('/time/getall/employee',TimeToWorkController.getTimeAllEmployee)
 
 router.put('/time/update/time',authAdmin, TimeToWorkController.updateTimeEasy)
 

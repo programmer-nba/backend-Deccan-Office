@@ -128,11 +128,11 @@ updateTimeEasy = async(req, res)=>{
     }
     const checkTime = await timeInOut.findOne(
       {
-        employee_id:employee_id,
-        day:day,
-        mount:mount,
-        year:year,
-        time_line:time_line
+          employee_id:employee_id,
+          day:day,
+          mount:mount,
+          year:year,
+          time_line:time_line
       })
       if(checkTime){
         return res
