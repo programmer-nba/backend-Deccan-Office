@@ -274,30 +274,47 @@ exports.getAcceptedTerms = async (req, res) => {
 }
 
 exports.getUserAcceptedTerms = async (req, res) => {
-    const { id } = req.params
+    const { id } = req.params;
     try {
-        const accepteds = await AcceptedTerm.find({ 'user_id' : id })
-        const acceptedTermIds = accepteds.map(term => term.term_id)
-        let matchedTerms = await Term.find({ _id: { $in: acceptedTermIds } })
+        // Fetch the accepted terms for the user
+        const accepteds = await AcceptedTerm.find({ user_id: id });
+        const acceptedTermIds = accepteds.map(term => term.term_id);
+        
+        // Fetch the terms corresponding to the accepted terms
+        const matchedTerms = await Term.find({ _id: { $in: acceptedTermIds } });
 
-        matchedTerms = matchedTerms.map(term => term.toObject())
+        // Convert matchedTerms to plain JavaScript objects
+        const matchedTermsMap = matchedTerms.reduce((acc, term) => {
+            acc[term._id.toString()] = term.toObject();
+            return acc;
+        }, {});
 
-        matchedTerms.forEach(term => {
-            const acc = accepteds.find(t => t.term_id.toString() === term._id.toString())
-            term.standard = false
-            term.acceptedAt = acc.createdAt
-        })
+        // Enrich accepteds with data from matchedTerms
+        const enrichedAccepteds = accepteds.map(term => {
+            const matchingTerm = matchedTermsMap[term.term_id.toString()];
+            if (matchingTerm) {
+                return {
+                    ...term.toObject(),
+                    user: matchingTerm.user,
+                    title: matchingTerm.title,
+                    code: matchingTerm.code,
+                    content: matchingTerm.content,
+                    standard: false,
+                    acceptedAt: term.createdAt,
+                };
+            }
+            return term.toObject();
+        });
 
         return res.status(200).json({
-            message: `มีสัญญาทั้งหมด ${matchedTerms.length} ฉบับ`,
+            message: `มีสัญญาทั้งหมด ${enrichedAccepteds.length} ฉบับ`,
             status: true,
-            data: matchedTerms
-        })
-    }
-    catch(err) {
-        console.log(err)
+            data: enrichedAccepteds,
+        });
+    } catch (err) {
+        console.log(err);
         return res.status(500).json({
-            message: err.message
-        })
+            message: err.message,
+        });
     }
-}
+};
