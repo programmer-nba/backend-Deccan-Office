@@ -9,7 +9,7 @@ router.post('/', ExamController.getExam);
 //ใช้โมดูล router และ เมธอด get กำหนดไปที่ path exam/ จากนั้นเรียกใช้ function getExam จากตัวแปร ExamController
 
 //Get Exam By Id
-router.get('/get/exams', ExamController.getExamWatch);
+router.post('/get/exams', ExamController.getExamWatch);
 
 //Get Exam By Id
 router.get('/byid/:id', ExamController.getExamById);
