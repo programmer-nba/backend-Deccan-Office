@@ -51,6 +51,42 @@ exports.getExam = async (req, res, next) => {
     }
 }
 
+exports.getExamWatch = async (req, res, next) => {
+    try {
+        const department = req.body.department
+        const position = req.body.position
+        let exams
+        if(position){
+            exams = await Exam.find({extype_id:department, position:position})
+                if(exams.length == 0){
+                    return res
+                            .status(200)
+                            .send({status:false, data:[]})
+                }
+        }else{
+            exams = await Exam.find({extype_id:department})
+            if(exams.length == 0){
+                return res
+                        .status(200)
+                        .send({status:false, data:[]})
+            }
+        }
+
+        return res.json({
+            message: 'Get exam data successfully!',
+            status: true,
+            data: exams
+        });
+    } catch (err) {
+        console.log(err);
+        return res.json({
+            message: 'Can not get exam data: ' + err.message,
+            status: false,
+            data: null
+        });
+    }
+}
+
 //Get Exam By Id
 exports.getExamById = async (req, res, next) => {
     try {
