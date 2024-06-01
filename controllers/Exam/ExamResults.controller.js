@@ -50,12 +50,12 @@ exports.getExamResultsById = async (req, res, next) => {
 //Insert ExamResults
 exports.InsertExamResults = async (req, res, next) => {
     try {
-        const { Position_applied, Score, Result, postid } = req.body
+        const { Position_applied, Score, Result, position, postid } = req.body
 
         const checkdata = await ExamResults.findOne({ 
             $and: [
                 { 'User_id': req.decoded.id },
-                { 'Position_applied': Position_applied }
+                { 'postid': postid }
             ]
         });
         if(checkdata) {
@@ -84,6 +84,7 @@ exports.InsertExamResults = async (req, res, next) => {
             Position_applied : Position_applied,
             Score : Score,
             Result : Result,
+            Position: position,
             postid : postid
         })
         
@@ -91,15 +92,6 @@ exports.InsertExamResults = async (req, res, next) => {
         if (!saved_user) {
             return res.json({
                 message: 'can not save user',
-                status: false,
-                data: null
-            })
-        }
-
-        const saved_examresults = await examresults.save()  
-        if (!saved_examresults) {
-            return res.json({
-                message: 'can not save examresults',
                 status: false,
                 data: null
             })
