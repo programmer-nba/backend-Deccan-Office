@@ -42,10 +42,17 @@ exports.getExamTypeById = async (req, res, next) => {
 //Insert ExamType
 exports.InsertExamType = async (req, res, next) => {
     try {
-        const { extype_id, extype_name } = req.body
+        const { extype_id, extype_name, extype_sub } = req.body
+        const findOne = await ExamType.findOne({extype_name:extype_name})
+            if(findOne){
+                return res
+                        .status(400)
+                        .send({status:false,message:"มีแผนกนี้อยู่ในระบบแล้ว"})
+            }
         const type = new ExamType({
             extype_id: extype_id,
-            extype_name: extype_name
+            extype_name: extype_name,
+            extype_sub: extype_sub
         })
         const saved_extype = await type.save()
         if (!saved_extype) {
@@ -74,7 +81,7 @@ exports.InsertExamType = async (req, res, next) => {
 //Update ExamType
 exports.UpdateExamType = async (req, res, next) => {
     try {
-        const examtype = await ExamType.findByIdAndUpdate(req.params.id, req.body);
+        const examtype = await ExamType.findByIdAndUpdate(req.params.id, {...req.body},{new:true});
         return res.json({
             message: 'Update examtype successfully!',
             status: true,
