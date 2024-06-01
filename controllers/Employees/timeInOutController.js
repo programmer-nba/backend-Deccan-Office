@@ -4,6 +4,7 @@ const dayjs = require("dayjs");
 const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone');
 const { date } = require("joi");
+const { requestTime } = require("../../model/employee/requestTime");
 
 
 // เพิ่มปลั๊กอินสำหรับ UTC และ timezone ใน dayjs
@@ -120,7 +121,7 @@ timeInMorning = async (req, res)=>{
 
 updateTimeEasy = async(req, res)=>{
   try{
-    const { employee_id, day, mount, year, time_line, time, remark } = req.body
+    const { employee_id, day, mount, year, time_line, time, remark, id } = req.body
     if(time_line != "เข้างานช่วงเช้า" && time_line != "พักเที่ยง" && time_line != "เข้างานช่วงบ่าย" && time_line != "ลงเวลาออกงาน" ){
         return res
                 .status(400)
@@ -145,9 +146,25 @@ updateTimeEasy = async(req, res)=>{
                 .status(400)
                 .send({status:false, message:"ไม่สามารถสร้างข้อมูลการลงเวลางานได้"})
       }
+    // const update = await requestTime.findByIdAndUpdate(id, 
+    //       {
+    //         status:"อนุมัติ"
+    //       },
+    //       {
+    //         new:true
+    //       })
+    //   if(!update){
+    //     return res
+    //             .status(404)
+    //             .send({status:false, message:"ไม่สามารถอัพเดทคำขอแก้ไขเวลาได้"})
+    //   }
     return res
             .status(200)
-            .send({status:true, data:createTime})
+            .send({
+              status:true, 
+              data:createTime,
+              update:update
+            })
   }catch(err){
     return res
             .status(500)
