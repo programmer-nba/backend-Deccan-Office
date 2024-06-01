@@ -17,27 +17,29 @@ const storage = multer.diskStorage({
 //Get Exam
 exports.getExam = async (req, res, next) => {
     try {
-        const exams = await Exam.aggregate([
-            {
-                $lookup: {
-                    from: 'ExamType',
-                    localField: 'extype_id',
-                    foreignField: 'extype_id',
-                    as: 'extype'
-                }
-            },
-            {
-                $replaceRoot: { newRoot: { $mergeObjects: [{ $arrayElemAt: ['$extype', 0] }, '$$ROOT'] } }
-            },
-            {
-                $project: { extype: 0 }
+        const department = req.body.department
+        const position = req.body.position
+        const exams = await Exam.find({extype_id:department, position:position})
+            if(exams.length == 0){
+                return res
+                        .status(200)
+                        .send({status:false, data:[]})
             }
-        ]);
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        const shuffledExams = shuffleArray(exams);
+        const selectedExams = shuffledExams.slice(0, 5);
 
         return res.json({
             message: 'Get exam data successfully!',
             status: true,
-            data: exams
+            data: selectedExams
         });
     } catch (err) {
         console.log(err);

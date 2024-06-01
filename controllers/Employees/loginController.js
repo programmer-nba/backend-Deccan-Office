@@ -6,7 +6,9 @@ loginController = async(req,res) =>{
     try{
         const UserID = req.body.userid //รับ UserId ที่ User กรอกมา
         const Password = req.body.password //รับ Password ที่ User กรอกมา
-        Employees.findOne({
+        // const find = await Employees.find()
+        //     console.log(find)
+        await Employees.findOne({
             $or: [
             { userid: UserID },
             { iden_number: UserID }
@@ -19,7 +21,10 @@ loginController = async(req,res) =>{
                             id: Employees._id,
                             user_id: Employees.userid,
                             role: Employees.role,
-                            position: Employees.position
+                            position: Employees.position,
+                            employee_number: Employees.employee_number,
+                            firstname: Employees.first_name,
+                            lastname: Employees.last_name,
                         }
                         const token = jwt.sign(payload, secretKey, { expiresIn: '365D'})
                         return res

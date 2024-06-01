@@ -82,7 +82,7 @@ exports.update = async (req, res) => {
         term.standard = standard || term.standard
         term.user = user || term.user
         term.signatures = signatures || term.signatures
-        term.status = status || term.status
+        term.status = status ? [...term.status, status] : term.status
         term.requireSignature = requireSignature || term.requireSignature
 
         const saved_term = await term.save()
@@ -272,3 +272,49 @@ exports.getAcceptedTerms = async (req, res) => {
         })
     }
 }
+
+exports.getUserAcceptedTerms = async (req, res) => {
+    const { id } = req.params;
+    try {
+        // Fetch the accepted terms for the user
+        const accepteds = await AcceptedTerm.find({ user_id: id });
+        const acceptedTermIds = accepteds.map(term => term.term_id);
+        
+        // Fetch the terms corresponding to the accepted terms
+        const matchedTerms = await Term.find({ _id: { $in: acceptedTermIds } });
+
+        // Convert matchedTerms to plain JavaScript objects
+        const matchedTermsMap = matchedTerms.reduce((acc, term) => {
+            acc[term._id.toString()] = term.toObject();
+            return acc;
+        }, {});
+
+        // Enrich accepteds with data from matchedTerms
+        const enrichedAccepteds = accepteds.map(term => {
+            const matchingTerm = matchedTermsMap[term.term_id.toString()];
+            if (matchingTerm) {
+                return {
+                    ...term.toObject(),
+                    user: matchingTerm.user,
+                    title: matchingTerm.title,
+                    code: matchingTerm.code,
+                    content: matchingTerm.content,
+                    standard: false,
+                    acceptedAt: term.createdAt,
+                };
+            }
+            return term.toObject();
+        });
+
+        return res.status(200).json({
+            message: `มีสัญญาทั้งหมด ${enrichedAccepteds.length} ฉบับ`,
+            status: true,
+            data: enrichedAccepteds,
+        });
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({
+            message: err.message,
+        });
+    }
+};

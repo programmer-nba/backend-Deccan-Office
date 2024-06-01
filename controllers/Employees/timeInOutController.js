@@ -118,6 +118,42 @@ timeInMorning = async (req, res)=>{
     }
 };
 
+updateTimeEasy = async(req, res)=>{
+  try{
+    const { employee_id, day, mount, year, time_line, time, remark } = req.body
+    if(time_line != "เข้างานช่วงเช้า" && time_line != "พักเที่ยง" && time_line != "เข้างานช่วงบ่าย" && time_line != "ลงเวลาออกงาน" ){
+        return res
+                .status(400)
+                .send({status:false, message:"กรุณากรอก Time line ให้ถูกต้อง"})
+    }
+    const checkTime = await timeInOut.findOne(
+      {
+          employee_id:employee_id,
+          day:day,
+          mount:mount,
+          year:year,
+          time_line:time_line
+      })
+      if(checkTime){
+        return res
+                .status(200)
+                .send({status:true, message:"ท่านได้ลงเวลางานช่วงนั้นไปแล้ว"})
+      }
+    const createTime = await timeInOut.create({...req.body})
+      if(!createTime){
+        return res
+                .status(400)
+                .send({status:false, message:"ไม่สามารถสร้างข้อมูลการลงเวลางานได้"})
+      }
+    return res
+            .status(200)
+            .send({status:true, data:createTime})
+  }catch(err){
+    return res
+            .status(500)
+            .send({status:false, message:err.message})
+  }
+}
 getMe = async (req, res)=>{
     try{
       const id = req.decoded.id
@@ -234,22 +270,15 @@ getTimeDay = async (req, res) => {
 updateTime = async (req, res)=>{
     try{
       const upID = req.params.id; //รับไอดีที่ต้องการอัพเดท
-        timeInOut.findByIdAndUpdate(upID,req.body, {new:true}).then((data) =>{
-          if (!data) {
-            res
-              .status(400)
-              .send({status:false, message: "ไม่สามารถแก้ไขผู้ใช้งานนี้ได้"})
-          }else {
-            res
+      let update = await timeInOut.findByIdAndUpdate(upID,{...req.body}, {new:true})
+        if(!update){
+          return res
+                  .status(400)
+                  .send({status:false, message:"ไม่สามารถอัพเดทข้อมูล / ไม่พบไอดีที่ท่านต้องการแก้ไข"})
+        }
+      return res
               .status(200)
-              .send({status:true, message: "อัพเดทข้อมูลแล้ว",data: data})
-          }
-        }).catch((err)=>{
-          res
-            .status(500)
-            .send({status: false, maessage: err.message})
-        })
-  
+              .send({status:true, data:update})
   }catch(err){
       console.log(err);
       return res.status(500).send({ maessage: err.message });
@@ -684,5 +713,106 @@ getTimemonthAll = async (req, res) => {
   }
 };
 
+getTimeAllEmployee = async (req, res) => {
+  try {
+    const mount = req.body.mount
+    const year = req.body.year
+    const day = req.body.day
+    const findEmployees = await Employees.find()
+      if(findEmployees.length == 0){
+        return res
+                .status(404)
+                .send({status:false, data:[]})
+      }
 
-module.exports = { timeInMorning, getMe, updateTime, deleteTime, getTimeDay, approveTime, getAll, getTimeDayAll, getTimeByEmployee, getAllOT, getOTByEmployeeId, getTimeAll}
+    let findId
+    if(day){
+      findId = await timeInOut.find(
+        { day:day, mount: mount, year: year }
+      )
+    }else{
+      findId = await timeInOut.find(
+        { mount: mount, year: year }
+      )
+    }
+  
+    if (findId.length > 0) {
+      const groupedData = findId.reduce((data, cur) => {
+        let key = cur.employee_id + '/' + cur.day + '/' + cur.mount + '/' + cur.year;
+        if (!data[key]) {
+          let findEm = findEmployees.find(item => item._id.toString() == cur.employee_id)
+          // console.log(findEm)
+          data[key] = {
+            employee_id: cur.employee_id,
+            day: cur.day + '/' + cur.mount + '/' + cur.year,
+            employee_number: "",
+            name: "",
+            morningIn: "",
+            morningOut: "",
+            afterIn: "",
+            afterOut: "",
+            date: "",
+            time_in: "",
+            time_out: "",
+            total_ot: ""
+          };
+          if(findEm){
+            data[key].employee_number = findEm.employee_number
+            data[key].name = findEm.first_name +' '+ findEm.last_name
+          }
+        }
+    
+        if (cur.time_line === 'เข้างานช่วงเช้า') {
+          data[key].morningIn = cur.time;
+    
+        } else if (cur.time_line === 'พักเที่ยง') {
+          data[key].morningOut = cur.time;
+    
+        } else if (cur.time_line === 'เข้างานช่วงบ่าย') {
+          data[key].afterIn = cur.time;
+    
+        } else if (cur.time_line === 'ลงเวลาออกงาน') {
+          data[key].afterOut = cur.time;
+    
+        } else if (cur.time_line === 'OT') {
+          if (typeof cur.total_ot === 'number') {
+            const totalOtInSeconds = cur.total_ot;
+            const hours = Math.floor(totalOtInSeconds / 3600);
+            const minutes = Math.floor((totalOtInSeconds % 3600) / 60);
+            const seconds = totalOtInSeconds % 60;
+    
+            data[key].date = `${cur.day}/${cur.mount}/${cur.year}`;
+            data[key].time_in = cur.time_in;
+            data[key].time_out = cur.time_out;
+            data[key].total_ot = `${hours} ชั่วโมง ${minutes} นาที ${seconds} วินาที`;
+          } else {
+            // Handle invalid total_ot value
+            console.error(`Invalid total_ot value for employee ${cur.employee_id}: ${cur.total_ot}`);
+          }
+        }
+        return data;
+      }, {});
+       // Convert groupedData to array and sort by date
+      const sortedData = Object.values(groupedData).sort((a, b) => {
+        const [dayA, monthA, yearA] = a.day.split('/').map(Number);
+        const [dayB, monthB, yearB] = b.day.split('/').map(Number);
+        const dateA = new Date(yearA, monthA - 1, dayA);
+        const dateB = new Date(yearB, monthB - 1, dayB);
+        return dateA - dateB;
+      });
+
+      return res.status(200).send({ status: true, data: sortedData });
+    } else {
+      return res
+        .status(400)
+        .send({ status: true, message: "วันนี้ท่านยังไม่ได้ลงเวลางาน" });
+    }
+  } catch (err) {
+    return res
+      .status(500)
+      .send({ status: false, message: err.message });
+  }
+};
+
+module.exports = { timeInMorning, getMe, updateTime, deleteTime, getTimeDay, approveTime, getAll, getTimeDayAll, 
+  getTimeByEmployee, getAllOT, getOTByEmployeeId, getTimeAll, getTimeAllEmployee, updateTimeEasy}

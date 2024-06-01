@@ -187,7 +187,7 @@ exports.LoginUser = async (req, res, next) => {
                 message: 'User not found',
                 status: false,
                 data: null
-            });
+            })
         }
 
         // ตรวจสอบรหัสผ่าน
@@ -216,7 +216,8 @@ exports.LoginUser = async (req, res, next) => {
             id: user._id,
             citizen_id: user.citizen_id,
             email: user.email,
-            role: user.role // เพิ่ม role เข้าไปใน payload
+            role: user.role, // เพิ่ม role เข้าไปใน payload
+            position: userInfo.position
         };
         
         const secretKey = "loginload";
@@ -226,7 +227,8 @@ exports.LoginUser = async (req, res, next) => {
             message: 'Login successful!',
             status: true,
             data: userInfo, // ส่งข้อมูลจาก userinfo กลับไป
-            token: token
+            token: token,
+            payload: payload
         });
     } catch (err) {
         console.log(err);

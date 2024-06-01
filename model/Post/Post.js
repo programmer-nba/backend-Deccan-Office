@@ -7,6 +7,7 @@ const PostSchema = new mongoose.Schema({
     header: {type: String, required : false, default : ""},
     description: {type: String, required : false, default : "" },
     department: {type: String, required : false, default : "" },
+    position: {type: String, required : false, default : "" },
     amount : {type: Number, required : false, default : 0},// จำนวนคนที่รับ
     age : {
         start_age : {type: Number, required: false, default : 22},// อายุที่รับเข้าทำงาน
