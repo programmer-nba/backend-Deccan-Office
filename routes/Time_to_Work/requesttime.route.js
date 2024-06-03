@@ -6,7 +6,7 @@ const updateTime = require('../../controllers/Employees/requestTime')
 const auth = require("../../lib/auth");
 const authAdmin = require("../../lib/authAdmin");
 
-router.post('/time/create', authAdmin, updateTime.create);
+router.post('/time/create', auth, updateTime.create);
 
 router.get('/time/getAll', authAdmin, updateTime.getAll)
 
