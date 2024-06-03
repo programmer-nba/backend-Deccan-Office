@@ -5,7 +5,7 @@ const Userinfo =require ('../../model/Userinfo/Userinfo')
 //Get ExamResults
 exports.getExamResults = async (req, res, next) => {
     try {
-        const examresults = await ExamResults.find();
+        const examresults = await ExamResults.find({"Meeting.meeting_date": { $ne: null } });
         return res.json({
             message: 'Get ExamResults data successfully!',
             status: true,
@@ -24,7 +24,10 @@ exports.getExamResults = async (req, res, next) => {
 //Get ExamResults By Id
 exports.getExamResultsById = async (req, res, next) => {
     try {
-        const extype = await ExamResults.findById(req.params.id);
+        const extype = await ExamResults.find(
+            {User_id:req.params.id,
+            "Meeting.meeting_date": { $ne: null } }
+        );
         if (!extype) {
             return res.status(404).json({
                 message: 'ExamResults not found',
@@ -127,7 +130,7 @@ exports.InsertExamResults = async (req, res, next) => {
 //Update ExamResults
 exports.UpdateExamResults = async (req, res, next) => {
     try {
-        const examresults = await ExamResults.findByIdAndUpdate(req.params.id, req.body);
+        const examresults = await ExamResults.findByIdAndUpdate(req.params.id,{...req.body},{new:true});
         if (!examresults) {
             return res.json({
                 message: 'ExamResults not found',
@@ -154,6 +157,7 @@ exports.UpdateExamResults = async (req, res, next) => {
 // Update ExamResults By User_id
 exports.UpdateExamResultsByID = async (req, res, next) => {
     try {
+        
         const examresults = await ExamResults.findOneAndUpdate(
             { User_id: req.params.User_id },
             req.body,
