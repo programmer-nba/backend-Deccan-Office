@@ -111,7 +111,7 @@ exports.InsertExamResults = async (req, res, next) => {
         return res.json({
             message: 'Insert examresults successfully!',
             status: true,
-            data: saved_examresults
+            data: saved_user
         })
     }
     catch (err) {
