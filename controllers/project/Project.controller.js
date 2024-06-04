@@ -56,7 +56,11 @@ exports.createProject = async (req, res) => {
             employees: employees,
             sendAddress: sendAddress,
             qty: qty,
-            unit: unit
+            unit: unit,
+            status: {
+                name: 'รอรับงาน',
+                timestamp: dayjs(Date.now()).format(""),
+            },
         });
 
         // บันทึกเอกสาร
@@ -93,7 +97,6 @@ exports.updateProject = async (req, res) => {
                 refs: refs,
                 remark: remark,
                 customer: customer,
-                status: status,
                 permisses: permisses,
                 billNo: billNo,
                 startDate: startDate,
@@ -102,6 +105,48 @@ exports.updateProject = async (req, res) => {
                 sendAddress: sendAddress,
                 qty: qty,
                 unit: unit
+            },
+            $push : {
+                status: {
+                    name: status,
+                    timestamp: dayjs(Date.now()).format(""),
+                },
+            }
+        }, { new: true })
+
+        // บันทึกเอกสาร
+        if (!project) {
+            return res.status(400).json({
+                message: 'can not save project'
+            })
+        }
+        return res.status(200).json({
+            message: 'success!',
+            status: true,
+            data: project
+        });
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            message: err.message
+        })
+    }
+}
+
+exports.acceptProject = async (req, res) => {
+    try {
+        const { employees } = req.body
+        const { id } = req.params
+        const status = 'กำลังดำเนินการ'
+        const project = await RequestProject.findByIdAndUpdate(id, {
+            $set: {
+                employees: employees,
+            },
+            $push : {
+                status: {
+                    name: status,
+                    timestamp: dayjs(Date.now()).format(""),
+                },
             }
         }, { new: true })
 
@@ -177,6 +222,7 @@ module.exports.createProjectShop = async (req, res) => {
         const data = {
             code: ProjectNumber,
             title: 'งานจากทศกัณฐ์',
+            projectType: 'tossagun',
             detail: req.body.detail,
             customer: req.body.customer,
             refs: req.body.product_detail,

@@ -12,7 +12,9 @@ router.get('/:id', ProjectController.getProject);
 
 router.post('/', ProjectController.createProject);
 
-router.put('/:id', ProjectController.updateProject);
+router.put('/:id/update', ProjectController.updateProject);
+
+router.put('/:id/accept', ProjectController.acceptProject);
 
 router.delete('/:id', ProjectController.deleteProject);
 
