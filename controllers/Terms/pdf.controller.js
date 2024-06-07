@@ -62,7 +62,7 @@ exports.updatePdf = async (req, res) => {
 
 exports.getPdf = (req, res) => {
   const filename = req.params.filename;
-  const filePath = path.join(__dirname, '..', 'uploads/pdf', filename);
+  const filePath = path.join(__dirname, '../..', 'uploads/pdf', filename);
   res.download(filePath);
 };
 
