@@ -108,7 +108,7 @@ exports.updateProject = async (req, res) => {
             },
             $push : {
                 status: {
-                    name: status,
+                    name: status || 'กำลังดำเนินการ',
                     timestamp: dayjs(Date.now()).format(""),
                 },
             }
