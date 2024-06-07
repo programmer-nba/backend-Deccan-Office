@@ -41,7 +41,8 @@ const cors = require("cors");
 
 app.use(express.json());
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'uploads')));
+app.use(express.static(path.join(__dirname, 'uploads/picture')));
+app.use(express.static(path.join(__dirname, 'uploads/pdf')));
 
 const ddsc = '/ddsc-office'
 // เรียกใช้ Path ตรงนี้ <=
