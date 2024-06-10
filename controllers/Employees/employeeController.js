@@ -36,12 +36,12 @@ exports.Post = async (req, res) => {
           .json({ status: false, message: 'มีผู้ใช้ยูสเซอร์ไอดีนี้ในระบบแล้ว' });
       }
     }
-    
+
     const refRole = await roleEmployee.findById(req.body.role_id)
 
-    const salt = await bcrypt.genSalt(Number(process.env.SALT)); 
+    const salt = await bcrypt.genSalt(Number(process.env.SALT));
     const hashPassword = await bcrypt.hash(req.body.iden_number, salt);
-    
+
     const employee = await Employees.create({
       ...req.body,
       password: hashPassword,
@@ -132,8 +132,7 @@ exports.getMe = async (req, res) => {
 
 exports.Update = async (req, res) => {
   try {
-    const upID = req.params.id; //รับไอดีที่ต้องการอัพเดท
-    
+    const upID = req.params.id; //รับไอดีที่ต้องการอัพเดทad
     const upload = multer({ storage: storage }).array("image", 20);
     upload(req, res, async function (err) {
       if (err) {
@@ -150,7 +149,7 @@ exports.Update = async (req, res) => {
         image = reqFiles[0];
       }
 
-      let employee = await Employees.findById(upID)
+      let employee = await Employees.findOne({ _id: upID });
       if (!employee) return res.status(404).json({
         message: 'employee id not founded'
       })
@@ -174,7 +173,7 @@ exports.Update = async (req, res) => {
       const hashPassword = req.body.password ? await bcrypt.hash(req.body.password, 10) : null
 
       const refRole = await roleEmployee.findById(req.body.role_id)
-      
+
       employee.password = hashPassword || employee.password
       employee.employee_number = req.body.employee_number || employee.employee_number
       employee.userid = req.body.userid || employee.userid
@@ -201,15 +200,15 @@ exports.Update = async (req, res) => {
         business_leave: req.body.business_leave || employee.leave.business_leave,
         sick_leave: req.body.sick_leave || employee.leave.sick_leave,
         annual_leave: req.body.annual_leave || employee.leave.annual_leave,
-        maternity_leave : req.body.maternity_leave || employee.leave.maternity_leave,
-        ordination_leave : req.body.ordination_leave || employee.leave.ordination_leave,
+        maternity_leave: req.body.maternity_leave || employee.leave.maternity_leave,
+        ordination_leave: req.body.ordination_leave || employee.leave.ordination_leave,
         disbursement: req.body.disbursement || employee.leave.disbursement,
       }
       employee.role_id = req.body.role_id || employee.role_id
       employee.permissions = refRole?.permissioins || employee.permissions || []
 
       const saved_employee = await employee.save()
-      if(!saved_employee) return res.status(500).json({
+      if (!saved_employee) return res.status(500).json({
         message: 'can not save data!'
       })
 
@@ -332,9 +331,9 @@ exports.Update_token = async (req, res) => {
     const update = await Employees.findByIdAndUpdate(req.params.id, req.body);
     if (!update) {
       return res.status(404).json({
-          message: 'ไม่มีการแก้ไข',
-          status: false,
-          data: null
+        message: 'ไม่มีการแก้ไข',
+        status: false,
+        data: null
       });
     }
     return res.json({
@@ -344,7 +343,7 @@ exports.Update_token = async (req, res) => {
     });
   }
   catch (err) {
-      console.log(err);
-      return res.status(500).send({ message: err });
+    console.log(err);
+    return res.status(500).send({ message: err });
   }
 }

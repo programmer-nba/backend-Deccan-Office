@@ -1,3 +1,4 @@
+const { default: axios } = require('axios');
 const RequestProject = require('../../model/project/RequestProject.model')
 const dayjs = require("dayjs");
 
@@ -85,46 +86,24 @@ exports.createProject = async (req, res) => {
 
 exports.updateProject = async (req, res) => {
     try {
-        const { code, title, projectType, qty, unit, projectSubType, dueDate, refs, remark, customer, status, permisses, billNo, startDate, detail, employees, sendAddress } = req.body
-        const { id } = req.params
-        const project = await RequestProject.findByIdAndUpdate(id, {
-            $set: {
-                code: code,
-                title: title,
-                projectType: projectType,
-                projectSubType: projectSubType,
-                dueDate: dueDate,
-                refs: refs,
-                remark: remark,
-                customer: customer,
-                permisses: permisses,
-                billNo: billNo,
-                startDate: startDate,
-                detail: detail,
-                employees: employees,
-                sendAddress: sendAddress,
-                qty: qty,
-                unit: unit
-            },
-            $push : {
-                status: {
-                    name: status || 'กำลังดำเนินการ',
-                    timestamp: dayjs(Date.now()).format(""),
-                },
-            }
-        }, { new: true })
-
-        // บันทึกเอกสาร
-        if (!project) {
-            return res.status(400).json({
-                message: 'can not save project'
-            })
+        const id = req.params.id;
+        const project = await RequestProject.findOne({ _id: id });
+        const resp = await axios.put(`${process.env.URL_TOSSAGUN}/order/service/confirm/${project.billNo}`);
+        if (resp.data.status) {
+            const status = {
+                name: 'กำลังดำเนินการ',
+                timestamp: dayjs(Date.now()).format(""),
+            };
+            project.status.push(status);
+            project.save();
+            console.log('อัพเดทสถานะสำเร็จ');
+            return res.status(200).send({ status: true, message: 'ยืนยันรับงานทำเสร็จ' })
         }
-        return res.status(200).json({
-            message: 'success!',
-            status: true,
-            data: project
-        });
+
+        if (!resp.response.data.staus) {
+            return res.status(403).send({ status: false, message: resp.response.data.message })
+        }
+
     } catch (err) {
         console.log(err)
         return res.status(500).json({
@@ -135,32 +114,22 @@ exports.updateProject = async (req, res) => {
 
 exports.acceptProject = async (req, res) => {
     try {
-        const { employees } = req.body
-        const { id } = req.params
-        const status = 'กำลังดำเนินการ'
-        const project = await RequestProject.findByIdAndUpdate(id, {
-            $set: {
-                employees: employees,
-            },
-            $push : {
-                status: {
-                    name: status,
-                    timestamp: dayjs(Date.now()).format(""),
-                },
-            }
-        }, { new: true })
-
-        // บันทึกเอกสาร
-        if (!project) {
-            return res.status(400).json({
-                message: 'can not save project'
-            })
+        const id = req.params.id;
+        const project = await RequestProject.findOne({ _id: id });
+        const resp = await axios.put(`${process.env.URL_TOSSAGUN}/order/service/submit/${project.billNo}`);
+        if (resp.data.status) {
+            const status = {
+                name: 'ดำเนินการสำเร็จ',
+                timestamp: dayjs(Date.now()).format(""),
+            };
+            project.status.push(status);
+            project.save();
+            console.log('อัพเดทสถานะสำเร็จ');
+            return res.status(200).send({ status: true, message: 'ยืนยันรับงานทำเสร็จ' })
         }
-        return res.status(200).json({
-            message: 'success!',
-            status: true,
-            data: project
-        });
+        if (!resp.response.data.staus) {
+            return res.status(403).send({ status: false, message: resp.response.data.message })
+        }
     } catch (err) {
         console.log(err)
         return res.status(500).json({

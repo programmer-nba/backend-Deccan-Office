@@ -1,6 +1,6 @@
-const express = require ('express')
-const router =  express.Router();
-const ProjectController = require ('../../controllers/project/Project.controller')
+const express = require('express')
+const router = express.Router();
+const ProjectController = require('../../controllers/project/Project.controller')
 
 //Auth
 const auth = require("../../lib/auth");
@@ -12,9 +12,8 @@ router.get('/:id', ProjectController.getProject);
 
 router.post('/', ProjectController.createProject);
 
-router.put('/:id/update', ProjectController.updateProject);
-
-router.put('/:id/accept', ProjectController.acceptProject);
+router.put('/:id/accept', ProjectController.updateProject);
+router.put('/:id/submit', ProjectController.acceptProject);
 
 router.delete('/:id', ProjectController.deleteProject);
 

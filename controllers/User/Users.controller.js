@@ -55,7 +55,7 @@ exports.getUserById = async (req, res, next) => {
 // Insert User
 exports.CreateRegister = async (req, res) => {
     try {
-        const { citizen_id, user_password, name, gender, birth, tel, status, role} = req.body;
+        const { citizen_id, user_password, name, gender, birth, tel, status, role } = req.body;
 
         // Check if the citizen ID or user email already exists in the database
         const existingUser = await User.findOne({ $or: [{ citizen_id }] });
@@ -76,7 +76,7 @@ exports.CreateRegister = async (req, res) => {
             tel,
             status,
             role
-     
+
         });
 
         return res.status(201).json({ status: true, message: 'User created successfully', data: newUser });
@@ -89,7 +89,7 @@ exports.CreateRegister = async (req, res) => {
 // Update User
 exports.UpdateUser = async (req, res, next) => {
     // Extract fields from request body
-    const { 
+    const {
         citizen_id,
         user_password,
         name,
@@ -98,12 +98,12 @@ exports.UpdateUser = async (req, res, next) => {
         tel,
         status,
         role
-        
+
     } = req.body;
 
     try {
         const user = await User.findById(req.params.id);
-        
+
         if (!user) {
             return res.status(404).json({
                 message: 'User not found',
@@ -181,7 +181,7 @@ exports.LoginUser = async (req, res, next) => {
     const { citizen_id, user_password } = req.body; // เพิ่ม tel เข้ามาในการรับข้อมูล
     try {
         // ค้นหาผู้ใช้โดยใช้ citizen_id หรือ tel
-        const user = await User.findOne({citizen_id:citizen_id});
+        const user = await User.findOne({ citizen_id: citizen_id });
         if (!user) {
             return res.json({
                 message: 'User not found',
@@ -199,7 +199,7 @@ exports.LoginUser = async (req, res, next) => {
                 data: null
             });
         }
-        
+
         // หากเข้าสู่ระบบสำเร็จ ให้ดึงข้อมูลจาก userinfo
         const userInfo = await Userinfo.findOne({ citizen_id: user.citizen_id }); // ใช้ citizen_id ของผู้ใช้จาก User model ในการค้นหาใน Userinfo model
 
@@ -210,7 +210,7 @@ exports.LoginUser = async (req, res, next) => {
                 data: null
             });
         }
-        
+
         // สร้าง payload สำหรับ JWT
         const payload = {
             id: user._id,
@@ -219,10 +219,10 @@ exports.LoginUser = async (req, res, next) => {
             role: user.role, // เพิ่ม role เข้าไปใน payload
             position: userInfo.position
         };
-        
+
         const secretKey = "loginload";
         const token = jwt.sign(payload, secretKey, { expiresIn: "10d" });
-        
+
         return res.json({
             message: 'Login successful!',
             status: true,
