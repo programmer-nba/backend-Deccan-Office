@@ -95,6 +95,7 @@ exports.updateProject = async (req, res) => {
                 timestamp: dayjs(Date.now()).format(""),
             };
             project.status.push(status);
+            project.employees.push(req.body.employees)
             project.save();
             console.log('อัพเดทสถานะสำเร็จ');
             return res.status(200).send({ status: true, message: 'ยืนยันรับงานทำเสร็จ' })
