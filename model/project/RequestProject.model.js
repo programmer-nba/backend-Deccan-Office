@@ -25,6 +25,7 @@ const RequestProjectSchema = new mongoose.Schema({
     status: { type: Array, required: false, default: [] },
     permisses: { type: Array, required: false, default: [] },
     employees: { type: Array, required: false, default: [] },
+    timestamps: { type: Date, required: false, default: Date.now() },
 
 }, { timestamps: true });
 

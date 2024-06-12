@@ -211,11 +211,34 @@ module.exports.createProjectShop = async (req, res) => {
         console.error(error);
         return res.status(500).send({ message: "Internal Server Error" });
     }
+};
+
+module.exports.cancelProjectShop = async (req, res) => {
+    try {
+        const project = await RequestProject.findOne({ billNo: req.body.invoice });
+        console.log(project)
+        const status = {
+            name: 'งานถูกยกเลิก',
+            timestamp: dayjs(Date.now()).format(""),
+        };
+        project.status.push(status);
+        project.save();
+        console.log('อัพเดทสถานะสำเร็จ');
+        return res.status(200).send({ status: true, message: 'ยกเลิกงานสำเร็จ' })
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: "Internal Server Error" });
+    }
 }
 
 async function GenerateProjectNumber() {
-    const project = await RequestProject.find();
-    const count = project.length == null ? 0 : 1;
-    const data = `DWG${count.toString().padStart(6, "0")}`;
+    const pipelint = [
+        {
+            $group: { _id: 0, count: { $sum: 1 } },
+        },
+    ];
+    const count = await RequestProject.aggregate(pipelint);
+    const countValue = count.length > 0 ? count[0].count + 1 : 1;
+    const data = `DWG${dayjs(Date.now()).format("YYMMDD")}${countValue.toString().padStart(3, "0")}`;
     return data;
 };

@@ -18,6 +18,7 @@ router.put('/:id/submit', ProjectController.acceptProject);
 router.delete('/:id', ProjectController.deleteProject);
 
 router.post('/shop', ProjectController.createProjectShop);
+router.put('/shop/cancel', ProjectController.cancelProjectShop)
 
 //router.put('/accept/:id', auth, ProjectController.Accept);
 
