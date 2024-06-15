@@ -84,6 +84,68 @@ exports.createProject = async (req, res) => {
     }
 }
 
+exports.acceptProjectOffice = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const { employees } = req.body
+        const project = await RequestProject.findByIdAndUpdate( id, {
+            $set: {
+                employees: employees
+            }
+        }, { new:true });
+        if (!project) {
+            return res.status(404).json({
+                message: 'not found'
+            })
+        }
+
+        return res.status(201).json({
+            message: "success",
+            status: true,
+            data: project
+        })
+
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            message: err.message
+        })
+    }
+}
+
+exports.updateProjectOffice = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const project = await RequestProject.findByIdAndUpdate( id, 
+           {
+            $set: req.body
+           },
+           {
+            $push: {
+                status: req.body.status
+            }
+           },
+            { new : true });
+        if (!project) {
+            return res.status(404).json({
+                message: 'not found'
+            })
+        }
+
+        return res.status(201).json({
+            message: "success",
+            status: true,
+            data: project
+        })
+
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            message: err.message
+        })
+    }
+}
+
 exports.updateProject = async (req, res) => {
     try {
         const id = req.params.id;
