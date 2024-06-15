@@ -29,6 +29,7 @@ const timeSchema = new Schema({
     time_out : { type : String, require : false, default : ""},
     total_ot : {type : Number, require : false, default : null},
     remark: { type: String, default: "" },
+    approve_by: { type: Object }
 },{timestamps:true});
 
 timeSchema.pre('save', function (next) { 
