@@ -37,7 +37,7 @@ exports.Post = async (req, res) => {
       }
     }
 
-    const refRole = await roleEmployee.findById(req.body.role_id)
+    //const refRole = await roleEmployee.findById(req.body.role_id)
 
     const salt = await bcrypt.genSalt(Number(process.env.SALT));
     const hashPassword = await bcrypt.hash(req.body.iden_number, salt);
@@ -45,10 +45,10 @@ exports.Post = async (req, res) => {
     const employee = await Employees.create({
       ...req.body,
       password: hashPassword,
-      role: refRole.role,
+      role: req.body.role,
       role_id: req.body.role_id,
-      position: refRole.position,
-      permissioins: refRole.permissions
+      position: req.body.position,
+      permissioins: req.body.permissions
     });
 
     if (employee) {
