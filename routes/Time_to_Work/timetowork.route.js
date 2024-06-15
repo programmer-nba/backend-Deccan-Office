@@ -10,9 +10,9 @@ router.post('/time/morning/in', auth, TimeToWorkController.timeInMorning);
 
 router.get('/time/getme', auth, TimeToWorkController.getMe)
 
-router.put('/uptime/:id', authAdmin, TimeToWorkController.updateTime)
+router.put('/uptime/:id', auth, TimeToWorkController.updateTime)
 
-router.delete('/deltime/:id', authAdmin, TimeToWorkController.deleteTime)
+router.delete('/deltime/:id', auth, TimeToWorkController.deleteTime)
 
 router.get('/time/getday', auth, TimeToWorkController.getTimeDay)
 
@@ -24,14 +24,14 @@ router.get('/time/getday/all', auth, TimeToWorkController.getTimeDayAll)// ด�
 
 router.get('/time/getall/employee/:employee_id', auth, TimeToWorkController.getTimeByEmployee)// ดึงเวลาทั้งหมดตาม ID พนักงาน
 
-router.get('/time/getall/ot', authAdmin, TimeToWorkController.getAllOT)// ดึงข้อมูล OT ทั้งหมด
+router.get('/time/getall/ot', auth, TimeToWorkController.getAllOT)// ดึงข้อมูล OT ทั้งหมด
 
 router.get('/time/getall/ot/byem/:employee_id', auth, TimeToWorkController.getOTByEmployeeId)// ดึงข้อมูล OT ทั้งหมดตามรหัสพนักงาน
 
-router.get('/time/getall', authAdmin, TimeToWorkController.getTimeAll)// ดึงข้อมูลทั้งหมด
+router.get('/time/getall', auth, TimeToWorkController.getTimeAll)// ดึงข้อมูลทั้งหมด
 
 router.post('/time/getall/employee',TimeToWorkController.getTimeAllEmployee)
 
-router.put('/time/update/time',authAdmin, TimeToWorkController.updateTimeEasy)
+router.put('/time/update/time',auth, TimeToWorkController.updateTimeEasy)
 
 module.exports = router;
