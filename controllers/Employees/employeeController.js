@@ -197,12 +197,12 @@ exports.Update = async (req, res) => {
       employee.salary = req.body.salary || employee.salary
       employee.image = image || employee.image
       employee.leave = {
-        business_leave: req.body.business_leave || employee.leave.business_leave,
-        sick_leave: req.body.sick_leave || employee.leave.sick_leave,
-        annual_leave: req.body.annual_leave || employee.leave.annual_leave,
-        maternity_leave: req.body.maternity_leave || employee.leave.maternity_leave,
-        ordination_leave: req.body.ordination_leave || employee.leave.ordination_leave,
-        disbursement: req.body.disbursement || employee.leave.disbursement,
+        business_leave: req.body.leave?.business_leave || employee.leave.business_leave,
+        sick_leave: req.body.leave?.sick_leave || employee.leave.sick_leave,
+        annual_leave: req.body.leave?.annual_leave || employee.leave.annual_leave,
+        maternity_leave: req.body.leave?.maternity_leave || employee.leave.maternity_leave,
+        ordination_leave: req.body.leave?.ordination_leave || employee.leave.ordination_leave,
+        disbursement: req.body.leave?.disbursement || employee.leave.disbursement,
       }
       employee.role_id = req.body.role_id || employee.role_id
       employee.permissions = req.body.permissions || employee.permissions || []
