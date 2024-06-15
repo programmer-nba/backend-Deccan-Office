@@ -172,7 +172,7 @@ exports.Update = async (req, res) => {
 
       const hashPassword = req.body.password ? await bcrypt.hash(req.body.password, 10) : null
 
-      const refRole = await roleEmployee.findById(req.body.role_id)
+      //const refRole = await roleEmployee.findById(req.body.role_id)
 
       employee.password = hashPassword || employee.password
       employee.employee_number = req.body.employee_number || employee.employee_number
@@ -182,7 +182,7 @@ exports.Update = async (req, res) => {
       employee.last_name = req.body.last_name || employee.last_name
       employee.nick_name = req.body.nick_name || employee.nick_name
       employee.iden_number = req.body.iden_number || employee.iden_number
-      employee.role = refRole?.role || employee.role
+      employee.role = req.body.role || employee.role
       employee.position = req.body.position || employee.position
       employee.tel = req.body.tel || employee.tel
       employee.address = req.body.address || employee.address
@@ -205,7 +205,7 @@ exports.Update = async (req, res) => {
         disbursement: req.body.disbursement || employee.leave.disbursement,
       }
       employee.role_id = req.body.role_id || employee.role_id
-      employee.permissions = refRole?.permissioins || employee.permissions || []
+      employee.permissions = req.body.permissioins || employee.permissions || []
 
       const saved_employee = await employee.save()
       if (!saved_employee) return res.status(500).json({
