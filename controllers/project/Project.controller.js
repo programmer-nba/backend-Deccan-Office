@@ -128,7 +128,10 @@ exports.updateProjectOffice = async (req, res) => {
            },
            {
             $push: {
-                status: req.body.status
+                status: {
+                    name: req.body.status,
+                    timestamp: dayjs(Date.now()).format("")
+                }
             }
            },
             { new : true });
