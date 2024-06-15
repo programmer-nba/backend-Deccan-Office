@@ -91,6 +91,12 @@ exports.acceptProjectOffice = async (req, res) => {
         const project = await RequestProject.findByIdAndUpdate( id, {
             $set: {
                 employees: employees
+            },
+            $push: {
+                status: {
+                    name: "กำลังดำเนินการ",
+                    timestamp: dayjs(Date.now()).format(""),
+                }
             }
         }, { new:true });
         if (!project) {
