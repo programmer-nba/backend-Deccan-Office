@@ -205,7 +205,7 @@ exports.Update = async (req, res) => {
         disbursement: req.body.disbursement || employee.leave.disbursement,
       }
       employee.role_id = req.body.role_id || employee.role_id
-      employee.permissions = req.body.permissioins || employee.permissions || []
+      employee.permissions = req.body.permissions || employee.permissions || []
 
       const saved_employee = await employee.save()
       if (!saved_employee) return res.status(500).json({
