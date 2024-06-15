@@ -45,7 +45,14 @@ exports.update = async(req, res)=>{
     try{
         const body = req.body
         const id = req.params.id
-        const update = await requestTime.findByIdAndUpdate(id, {...body},{new:true})
+        const update = await requestTime.findByIdAndUpdate(id, 
+            {
+                ...body, 
+                $push: {
+                    approve_by: req.body.approve_by
+                }
+            },
+            {new:true})
             if(!update){
                 return res
                         .status(404)
