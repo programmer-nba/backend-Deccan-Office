@@ -18,7 +18,7 @@ function updateRealTime() {
 setInterval(updateRealTime, 500);
 
 const requestTimeSchema = new Schema({
-    approve_by: { type:Array, default: [] },
+    approve_by: { type:Object },
     employee_id:{type:String, require: false},
     employee_number: {type:String, require: false},
     firstname:{type:String, require: false},

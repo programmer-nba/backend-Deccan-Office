@@ -47,10 +47,7 @@ exports.update = async(req, res)=>{
         const id = req.params.id
         const update = await requestTime.findByIdAndUpdate(id, 
             {
-                ...body, 
-                $push: {
-                    approve_by: req.body.approve_by
-                }
+                ...body
             },
             {new:true})
             if(!update){
