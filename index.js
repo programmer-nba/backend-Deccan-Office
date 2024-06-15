@@ -47,6 +47,7 @@ app.use('/ddsc-office/uploads/pdf', express.static(path.join(__dirname, 'uploads
 const ddsc = '/ddsc-office'
 // เรียกใช้ Path ตรงนี้ <=
 app.use(ddsc, EmployeesRoutes);
+app.use(ddsc, require('./routes/event/marquee.route'));
 app.use(ddsc, RecordsRoutes);
 app.use(ddsc, TimeInOut);
 app.use(ddsc + '/request', RequestUpateTime);

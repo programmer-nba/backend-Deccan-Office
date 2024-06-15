@@ -1,4 +1,5 @@
 const Event = require("../../model/Event/event_model")
+const Marquee = require("../../model/Event/marquee_model")
 
 exports.createEvent = async (req, res) => {
     const { title, detail, creator, members, location, startDate, endDate, startTime, endTime, status, remind, eventType } = req.body
@@ -143,6 +144,105 @@ exports.getEvents = async (req, res) => {
             message: `have ${events.length} events`,
             status: true,
             data: events
+        })
+    }
+    catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            message: err.message
+        })
+    }
+}
+
+
+// Marquee
+exports.createMarquee = async (req, res) => {
+    const { text } = req.body
+    try {
+        const marquee = await Marquee.create({
+            text: text
+        })
+        if (!marquee) {
+            return res.status(500).json({
+                message: "can not create marquee!"
+            })
+        }
+        return res.status(200).json({
+            message: "success",
+            status: true,
+            data: marquee
+        })
+    }
+    catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            message: err.message
+        })
+    }
+}
+
+exports.updateMarquee = async (req, res) => {
+    const { text } = req.body
+    const { id } = req.params
+    try {
+        const marquee = await Marquee.findByIdAndUpdate(id, {
+            $set: {
+                text: text
+            }
+        }, { new : true })
+        if (!marquee) {
+            return res.status(404).json({
+                message: "marquee not found!"
+            })
+        }
+        return res.status(201).json({
+            message: "success",
+            status: true,
+            data: marquee
+        })
+    }
+    catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            message: err.message
+        })
+    }
+}
+
+exports.getMarquees = async (req, res) => {
+    try {
+        const marquee = await Marquee.find()
+        if (!marquee) {
+            return res.status(404).json({
+                message: "marquee not found!"
+            })
+        }
+        return res.status(200).json({
+            message: "success",
+            status: true,
+            data: marquee
+        })
+    }
+    catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            message: err.message
+        })
+    }
+}
+
+exports.deleteMarquee = async (req, res) => {
+    const { id } = req.params
+    try {
+        const marquee = await Marquee.findByIdAndDelete(id)
+        if (!marquee) {
+            return res.status(404).json({
+                message: "marquee not found!"
+            })
+        }
+        return res.status(200).json({
+            message: "success",
+            status: true
         })
     }
     catch (err) {
