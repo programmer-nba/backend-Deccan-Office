@@ -124,9 +124,6 @@ exports.updateProjectOffice = async (req, res) => {
         const id = req.params.id;
         const project = await RequestProject.findByIdAndUpdate( id, 
            {
-            $set: req.body
-           },
-           {
             $push: {
                 status: {
                     name: req.body.status,
