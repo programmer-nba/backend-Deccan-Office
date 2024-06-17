@@ -12,8 +12,8 @@ router.get('/byid/:id', LeaveTypeController.getLeaveTypeById);
 
 router.post('/insert', LeaveTypeController.InsertLeaveType);
 
-router.put('/update', LeaveTypeController.UpdateLeaveType);
+router.put('/update/:id', LeaveTypeController.UpdateLeaveType);
 
-router.delete('/delete', LeaveTypeController.DeleteLeaveType);
+router.delete('/delete/:id', LeaveTypeController.DeleteLeaveType);
 
 module.exports = router;

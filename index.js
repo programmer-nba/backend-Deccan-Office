@@ -32,6 +32,7 @@ const SubTypeRoute = require('./routes/Project/SubType.route');
 const SignatureRoutes = require('./routes/Employees/signature.route');
 const ImagehandlingRoutes = require('./routes/services/imageHandling.route')
 const RequestUpateTime = require('./routes/Time_to_Work/requesttime.route')
+const postType = require('./routes/Post/post.type')
 
 app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -79,6 +80,7 @@ app.use(ddsc + '/signature', SignatureRoutes)
 
 //รับสมัครพนักงาน
 app.use(ddsc + '/post', PostRoutes);
+app.use(ddsc + '/post/type', postType);
 app.use(ddsc + '/exam', ExamRoute);
 app.use(ddsc + '/exam-type', ExamTypeRoutes);
 app.use(ddsc + '/examresults', ExamResultsRoutes);
