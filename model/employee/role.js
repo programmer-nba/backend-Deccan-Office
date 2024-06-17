@@ -8,7 +8,6 @@ const roleSchema = new Schema({
     thai_position:{type: String, required:false},
     Abbreviation: {type: String, required:false},
     number_role: {type: Number, required:false},
-    permissions: { type: Array, default: [] },
     scope: [{
         position:{type:String, required:false}
     }]

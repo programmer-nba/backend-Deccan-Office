@@ -40,7 +40,6 @@ updateRole = async(req, res)=>{
         thisRole.thai_position = thai_position || thisRole.thai_position
         thisRole.Abbreviation = Abbreviation || thisRole.Abbreviation
         thisRole.number_role = number_role || thisRole.number_role 
-        thisRole.permissioins = permissioins || thisRole.permissioins
 
         const saved_role = await thisRole.save()
         if (!saved_role) return res.status(500).json({ message: 'can not save data' })

@@ -8,7 +8,7 @@ const recordTypeSchema = new Schema({
     type_number: {type:String, required:false},
     approve_flow: [{
         role: {type:String, required:false},
-        level: {type:String, required:false},
+        number_role: {type:String, required:false},
     }],
 },{timestamps:true});
 
