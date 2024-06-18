@@ -15,6 +15,7 @@ router.post("/accepted", TermsController.createAcceptedTerm)
 router.get("/accepteds", TermsController.getAcceptedTerms)
 
 router.get("/:id/userterms", TermsController.getUserAcceptedTerms)
+router.get("/:id/userterms-main", TermsController.getUserTerms)
 
 router.post("/pdf/upload", PdfController.upload, PdfController.uploadPdf)
 router.put("/pdf/edit", PdfController.updatePdf)

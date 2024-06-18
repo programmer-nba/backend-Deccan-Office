@@ -273,6 +273,24 @@ exports.getAcceptedTerms = async (req, res) => {
     }
 }
 
+exports.getUserTerms = async (req, res) => {
+    const { id } = req.params
+    try {
+        const terms = await Term.find({ 'user._id' : id })
+        return res.status(200).json({
+            message: `สัญญาของคุณ มี ${terms.length} ฉบับ`,
+            status: true,
+            data: terms
+        })
+    }
+    catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            message: err.message
+        })
+    }
+}
+
 exports.getUserAcceptedTerms = async (req, res) => {
     const { id } = req.params;
     try {
