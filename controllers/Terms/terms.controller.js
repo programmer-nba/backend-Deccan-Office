@@ -11,8 +11,7 @@ exports.create = async (req, res) => {
         standard,
         user,
         requireSignature,
-        signatures,
-        status,
+        signatures
     } = req.body
     if (!title || !code) {
         return res.json({
