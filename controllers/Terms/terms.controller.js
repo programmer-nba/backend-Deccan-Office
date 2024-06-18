@@ -1,5 +1,6 @@
 const Term = require("../../model/Terms/terms.model")
 const AcceptedTerm = require("../../model/Terms/acceptedHis.model")
+const dayjs = require('dayjs')
 
 exports.create = async (req, res) => {
     const {
@@ -28,7 +29,18 @@ exports.create = async (req, res) => {
             user: user,
             requireSignature: requireSignature,
             signatures: signatures,
-            status: status,
+            status: standard 
+            ? [] 
+            : [
+                {
+                    name: 'ร่างสัญญา',
+                    createdAt: new Date()
+                },
+                {
+                    name: 'รอลงนาม',
+                    createdAt: new Date()
+                }
+            ],
         }
 
         const new_term = new Term(data)
@@ -82,7 +94,7 @@ exports.update = async (req, res) => {
         term.standard = standard || term.standard
         term.user = user || term.user
         term.signatures = signatures && signatures?.length ? [...term.signatures, ...signatures] : term.signatures
-        term.status = status ? [...term.status, status] : term.status
+        term.status = status ? [...term.status, { name: status, createdAt: new Date() }] : term.status
         term.requireSignature = requireSignature || term.requireSignature
 
         const saved_term = await term.save()
