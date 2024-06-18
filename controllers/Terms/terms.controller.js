@@ -81,7 +81,7 @@ exports.update = async (req, res) => {
         term.active = active !== null || active !== undefined ? active : term.active
         term.standard = standard || term.standard
         term.user = user || term.user
-        term.signatures = signatures || term.signatures
+        term.signatures = signatures && signatures?.length ? [...term.signatures, ...signatures] : term.signatures
         term.status = status ? [...term.status, status] : term.status
         term.requireSignature = requireSignature || term.requireSignature
 
