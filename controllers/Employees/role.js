@@ -28,7 +28,6 @@ updateRole = async(req, res)=>{
         thai_position,
         Abbreviation,
         number_role,
-        permissioins
     } = req.body
     try{
         let thisRole = await roleEmployee.findById(id)
@@ -96,4 +95,29 @@ getall = async (req, res, next) => {
     }
 }
 
-module.exports = { create , getall, updateRole, deleteRole}
+
+getPosition = async (req, res) => {
+    try {
+        const role = req.body.role
+        const data = await roleEmployee.find({role: role},{position:1, thai_position:1, number_role:1}).exec();
+            if(data.length == 0){
+                return res
+                        .status(404)
+                        .send({status:false, message:"ไม่มีข้อมูลของ role"})
+            }
+        return res.json({
+            message: 'Get data successfully!',
+            status: true,
+            data: data
+        });
+    } catch (err) {
+        console.log(err)
+        return res.json({
+            message: ('Can not get data', err.message),
+            status: false,
+            data: null
+        })
+    }
+}
+
+module.exports = { create , getall, updateRole, deleteRole, getPosition}

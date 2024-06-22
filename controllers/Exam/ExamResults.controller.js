@@ -204,3 +204,30 @@ exports.DeleteExamResults = async (req, res, next) => {
         })
     }
 }
+
+exports.getExamResultsByIdAll = async (req, res, next) => {
+    try {
+        const extype = await ExamResults.find(
+            {User_id:req.params.id}
+        );
+        if (!extype) {
+            return res.status(404).json({
+                message: 'ExamResults not found',
+                status: false,
+                data: null
+            });
+        }
+        return res.json({
+            message: 'Get ExamResults by id successfully!',
+            status: true,
+            data: extype
+        });
+    } catch (err) {
+        console.log(err);
+        return res.json({
+            message: 'Can not get ExamResults by id : ' + err.message,
+            status: false,
+            data: null
+        });
+    }
+};

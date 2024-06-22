@@ -7,8 +7,9 @@ const auth = require("../../lib/auth");
 const authAdmin = require("../../lib/authAdmin");
 
 router.post('/create',auth,Role.create);
-router.get('/getall',Role.getall);
-router.put('/update',Role.updateRole);
-router.delete('/delete',Role.deleteRole);
+router.get('/getall',auth, Role.getall);
+router.put('/update/:id',auth, Role.updateRole);
+router.delete('/delete/:id',auth, Role.deleteRole);
+router.post('/getrole',auth, Role.getPosition);
 
 module.exports = router;

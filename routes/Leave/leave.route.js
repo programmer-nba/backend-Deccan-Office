@@ -17,7 +17,9 @@ router.get('/calculate', LeaveController.calculateLeave);
 
 router.post('/insert', auth, LeaveController.InsertLeave); //เพิ่มข้อมูลใบลา
 
-router.put('/update/:id', /**authAdmin,**/ LeaveController.Update);
+router.put('/update/:id', auth, LeaveController.Update);
+
+router.put('/update/leave/:id', auth, LeaveController.updateLeave);
 
 router.delete('/delete/:id', /**authAdmin,**/ LeaveController.Delete);
 

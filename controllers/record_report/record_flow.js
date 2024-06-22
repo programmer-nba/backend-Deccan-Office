@@ -1,47 +1,25 @@
-const { recordType } = require('../../model/recordType/record_type');
 const mongoose = require('mongoose');
+const { recordFlow } = require('../../model/recordType/record_flow');
 
 create = async (req, res)=>{
     try{
-        const find = await recordType.findOne({
-            $or:[
-                { type_name: req.body.type_name },
-                { type_number: req.body.type_number }
-            ]
-        })
-            if (find) {
-                let message = "พบข้อมูลที่ซ้ำในระบบ: ";
-                if (find.type_name === req.body.type_name) {
-                    message += `ประเภทข้อความ (${req.body.type_name}) `;
-                }
-                if (find.type_number === req.body.type_number) {
-                    message += `หมายเลขข้อความ (${req.body.type_number}) `;
-                }
-            
-                return res
-                        .status(400)
-                        .send({ status: false, message: message });
-            }
-        const record = await recordType.create(req.body)
-            if(!record){
+        const record = await recordFlow.create(req.body)
+            if(record){
                 return res
                         .status(200)
-                        .send({status: true, message: "ไม่สามารถสร้างประเภทบันทึกข้อความได้"})
+                        .send({status: true, data: record})
             }
-        return res
-                .status(200)
-                .send({status:true, data:record})
     }catch(err){
         return res  
                 .status(500)
-                .send({status:false, message:err.message})
+                .send({status:false, message:"มีบางอย่างผิดพลาด"})
     }
 }
 
 getbyid = async (req, res) => {
     try {
-        const id = req.params.id; // สมมติว่าคุณใช้ parameter ในการระบุ user_id
-        const get = await recordType.findById(id);
+        const id  = req.params.id; // สมมติว่าคุณใช้ parameter ในการระบุ user_id
+        const get = await recordFlow.findOne({ _id: id });
         if (get) {
             return res
                 .status(200)
@@ -60,7 +38,7 @@ getbyid = async (req, res) => {
 
 getAll = async (req, res)=>{
     try{
-        const get = await recordType.find()
+        const get = await recordFlow.find()
         if(get){
             return res 
                     .status(200)
@@ -80,7 +58,7 @@ getAll = async (req, res)=>{
 delend = async (req, res)=>{
     try{
         const id = req.params.id
-        const del = await recordType.findByIdAndDelete(id)
+        const del = await recordFlow.findByIdAndDelete(id)
         if(del){
             return res
                     .status(200)
@@ -100,7 +78,7 @@ delend = async (req, res)=>{
 update = async (req, res)=>{
     try{
         const id = req.params.id
-        const update = await recordType.findByIdAndUpdate(id,req.body, {new:true})
+        const update = await recordFlow.findByIdAndUpdate(id,req.body, {new:true})
         if(update){
             return res
                     .status(200)

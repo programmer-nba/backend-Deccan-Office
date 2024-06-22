@@ -34,6 +34,7 @@ const ImagehandlingRoutes = require('./routes/services/imageHandling.route')
 const RequestUpateTime = require('./routes/Time_to_Work/requesttime.route')
 const postType = require('./routes/Post/post.type')
 const recordType = require('./routes/Record/record.type')
+const recordFlow = require('./routes/Record/record.flow')
 
 app.use(bodyParser.json({ limit: '50mb', type: 'application/json' }));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -52,6 +53,7 @@ app.use(ddsc, EmployeesRoutes);
 app.use(ddsc, require('./routes/event/marquee.route'));
 app.use(ddsc, RecordsRoutes);
 app.use(ddsc, recordType);
+app.use(ddsc, recordFlow);
 app.use(ddsc, TimeInOut);
 app.use(ddsc + '/request', RequestUpateTime);
 app.use(ddsc + '/role', Role);

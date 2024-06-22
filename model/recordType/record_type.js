@@ -8,11 +8,14 @@ const recordTypeSchema = new Schema({
     type_number: {type:String, required:false},
     approve_flow: [{
         role: {type:String, required:false},
-        number_role: {type:String, required:false},
+        thai_role : {type:String, required:false},
+        position: {type:String, required:false},
+        thai_position : {type:String, required:false},
+        number_role: {type:Number, required:false},
     }],
 },{timestamps:true});
 
-const recordTpye = mongoose.model("record_type", recordTypeSchema);
+const recordType = mongoose.model("record_type", recordTypeSchema);
 
-module.exports = { recordTpye};
+module.exports = { recordType};
 

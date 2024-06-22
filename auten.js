@@ -43,6 +43,7 @@ const user = async (req, res, next) => {
             return res.status(400).send({ status: false, message: "คุณไม่มีสิทธิ่ในการใช้งาน" });
         }
     } catch (err) {
+        console.log(err)
         return res.status(500).send({ error: err.message });
     }
 };
