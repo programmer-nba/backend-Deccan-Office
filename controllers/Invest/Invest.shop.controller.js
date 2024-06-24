@@ -62,7 +62,10 @@ module.exports.approve = async (req, res) => {
 module.exports.cancel = async (req, res) => {
 	try {
 		const id = req.params.id;
-		const resp = await axios.post(`${process.env.URL_TOSSAGUN}/partner/invest/cancel/${id}`, {
+		const value = {
+			employee: req.decoded.id,
+		};
+		const resp = await axios.post(`${process.env.URL_TOSSAGUN}/partner/invest/cancel/${id}`, value, {
 			headers: {
 				'Accept': 'application/json',
 			}
