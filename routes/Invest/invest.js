@@ -6,7 +6,7 @@ router.get("/", invest.getInvestAll);
 router.get("/:id", invest.getInvestById);
 
 // อนุมัติ
-router.post("/approve/:id", invest.approve);
-router.post("/cancel/:id", invest.cancel);
+router.post("/approve/:id", auth, invest.approve);
+router.post("/cancel/:id", auth, invest.cancel);
 
 module.exports = router;

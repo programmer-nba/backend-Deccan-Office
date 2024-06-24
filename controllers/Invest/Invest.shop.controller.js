@@ -40,7 +40,10 @@ module.exports.getInvestById = async (req, res) => {
 module.exports.approve = async (req, res) => {
 	try {
 		const id = req.params.id;
-		const resp = await axios.post(`${process.env.URL_TOSSAGUN}/partner/invest/approve/${id}`, {
+		const value = {
+			employee: req.decoded.id,
+		};
+		const resp = await axios.post(`${process.env.URL_TOSSAGUN}/partner/invest/approve/${id}`, value, {
 			headers: {
 				'Accept': 'application/json',
 			}

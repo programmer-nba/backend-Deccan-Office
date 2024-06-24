@@ -102,7 +102,7 @@ app.use(ddsc + '/event', require('./routes/event/event.route'))
 app.use(ddsc + '/onestopservice', require('./routes/Tossagunshop/onestopservice'));
 
 // ผู้ลงทุน One Stop Shop
-app.use(ddsc + '/invest', require('./routes//Invest/invest'));
+app.use(ddsc + '/invest', require('./routes/Invest/invest'));
 
 
 const port = process.env.PORT || 9996;
