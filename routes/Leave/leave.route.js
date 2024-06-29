@@ -23,5 +23,9 @@ router.put('/update/leave/:id', auth, LeaveController.updateLeave);
 
 router.delete('/delete/:id', /**authAdmin,**/ LeaveController.Delete);
 
+router.post('/get/role/position', auth, LeaveController.getFlow)
 
+router.post('/get/role/position/scope', auth, LeaveController.getFlowScope)
+
+router.post('/get/leave/me', auth, LeaveController.getLeaveMe);
 module.exports = router;

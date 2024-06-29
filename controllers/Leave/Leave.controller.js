@@ -767,3 +767,106 @@ exports.approveleave = async (req, res) => {
         });
     }
 }
+
+exports.getFlow = async(req, res)=>{
+    try{
+        const role = req.decoded.role
+        const position = req.decoded.position
+        // console.log(role, position)
+        const roleAll = await roleEmployee.findOne({role:role, position:position})
+        console.log(roleAll)
+            if(roleAll.length == 0){
+                return res
+                        .status(404)
+                        .send({status:false, message:"ไม่สามารถค้นหา role employee ได้"})
+            }
+        let get
+        if(role != 'ผู้บริหาร'){
+            get = await Leave.find({status_document:`รอ${roleAll.thai_role}${roleAll.thai_position}อนุมัติ`}).sort({createdAt:-1})
+            
+            if(!get){
+                return res
+                        .status(404)
+                        .send({status:true, data:'ไม่สามารถหาข้อมูลได้'})
+            }
+        }else{
+            get = await Leave.find({status_document:'รอผู้บริหารอนุมัติ'}).sort({createdAt:-1})
+            if(!get){
+                return res
+                        .status(404)
+                        .send({status:true, data:'ไม่สามารถหาข้อมูลได้'})
+            }
+        }
+        return res
+                .status(200)
+                .send({status:true, data:get})
+        
+    }catch(err){
+        return res
+                .status(500)
+                .send({status:false, message:err.message})
+    }
+}
+
+exports.getFlowScope = async(req, res)=>{
+    try{
+        const role = req.decoded.role
+        const position = req.decoded.position
+        const roleAll = await roleEmployee.findOne({role:role, position:position})
+            if(roleAll.length == 0){
+                return res
+                        .status(404)
+                        .send({status:false, message:"ไม่สามารถค้นหา role employee ได้"})
+            }
+        // Ensure roleAll.scope is an array of strings
+        const scopes = Array.isArray(roleAll.scope) ? roleAll.scope : [roleAll.scope];
+        // console.log(scopes)
+        let findLeave
+        if(role != 'owner'){
+            findLeave = await Leave.find({
+                [`status_detail.0.position`]: { $in: scopes }
+            }).sort({createdAt:-1})
+                if(findLeave.length == 0){
+                    return res
+                            .status(404)
+                            .send({status:true, data:'ไม่สามารถหาข้อมูลได้'})
+                }
+        }else{
+            findLeave = await Leave.find().sort({createdAt:-1})
+            if(findLeave.length == 0){
+                return res
+                        .status(404)
+                        .send({status:true, data:'ไม่สามารถหาข้อมูลได้'})
+            }
+        }
+        
+        return res
+                .status(200)
+                .send({status:true, data:findLeave})
+    }catch(err){
+        console.log(err)
+        return res
+                .status(500)
+                .send({status:false, message:err.message})
+    }
+}
+
+exports.getLeaveMe = async(req, res)=>{
+    try{
+        const id = req.decoded.id
+        const get = await Leave.find({employees_id:id}).sort({createdAt:-1})
+        if(get){
+            return res
+                    .status(200)
+                    .send({status: true, data:get})
+        }else{
+            return res
+                    .status(400)
+                    .send({status: false, message:"ไม่สามารถเรียกดูข้อมูลได้"})
+        }
+    }catch(err){
+        return res  
+                .status(500)
+                .send({status:false, message:"มีบางอย่างผิดพลาด"})
+    }
+}

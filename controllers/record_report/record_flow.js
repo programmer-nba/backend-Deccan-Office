@@ -95,4 +95,5 @@ update = async (req, res)=>{
     }
 }
 
+
 module.exports = { create, getAll, delend, update, getbyid}
