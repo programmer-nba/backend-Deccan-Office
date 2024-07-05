@@ -368,7 +368,7 @@ exports.Update = async (req, res, next) => {
         let status_detail
         const findDocument = await Leave.findById(record_id)
             if (findDocument) {
-                console.log(findDocument)
+                // console.log(findDocument)
                 status_detail = findDocument.status_detail[findDocument.status_detail.length - 1];
                 let statusDocs = findDocument.status_document
                 if(statusDocs == 'รอตรวจสอบ'){
@@ -413,12 +413,13 @@ exports.Update = async (req, res, next) => {
                         .status(400)
                         .send({status:false, message:`คุณได้ทำการ ${status_detail.status} ไปแล้ว`})
             }
+
             if(roleUser.number_role > findDocument.number_role){
                 return res
                         .status(400)
                         .send({status:false, message:"คุณไม่มีสิทธิ์ทำรายการเอกสารนี้"})
             }
-
+        
         const index = type.approve_flow.findIndex(flow => {
             if(flow.role == role && flow.position == position){
                 return true
@@ -627,6 +628,7 @@ exports.updateLeave = async (req, res)=>{
         const update = await Leave.findByIdAndUpdate(
             record_id,
             {
+                ...req.body,
                 number_role: nextApproveFlow.number_role,
                 status_document: status_document,
                 $push:{
