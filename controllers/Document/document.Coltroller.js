@@ -12,6 +12,8 @@ const {
     uploadFileCreate,
     deleteFile,
     } = require("../../funtion/uploadfilecreate");
+const { response } = require('express');
+const { param } = require('../../routes/Document/document.route');
 
 const storage = multer.diskStorage({
         filename: function (req, file, cb) {
@@ -75,18 +77,22 @@ exports.getdocument = async (req, res, next) => {
 //Get Document By Id
 exports.getdocumentById = async (req, res, next) => {
     try {
+
         const document = await Document.findById(req.params.id);
+        console.log(document , req.params.id)
+
         if (!document) {
             return res.json({
                 message: 'not found document',
                 status : true,
-                data : document
+                data : document,
             })
         }
         return res.json({
             message: 'Get document by id successfully!',
             status : true,
             data : document
+
         })
     }
     catch (err){
@@ -94,10 +100,38 @@ exports.getdocumentById = async (req, res, next) => {
         return res.json({
             message: 'Can not get document by id : '+ err.message,
             status: false,
-            data : null
+            data : null,
         })
     }
 };
+
+exports.GetDocumentByID = async (req , res , next) => {
+
+    try {
+        const documents = await Document.find({ 'Employee.employee_id': req.params.id});
+        for(let key in documents){
+            if(documents[key].document_id === req.params.id){
+                return res.json({
+                    message: 'Get documents by employee_id successfully!',
+                    status: true,
+                    data: documents[key],
+                    param : req.params.id
+                })
+            }
+        }
+    } catch (err) {
+        console.log(err);
+        return res.json({
+            message: 'Can not get documents by employee_id: ' + err.message,
+            status: false,
+            data: null
+        });
+    }
+
+ }; // ใช้งานได้ http://localhost:9996/ddsc-office/document/GetUserID/00002
+
+
+
 
 // Get Document By Requester
 exports.getdocumentByRequester = async (req, res, next) => {
@@ -116,6 +150,7 @@ exports.getdocumentByRequester = async (req, res, next) => {
             data: null
         });
     }
+
 };//ใช้งานได้
 
 // Get Document By Me
@@ -437,7 +472,7 @@ exports.InsertDocument = async (req, res, next) => {
 
 //Update Document
 exports.UpdateDocument = async (req, res, next) => {
-    const trueorfalse = req.body.document_true
+    const trueorfalse = req.body
     try {
         console.log(trueorfalse)
         if(req.body.document_true != "ฉบับจริง" && req.body.document_true != "ฉบับร่าง"){
@@ -610,6 +645,66 @@ exports.updateDocumentDetail = async (req, res, next) => {
       return res.status(500).json({ message: 'Failed to update document Detail' });
     }
 };//ใช้งานได้
+
+exports.UpdateUserByID = async (req , res) => {
+    try {
+            const { id } = req.params;
+            const updateData = req.body; // Data to update the user
+            // Find and update the user
+            const updatedUser = await Document.findByIdAndUpdate(id, updateData, {
+                new: true , // Return the updated document
+                runValidators: true // Ensure validation is applied
+            });
+            if (!updatedUser) {
+                return res.status(404).json({
+                    message: 'User not found',
+                    status: false,
+                    data: null
+                });
+            }
+
+            return res.json({
+                message: 'User updated successfully!',
+                status: true,
+                data: updatedUser
+            });
+
+        } catch (err) {
+            console.error(err);
+            return res.status(500).json({
+                message: 'Error updating user: ' + err.message,
+                status: false,
+                data: null
+            });
+        }
+}
+
+
+
+
+
+    // try { 
+    //     const documents = await Document.find({ 'Employee.employee_id': req.params.id});
+    //     return res.status(200).json(
+    //         { 
+    //             message: 'Update document Detail' ,
+    //             data : documents
+
+    //         },
+            
+    //     );
+
+    // } catch (error) {
+    //     console.log(error)        
+    //     return res.status(500).json(
+    //         { 
+    //             message: 'Failed to update document Detail' ,
+    //         }
+    //     );
+    // }
+
+
+
   
 //Add file only
 exports.addfileToDocument = async (req, res, next) => {
